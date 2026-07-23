@@ -1,11 +1,11 @@
-# 🛰️ OppScout (Opportunity Scout)
+# 🛰️ Oppy (Opportunity Scout)
 
-[![NPM Version](https://img.shields.io/npm/v/oppscout.svg)](https://www.npmjs.com/package/oppscout)
-[![License](https://img.shields.io/npm/l/oppscout.svg)](https://github.com/dshenoyh/oppscout/blob/main/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/oppy-cli.svg)](https://www.npmjs.com/package/oppy-cli)
+[![License](https://img.shields.io/npm/l/oppy-cli.svg)](https://github.com/dshenoyh/oppy/blob/main/LICENSE)
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dshenoyh/oppscout/blob/main/CONTRIBUTING.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dshenoyh/oppy/blob/main/CONTRIBUTING.md)
 
-**OppScout** is a zero-config, automated command-line utility to scrape, filter, and aggregate remote paid internships and hackathons from **Unstop**, **Devpost**, **RemoteOK**, and **WeWorkRemotely**. It saves results directly to a local SQLite database and generates a clean, links-enabled Markdown dashboard in your local directory or Obsidian vault.
+**Oppy** is a zero-config, automated command-line utility to scrape, filter, and aggregate remote paid internships and hackathons from **Unstop**, **Devpost**, **RemoteOK**, and **WeWorkRemotely**. It saves results directly to a local SQLite database and generates a clean, links-enabled Markdown dashboard in your local directory or Obsidian vault.
 
 ```
        _____  _____   _____                _ 
@@ -23,10 +23,10 @@
 Run the scanner instantly anywhere on your terminal using Node.js:
 
 ```bash
-npx oppscout
+npx oppy-cli
 ```
 
-*Note: OppScout requires Python 3.8+ to execute its crawlers. If python dependencies like `feedparser` are missing, the runner will automatically attempt to install them on first execution.*
+*Note: Oppy requires Python 3.8+ to execute its crawlers. If python dependencies like `feedparser` are missing, the runner will automatically attempt to install them on first execution.*
 
 ---
 
@@ -42,10 +42,10 @@ npx oppscout
 
 ## 🏗️ Architecture
 
-OppScout is built in Python for robust parsing and wrapped in a Node.js CLI script for zero-config distribution:
+Oppy is built in Python for robust parsing and wrapped in a Node.js CLI script for zero-config distribution:
 
 ```
-oppscout/
+oppy/
 ├── bin/
 │   └── cli.js            # Node CLI wrapper (auto-installs requirements, spawns python)
 ├── database/
@@ -67,24 +67,24 @@ oppscout/
 
 ## ⚙️ Customization
 
-Customize OppScout paths by declaring environment variables before execution:
+Customize Oppy paths by declaring environment variables before execution:
 
-*   **`OPPSCOUT_EXPORT_PATH`**: The destination path for the Markdown dashboard. 
+*   **`OPPY_EXPORT_PATH`**: The destination path for the Markdown dashboard. 
     *   *Default*: Fallback to `~/Documents/obsidian/Brain/00 Inbox/Opportunities.md` if the directory exists, otherwise outputs `Opportunities.md` to your current working directory.
-*   **`OPPSCOUT_DB_PATH`**: Location of the SQLite database.
-    *   *Default*: `~/.config/oppscout/opportunities.db`.
+*   **`OPPY_DB_PATH`**: Location of the SQLite database.
+    *   *Default*: `~/.config/oppy/opportunities.db`.
 
 ```bash
 # Example: Export to a custom path and use a local database
-export OPPSCOUT_EXPORT_PATH="/path/to/my/folder/Jobs.md"
-npx oppscout
+export OPPY_EXPORT_PATH="/path/to/my/folder/Jobs.md"
+npx oppy-cli
 ```
 
 ---
 
 ## 🤝 Contributing
 
-We welcome community contributions to expand OppScout! Please read our **[CONTRIBUTING.md](file:///home/dhanush/Projects/OpenSource/oppscout/CONTRIBUTING.md)** guidelines to get started.
+We welcome community contributions to expand Oppy! Please read our **[CONTRIBUTING.md](file:///home/dhanush/Projects/OpenSource/oppy/CONTRIBUTING.md)** guidelines to get started.
 
 ---
 

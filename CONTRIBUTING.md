@@ -1,6 +1,6 @@
-# 🤝 Contributing to OppScout
+# 🤝 Contributing to Oppy
 
-Thank you for showing interest in contributing to **OppScout**! We are building a modular, community-driven tool to help developers, designers, and creators discover paid internships and hackathons globally.
+Thank you for showing interest in contributing to **Oppy**! We are building a modular, community-driven tool to help developers, designers, and creators discover paid internships and hackathons globally.
 
 Follow this guide to get your local environment set up and start shipping features.
 
@@ -16,8 +16,8 @@ Follow this guide to get your local environment set up and start shipping featur
 1.  Fork the repository on GitHub.
 2.  Clone your fork locally:
     ```bash
-    git clone https://github.com/YOUR-USERNAME/oppscout.git
-    cd oppscout
+    git clone https://github.com/YOUR-USERNAME/oppy.git
+    cd oppy
     ```
 
 ### 3. Python Environment Configuration
