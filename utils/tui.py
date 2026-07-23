@@ -18,15 +18,15 @@ def clear_screen():
 
 def render_header():
     ascii_art = r"""
-   ____   ____   ____  __  __ 
-  / __ \ / __ \ / __ \|  \/  |
- | |  | | |  | | |  | | \  / |
- | |  | | |  | | |  | |  \/  |
- | |__| | |__| | |__| |      |
-  \____/ \____/ \____/|_|  |_|
+  ____  _____  _____ __     __
+ / __ \|  __ \|  __ \\ \   / /
+| |  | | |__) | |__) |\ \_/ / 
+| |  | |  ___/|  ___/  \   /  
+| |__| | |    | |       | |   
+ \____/|_|    |_|       |_|   
 """
     header_panel = Panel(
-        Align.center(f"[bold magenta]{ascii_art}[/bold magenta]\n[dim]🛰️ Oppy — Terminal-Native Opportunity Scout[/dim]"),
+        Align.center(f"[bold magenta]{ascii_art}[/bold magenta]\n[dim]Oppy - Terminal-Native Opportunity Scout & Indexer[/dim]"),
         border_style="magenta"
     )
     console.print(header_panel)
@@ -52,7 +52,7 @@ def run_sync_progress(scrapers_to_run):
         task_desc = f"Syncing {platform_name} {opp_type.title()}s"
         sync_tasks.append((scraper_instance, method_name, opp_type, task_desc))
         
-    console.print("\n[bold cyan]🔄 Initiating Ledger Synchronization...[/bold cyan]")
+    console.print("\n[bold cyan]Initiating Ledger Synchronization...[/bold cyan]")
     
     with Progress(
         SpinnerColumn(),
@@ -99,17 +99,17 @@ def run_sync_progress(scrapers_to_run):
                 conn.commit()
                 
                 progress.advance(main_task)
-                progress.update(main_task, description=f"[green]✓ Completed {task_desc} (+{new_count} new)[/green]")
+                progress.update(main_task, description=f"[green]SUCCESS: {task_desc} (+{new_count} new)[/green]")
                 time.sleep(0.5)
                 
             except Exception as e:
                 progress.advance(main_task)
-                progress.update(main_task, description=f"[red]❌ Failed {task_desc}: {str(e)[:40]}[/red]")
+                progress.update(main_task, description=f"[red]FAILED: {task_desc}: {str(e)[:40]}[/red]")
                 time.sleep(1.0)
                 
     conn.close()
     
-    console.print(f"\n[bold green]✅ Sync execution complete. Discovered {total_new} new opportunities.[/bold green]")
+    console.print(f"\n[bold green]Sync execution complete. Discovered {total_new} new opportunities.[/bold green]")
     
     # Trigger dashboard generation
     from utils.exporter import generate_markdown
@@ -126,7 +126,7 @@ def browse_ledger():
     cursor = conn.cursor()
     
     # Get keywords filter if any
-    keyword = Prompt.ask("\n🔍 [bold yellow]Enter search query (leave blank for all)[/bold yellow]").strip()
+    keyword = Prompt.ask("\nSearch [bold yellow](leave blank for all)[/bold yellow]").strip()
     
     # Paginated view loop
     limit = 10
@@ -267,11 +267,11 @@ def tui_main(scrapers_full_list):
         render_header()
         
         menu_panel = Panel(
-            "[bold white][1][/bold white] 🔄 Synchronize Opportunities\n"
-            "[bold white][2][/bold white] 🔍 Browse Opportunities Ledger\n"
-            "[bold white][3][/bold white] ⚙️ Configure Scan Settings\n"
-            "[bold white][4][/bold white] ❓ Help & Repository Info\n"
-            "[bold white][5][/bold white] 🚪 Exit Console",
+            "[bold white][1][/bold white] Synchronize Opportunities (Index Feeds)\n"
+            "[bold white][2][/bold white] Browse Opportunities Ledger (Query & Filter)\n"
+            "[bold white][3][/bold white] Configure Scan Settings (Filter Toggles)\n"
+            "[bold white][4][/bold white] Help & Repository Details\n"
+            "[bold white][5][/bold white] Exit Console",
             title="Main Menu",
             border_style="magenta"
         )
@@ -300,5 +300,5 @@ def tui_main(scrapers_full_list):
             show_help()
         elif choice == "5":
             clear_screen()
-            console.print("[bold magenta]Goodbye! Keep scouting.[/bold magenta] 🛰️")
+            console.print("[bold magenta]Goodbye! Keep scouting.[/bold magenta]")
             break
