@@ -1,0 +1,29 @@
+{
+  "name": "oppscout",
+  "version": "1.0.0",
+  "description": "Automated CLI pipeline to scrape, filter, and track remote paid internships and hackathons in Markdown dashboards.",
+  "main": "bin/cli.js",
+  "bin": {
+    "oppscout": "./bin/cli.js"
+  },
+  "preferGlobal": true,
+  "engines": {
+    "node": ">=14"
+  },
+  "keywords": [
+    "internship",
+    "hackathon",
+    "remote",
+    "paid",
+    "scraper",
+    "crawler",
+    "automation",
+    "obsidian",
+    "cli"
+  ],
+  "author": "Dhanush Shenoy H",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dshenoyh/oppscout/issues"
+  }
+}
