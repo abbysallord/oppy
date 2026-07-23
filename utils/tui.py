@@ -438,12 +438,21 @@ def show_help():
     help_text = f"""
 [bold cyan]Oppy CLI Help Console[/bold cyan]
 
-Oppy scans popular developer databases to find career opportunities and export them to your second brain.
+Oppy scans career opportunities, caches them in local SQLite, and exports markdown tables.
 
-*   [bold yellow]Synchronize[/bold yellow]: Pulls current records from selected feeds and saves them to local SQLite.
-*   [bold yellow]Markdown Exporter[/bold yellow]: Compiles entries to clean tables in your vault file.
-*   [bold yellow]Global Configuration[/bold yellow]: Configurations persist in `~/.config/oppy/config.json`.
-*   [bold yellow]Headless Execution[/bold yellow]: Run `oppy --headless` for background scripts or cron schedules.
+[bold yellow]Ledger Keyboard Controls:[/bold yellow]
+*   [bold white]Left Arrow / P[/bold white] : Go to Previous Page
+*   [bold white]Right Arrow / N[/bold white] : Go to Next Page
+*   [bold white]T[/bold white]             : Toggle Type Filter (ALL ➔ INTERNSHIPS ➔ HACKATHONS ➔ JOBS)
+*   [bold white]Q[/bold white]             : Return to Main Menu
+
+[bold yellow]Settings Console Controls:[/bold yellow]
+*   [bold white]1 - 6[/bold white]         : Instant Option Selection (no Enter required)
+*   [bold white]Y / N[/bold white]         : Instant Toggle confirmation
+*   [bold white]5[/bold white]             : Open Custom RSS Feed Manager (add/delete URL feeds)
+
+[bold yellow]Automation / Headless Mode:[/bold yellow]
+*   Run [dim]oppy --headless[/dim] to sync in background (ideal for cron / systemd).
 
 [dim]Repository: https://github.com/abbysallord/oppy[/dim]
 """
