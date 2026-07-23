@@ -4,12 +4,12 @@ from pathlib import Path
 from database.connection import get_connection
 from utils.config import load_config
 
-config = load_config()
-DEFAULT_OBSIDIAN = config.get("export_path")
-# Support environment override for customized dashboard export paths using Oppy namespace
-OBSIDIAN_PATH = os.environ.get("OPPY_EXPORT_PATH", DEFAULT_OBSIDIAN)
-
 def generate_markdown():
+    config = load_config()
+    default_obsidian = config.get("export_path")
+    # Support environment override for customized dashboard export paths using Oppy namespace
+    obsidian_path = os.environ.get("OPPY_EXPORT_PATH", default_obsidian)
+
     conn = get_connection()
     cursor = conn.cursor()
     
@@ -77,18 +77,17 @@ def generate_markdown():
     markdown_content = "\n".join(md_lines)
     
     # Resolve write path safely
-    global OBSIDIAN_PATH
-    parent_dir = os.path.dirname(OBSIDIAN_PATH)
+    parent_dir = os.path.dirname(obsidian_path)
     if parent_dir and not os.path.exists(parent_dir):
-        OBSIDIAN_PATH = os.path.join(os.getcwd(), "Opportunities.md")
-        print(f"Target folder {parent_dir} not found. Exporting locally to: {OBSIDIAN_PATH}")
+        obsidian_path = os.path.join(os.getcwd(), "Opportunities.md")
+        print(f"Target folder {parent_dir} not found. Exporting locally to: {obsidian_path}")
     else:
         os.makedirs(parent_dir, exist_ok=True)
     
-    with open(OBSIDIAN_PATH, "w", encoding="utf-8") as f:
+    with open(obsidian_path, "w", encoding="utf-8") as f:
         f.write(markdown_content)
         
-    print(f"Markdown dashboard generated successfully: {OBSIDIAN_PATH}")
+    print(f"Markdown dashboard generated successfully: {obsidian_path}")
 
 if __name__ == "__main__":
     generate_markdown()

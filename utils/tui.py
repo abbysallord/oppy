@@ -137,7 +137,12 @@ def run_sync_progress(scrapers_to_run):
             
             try:
                 method = getattr(scraper_instance, method_name)
-                results = method()
+                
+                # Silence crawler print outputs to keep TUI screen clean
+                import io
+                import contextlib
+                with contextlib.redirect_stdout(io.StringIO()):
+                    results = method()
                 
                 if results is None:
                     raise Exception("Offline")
@@ -197,6 +202,7 @@ def browse_ledger():
     
     limit = 10
     offset = 0
+    filter_type = "all"
     message = ""
     
     while True:
@@ -210,6 +216,10 @@ def browse_ledger():
         for word in words:
             conditions.append("(LOWER(title) LIKE ? OR LOWER(company) LIKE ? OR LOWER(platform) LIKE ?)")
             params.extend([f"%{word}%", f"%{word}%", f"%{word}%"])
+            
+        if filter_type != "all":
+            conditions.append("opportunity_type = ?")
+            params.append(filter_type)
             
         where_clause = " AND ".join(conditions) if conditions else "1"
         
@@ -256,7 +266,7 @@ def browse_ledger():
             console.print(f"\n{message}")
             message = ""
             
-        console.print("\n[dim]Navigation: [→ / N]ext Page  •  [← / P]revious Page  •  [Q]uit to Main Menu[/dim]")
+        console.print(f"\n[dim]Navigation: [→ / N]ext Page  •  [← / P]revious Page  •  [T]oggle Type Filter ({filter_type.upper()})  •  [Q]uit[/dim]")
         
         choice = read_key()
         
@@ -270,6 +280,16 @@ def browse_ledger():
                 offset -= limit
             else:
                 message = "[bold red]Notice: Already at the first page of the ledger.[/bold red]"
+        elif choice == "t":
+            if filter_type == "all":
+                filter_type = "internship"
+            elif filter_type == "internship":
+                filter_type = "hackathon"
+            elif filter_type == "hackathon":
+                filter_type = "job"
+            else:
+                filter_type = "all"
+            offset = 0
         elif choice == "q" or choice == "\x03":
             break
             
@@ -287,19 +307,22 @@ def edit_settings():
         platforms_str = ", ".join([p.upper() for p in config.get("selected_platforms")])
         export_path = config.get("export_path")
         
+        active_feeds_count = len(config.get("custom_rss_feeds", []))
+        
         settings_panel = Panel(
             f"[bold cyan]Current Synchronization Settings:[/bold cyan]\n\n"
             f"[bold white][1] Remote Only Filter  :[/bold white] {remote_val} (Internships)\n"
             f"[bold white][2] Paid Only Filter    :[/bold white] {paid_val} (Internships)\n"
             f"[bold white][3] Active Platforms    :[/bold white] {platforms_str}\n"
             f"[bold white][4] Dashboard Export Path:[/bold white] {export_path}\n"
-            f"[bold white][5] Return to Main Menu[/bold white]",
+            f"[bold white][5] Custom RSS Feeds     :[/bold white] {active_feeds_count} feeds\n"
+            f"[bold white][6] Return to Main Menu[/bold white]",
             title="Settings Console",
             border_style="cyan"
         )
         console.print(settings_panel)
         
-        console.print("[dim]Press key [1-5] to select...[/dim]", end="")
+        console.print("[dim]Press key [1-6] to select...[/dim]", end="")
         choice = read_key()
         
         if choice == "1":
@@ -325,7 +348,59 @@ def edit_settings():
             new_path = Prompt.ask("Enter new export absolute path (Press Enter to keep current)", default=export_path)
             config["export_path"] = os.path.expanduser(new_path)
             save_config(config)
-        elif choice == "5" or choice == "q":
+        elif choice == "5":
+            while True:
+                clear_screen()
+                render_header()
+                feeds = config.get("custom_rss_feeds", [])
+                
+                console.print("[bold cyan]Custom RSS Feeds Panel[/bold cyan]\n")
+                if not feeds:
+                    console.print("[dim]No custom RSS feeds active currently.[/dim]\n")
+                else:
+                    for idx, feed_url in enumerate(feeds):
+                        console.print(f"[{idx + 1}] {feed_url}")
+                    console.print("")
+                
+                console.print("[bold white][1][/bold white] Add New RSS Feed")
+                if feeds:
+                    console.print("[bold white][2][/bold white] Delete Existing RSS Feed")
+                    console.print("[bold white][3][/bold white] Return to Settings Console")
+                    console.print("\n[dim]Press key [1-3] to select...[/dim]", end="")
+                    feed_choice = read_key()
+                else:
+                    console.print("[bold white][2][/bold white] Return to Settings Console")
+                    console.print("\n[dim]Press key [1-2] to select...[/dim]", end="")
+                    feed_choice = read_key()
+                    if feed_choice == "2":
+                        break
+                        
+                if feed_choice == "1":
+                    new_feed = Prompt.ask("Enter custom RSS Feed URL").strip()
+                    if new_feed.startswith("http"):
+                        feeds.append(new_feed)
+                        config["custom_rss_feeds"] = feeds
+                        save_config(config)
+                    else:
+                        console.print("[bold red]Invalid URL schema! Must start with http/https.[/bold red]")
+                        time.sleep(1)
+                elif feed_choice == "2" and feeds:
+                    del_idx_str = Prompt.ask("Enter feed number to delete")
+                    try:
+                        del_idx = int(del_idx_str) - 1
+                        if 0 <= del_idx < len(feeds):
+                            feeds.pop(del_idx)
+                            config["custom_rss_feeds"] = feeds
+                            save_config(config)
+                        else:
+                            console.print("[bold red]Index out of bounds![/bold red]")
+                            time.sleep(1)
+                    except ValueError:
+                        console.print("[bold red]Invalid index number![/bold red]")
+                        time.sleep(1)
+                elif feed_choice == "3" or (feed_choice == "2" and not feeds):
+                    break
+        elif choice == "6" or choice == "q":
             break
 
 def show_help():
@@ -387,7 +462,7 @@ def tui_main(scrapers_full_list):
             run_list = []
             for scraper_instance, method_name, opp_type in scrapers_full_list:
                 platform_name = scraper_instance.__class__.__name__.replace("Scraper", "").lower()
-                if platform_name in active_platforms:
+                if platform_name in active_platforms or platform_name == "customrss":
                     run_list.append((scraper_instance, method_name, opp_type))
             
             run_sync_progress(run_list)
