@@ -5,6 +5,7 @@ from scrapers.unstop import UnstopScraper
 from scrapers.devpost import DevpostScraper
 from scrapers.remoteok import RemoteOkScraper
 from scrapers.weworkremotely import WeWorkRemotelyScraper
+from scrapers.custom_rss import CustomRSSScraper
 from utils.exporter import generate_markdown
 from utils.tui import tui_main
 
@@ -14,7 +15,8 @@ def main():
         (UnstopScraper(), "scrape_hackathons", "hackathon"),
         (DevpostScraper(), "scrape_hackathons", "hackathon"),
         (RemoteOkScraper(), "scrape_internships", "internship"),
-        (WeWorkRemotelyScraper(), "scrape_internships", "internship")
+        (WeWorkRemotelyScraper(), "scrape_internships", "internship"),
+        (CustomRSSScraper(), "scrape_custom_feeds", "job")
     ]
     
     if "--headless" in sys.argv or "-h" in sys.argv:
@@ -32,7 +34,7 @@ def main():
         
         for scraper_instance, method_name, opp_type in scrapers:
             platform_name = scraper_instance.__class__.__name__.replace("Scraper", "").lower()
-            if platform_name not in active_platforms:
+            if platform_name not in active_platforms and platform_name != "customrss":
                 continue
                 
             print(f"Syncing platform {platform_name} ({opp_type})...")

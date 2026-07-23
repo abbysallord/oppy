@@ -11,7 +11,8 @@ DEFAULT_CONFIG = {
     "paid_only": True,
     "selected_platforms": ["unstop", "devpost", "remoteok", "weworkremotely"],
     "export_path": os.path.join(HOME, "Documents", "obsidian", "Brain", "00 Inbox", "Opportunities.md"),
-    "search_keywords": []
+    "search_keywords": [],
+    "custom_rss_feeds": []
 }
 
 def load_config():
