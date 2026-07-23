@@ -28,3 +28,7 @@ Issues = "https://github.com/abbysallord/oppy/issues"
 [project.scripts]
 oppy = "scan:main"
 oppy-cli = "scan:main"
+
+[tool.setuptools]
+packages = ["database", "scrapers", "utils"]
+py-modules = ["scan"]
