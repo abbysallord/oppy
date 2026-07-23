@@ -11,10 +11,11 @@ from rich.align import Align
 from database.connection import get_connection, init_db
 from utils.config import load_config, save_config
 
-# Enable standard GNU readline wrapper if supported by OS
-# This binds terminal escape keys (arrow keys, backspace) to standard input handling
+# Enable standard GNU readline wrapper with disabled filename auto-complete
 try:
     import readline
+    readline.set_completer(None)
+    readline.parse_and_bind("tab: self-insert")
 except ImportError:
     pass
 
@@ -25,15 +26,22 @@ def clear_screen():
 
 def read_key():
     """
-    Reads a single character from standard input without waiting for Enter.
-    Fully cross-platform (handles Unix raw-mode tty and Windows msvcrt).
+    Reads a single keypress, supporting immediate returns for numbers, 
+    character commands, and ANSI escape sequences (Arrow keys).
     """
     if os.name == 'nt':
         import msvcrt
         try:
-            return msvcrt.getch().decode('utf-8', errors='ignore').lower()
+            ch = msvcrt.getch()
+            if ch in (b'\x00', b'\xe0'): # Arrow key prefix
+                ch2 = msvcrt.getch()
+                if ch2 == b'M': return 'right'
+                if ch2 == b'K': return 'left'
+                if ch2 == b'H': return 'up'
+                if ch2 == b'P': return 'down'
+            return ch.decode('utf-8', errors='ignore').lower()
         except Exception:
-            return sys.stdin.read(1).lower()
+            return ''
     else:
         import sys
         import tty
@@ -45,18 +53,26 @@ def read_key():
         try:
             tty.setraw(fd)
             ch = sys.stdin.read(1)
+            if ch == '\x1b': # Escape sequence detector
+                ch2 = sys.stdin.read(1)
+                if ch2 == '[':
+                    ch3 = sys.stdin.read(1)
+                    if ch3 == 'C': return 'right'
+                    if ch3 == 'D': return 'left'
+                    if ch3 == 'A': return 'up'
+                    if ch3 == 'B': return 'down'
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch.lower()
 
 def render_header():
     ascii_art = r"""
-  ██████╗ ██████╗ ██████╗ _   _
- ██╔═══██╗██╔══██╗██╔══██╗\ \ / /
- ██║   ██║██████╔╝██████╔╝ \ V / 
- ██║   ██║██╔═══╝ ██╔═══╝   \ /  
- ╚██████╔╝██║     ██║       | |  
-  ╚═════╝ ╚═╝     ╚═╝       |_|  
+ ██████╗ ██████╗ ██████╗ ██╗   ██╗
+██╔═══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝
+██║   ██║██████╔╝██████╔╝ ╚████╔╝ 
+██║   ██║██╔═══╝ ██╔═══╝   ╚██╔╝  
+╚██████╔╝██║     ██║        ██║   
+ ╚═════╝ ╚═╝     ╚═╝        ╚═╝   
 """
     header_panel = Panel(
         Align.center(f"[bold magenta]{ascii_art}[/bold magenta]\n[dim]Oppy - Terminal-Native Opportunity Scout & Indexer[/dim]"),
@@ -65,10 +81,6 @@ def render_header():
     console.print(header_panel)
 
 def run_sync_progress(scrapers_to_run):
-    """
-    Executes the scrapers with a beautiful progress panel.
-    Hides raw crawling logs, showing synchronization tasks.
-    """
     clear_screen()
     render_header()
     
@@ -77,8 +89,6 @@ def run_sync_progress(scrapers_to_run):
     cursor = conn.cursor()
     
     total_new = 0
-    
-    # Define tasks with clean enterprise-style descriptions
     sync_tasks = []
     for scraper_instance, method_name, opp_type in scrapers_to_run:
         platform_name = scraper_instance.__class__.__name__.replace("Scraper", "")
@@ -102,10 +112,8 @@ def run_sync_progress(scrapers_to_run):
             
             try:
                 method = getattr(scraper_instance, method_name)
-                # Run scraper
                 results = method()
                 
-                # Save to db
                 new_count = 0
                 for item in results:
                     try:
@@ -144,7 +152,6 @@ def run_sync_progress(scrapers_to_run):
     
     console.print(f"\n[bold green]Sync execution complete. Discovered {total_new} new opportunities.[/bold green]")
     
-    # Trigger dashboard generation
     from utils.exporter import generate_markdown
     generate_markdown()
     
@@ -158,10 +165,8 @@ def browse_ledger():
     conn = get_connection()
     cursor = conn.cursor()
     
-    # Get keywords filter if any
     keyword = Prompt.ask("\nSearch query (leave blank for all)").strip()
     
-    # Paginated view loop
     limit = 10
     offset = 0
     message = ""
@@ -170,7 +175,7 @@ def browse_ledger():
         clear_screen()
         render_header()
         
-        # Build flexible conditions by splitting terms and stripping trailing 's'
+        # Build query conditions case-insensitively, splitting terms & removing plural 's'
         words = [w.lower().rstrip('s') for w in keyword.split() if w]
         conditions = []
         params = []
@@ -202,16 +207,17 @@ def browse_ledger():
         table = Table(title=f"Opportunities Ledger (Showing {offset+1}-{offset+len(rows)} of {total_rows} matches)", expand=True)
         table.add_column("Type", justify="center", style="cyan")
         table.add_column("Platform", justify="center", style="green")
-        table.add_column("Opportunity & Company", justify="left")
+        table.add_column("Opportunity, Company & URL", justify="left")
         table.add_column("Compensation / Prize", justify="left", style="yellow")
         table.add_column("Deadline", justify="left", style="blue")
         
         for title, company, platform, opp_type, stipend, deadline, url in rows:
-            display_title = f"[bold white]{title}[/bold white]\n[dim]{company}[/dim]"
+            # Inline stacked display containing clickable link
+            display_cell = f"[bold white]{title}[/bold white]\n[dim]{company}[/dim]\n[blue][link={url}]{url}[/link][/blue]"
             table.add_row(
                 opp_type.upper(),
                 platform.upper(),
-                display_title,
+                display_cell,
                 stipend if stipend else "Paid",
                 deadline if deadline else "Open"
             )
@@ -222,20 +228,21 @@ def browse_ledger():
             console.print(f"\n{message}")
             message = ""
             
-        console.print("\n[dim]Navigation: [N]ext Page  •  [P]revious Page  •  [Q]uit to Main Menu[/dim]")
+        console.print("\n[dim]Navigation: [→ / N]ext Page  •  [← / P]revious Page  •  [Q]uit to Main Menu[/dim]")
+        
         choice = read_key()
         
-        if choice == "n":
+        if choice in ("n", "right"):
             if offset + limit < total_rows:
                 offset += limit
             else:
                 message = "[bold red]Notice: You have reached the end of the ledger.[/bold red]"
-        elif choice == "p":
+        elif choice in ("p", "left"):
             if offset - limit >= 0:
                 offset -= limit
             else:
                 message = "[bold red]Notice: Already at the first page of the ledger.[/bold red]"
-        elif choice == "q" or choice == "\x03": # 'q' or Ctrl+C
+        elif choice == "q" or choice == "\x03":
             break
             
     conn.close()
@@ -264,7 +271,8 @@ def edit_settings():
         )
         console.print(settings_panel)
         
-        choice = Prompt.ask("Select setting to edit [1-5]", choices=["1", "2", "3", "4", "5"], default="5")
+        console.print("[dim]Press key [1-5] to select...[/dim]", end="")
+        choice = read_key()
         
         if choice == "1":
             config["remote_only"] = not config["remote_only"]
@@ -273,7 +281,6 @@ def edit_settings():
             config["paid_only"] = not config["paid_only"]
             save_config(config)
         elif choice == "3":
-            # Select platforms interactively
             all_platforms = ["unstop", "devpost", "remoteok", "weworkremotely"]
             selected = []
             for plat in all_platforms:
@@ -287,17 +294,26 @@ def edit_settings():
                 console.print("[bold red]Must select at least one platform![/bold red]")
                 time.sleep(1)
         elif choice == "4":
-            new_path = Prompt.ask("Enter new export absolute path", default=export_path)
+            new_path = Prompt.ask("Enter new export absolute path (Press Enter to keep current)", default=export_path)
             config["export_path"] = os.path.expanduser(new_path)
             save_config(config)
-        elif choice == "5":
+        elif choice == "5" or choice == "q":
             break
 
 def show_help():
     clear_screen()
     render_header()
     
-    help_text = """
+    mascot = r"""
+     .
+    / \
+   |   |
+===|[-]|===   Oppy (Scouting Satellite)
+   |   |
+    \ /
+     v
+"""
+    help_text = f"""
 [bold cyan]Oppy CLI Help Console[/bold cyan]
 
 Oppy scans popular developer databases to find career opportunities and export them to your second brain.
@@ -309,7 +325,9 @@ Oppy scans popular developer databases to find career opportunities and export t
 
 [dim]Repository: https://github.com/abbysallord/oppy[/dim]
 """
-    console.print(Panel(help_text, border_style="yellow"))
+    
+    # Combined Layout Panel
+    console.print(Panel(help_text + f"\n[dim]{mascot}[/dim]", border_style="yellow"))
     Prompt.ask("\n[bold yellow]Press Enter to return to main menu[/bold yellow]")
 
 def tui_main(scrapers_full_list):
@@ -331,10 +349,10 @@ def tui_main(scrapers_full_list):
         )
         console.print(menu_panel)
         
-        choice = Prompt.ask("Select option [1-5]", choices=["1", "2", "3", "4", "5"], default="1")
+        console.print("[dim]Press key [1-5] to select...[/dim]", end="")
+        choice = read_key()
         
         if choice == "1":
-            # Load active platforms from config and run sync
             config = load_config()
             active_platforms = config.get("selected_platforms", [])
             
@@ -352,7 +370,7 @@ def tui_main(scrapers_full_list):
             edit_settings()
         elif choice == "4":
             show_help()
-        elif choice == "5":
+        elif choice == "5" or choice == "q":
             clear_screen()
             console.print("[bold magenta]Goodbye! Keep scouting.[/bold magenta]")
             break
