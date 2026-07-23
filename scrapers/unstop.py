@@ -3,8 +3,17 @@ from scrapers.base import BaseScraper
 
 class UnstopScraper(BaseScraper):
     def scrape_internships(self):
-        url = "https://unstop.com/internships?opportunityStatus=open&financials=paid&workMode=virtual"
-        print(f"Scraping Unstop paid remote internships from {url}...")
+        from utils.config import load_config
+        config = load_config()
+        
+        params = ["opportunityStatus=open"]
+        if config.get("paid_only"):
+            params.append("financials=paid")
+        if config.get("remote_only"):
+            params.append("workMode=virtual")
+            
+        url = f"https://unstop.com/internships?{'&'.join(params)}"
+        print(f"Scraping Unstop internships from {url}...")
         markdown_content = self.fetch_url(url, use_jina=True)
         if not markdown_content:
             return []

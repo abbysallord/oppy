@@ -3,8 +3,15 @@ from scrapers.base import BaseScraper
 
 class DevpostScraper(BaseScraper):
     def scrape_hackathons(self):
-        url = "https://devpost.com/hackathons?challenge_type[]=online"
-        print(f"Scraping Devpost online hackathons from {url}...")
+        from utils.config import load_config
+        config = load_config()
+        
+        if config.get("remote_only"):
+            url = "https://devpost.com/hackathons?challenge_type[]=online"
+        else:
+            url = "https://devpost.com/hackathons"
+            
+        print(f"Scraping Devpost hackathons from {url}...")
         markdown_content = self.fetch_url(url, use_jina=True)
         if not markdown_content:
             return []
