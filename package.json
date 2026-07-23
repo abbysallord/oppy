@@ -1,6 +1,6 @@
 {
   "name": "@dshenoyh/oppy-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Automated CLI pipeline to scrape, filter, and track remote paid internships and hackathons in Markdown dashboards.",
   "main": "bin/cli.js",
   "bin": {
