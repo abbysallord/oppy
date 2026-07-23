@@ -1,11 +1,13 @@
 import sqlite3
 import os
+from pathlib import Path
 
-DB_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(os.path.dirname(DB_DIR), "data", "opportunities.db")
+HOME = str(Path.home())
+# Dynamic path for persistent database storage
+DB_PATH = os.environ.get("OPPSCOUT_DB_PATH", os.path.join(HOME, ".config", "oppscout", "opportunities.db"))
 
 def get_connection():
-    # Ensure data directory exists
+    # Ensure database directory exists
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     
     conn = sqlite3.connect(DB_PATH, timeout=5.0)
@@ -32,7 +34,6 @@ def init_db():
             discovered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     """)
-    # Unique index on URL to prevent double insertions
     cursor.execute("""
         CREATE UNIQUE INDEX IF NOT EXISTS idx_opp_url ON opportunities (opportunity_url);
     """)
