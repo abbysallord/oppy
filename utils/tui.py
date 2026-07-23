@@ -65,6 +65,24 @@ def read_key():
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch.lower()
 
+def confirm_key(prompt_text):
+    """
+    Prompts the user with a single-key (y/n) question.
+    Returns True for 'y', False for 'n'. Does not require hitting Enter.
+    """
+    console.print(f"{prompt_text} [dim](y/n)[/dim]: ", end="")
+    while True:
+        key = read_key()
+        if key == 'y':
+            console.print("[green]yes[/green]")
+            return True
+        elif key == 'n':
+            console.print("[red]no[/red]")
+            return False
+        elif key in ('q', '\x03'):
+            console.print("[red]cancelled[/red]")
+            return False
+
 def render_header():
     ascii_art = r"""
  ██████╗ ██████╗ ██████╗ ██╗   ██╗
@@ -113,6 +131,9 @@ def run_sync_progress(scrapers_to_run):
             try:
                 method = getattr(scraper_instance, method_name)
                 results = method()
+                
+                if results is None:
+                    raise Exception("Offline")
                 
                 new_count = 0
                 for item in results:
@@ -284,7 +305,7 @@ def edit_settings():
             all_platforms = ["unstop", "devpost", "remoteok", "weworkremotely"]
             selected = []
             for plat in all_platforms:
-                is_selected = Confirm.ask(f"Enable platform {plat.upper()}?")
+                is_selected = confirm_key(f"Enable platform {plat.upper()}?")
                 if is_selected:
                     selected.append(plat)
             if len(selected) > 0:
