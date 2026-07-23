@@ -11,19 +11,52 @@ from rich.align import Align
 from database.connection import get_connection, init_db
 from utils.config import load_config, save_config
 
+# Enable standard GNU readline wrapper if supported by OS
+# This binds terminal escape keys (arrow keys, backspace) to standard input handling
+try:
+    import readline
+except ImportError:
+    pass
+
 console = Console()
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def read_key():
+    """
+    Reads a single character from standard input without waiting for Enter.
+    Fully cross-platform (handles Unix raw-mode tty and Windows msvcrt).
+    """
+    if os.name == 'nt':
+        import msvcrt
+        try:
+            return msvcrt.getch().decode('utf-8', errors='ignore').lower()
+        except Exception:
+            return sys.stdin.read(1).lower()
+    else:
+        import sys
+        import tty
+        import termios
+        fd = sys.stdin.fileno()
+        if not os.isatty(fd):
+            return sys.stdin.read(1).lower()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch.lower()
+
 def render_header():
     ascii_art = r"""
-  ____  _____  _____ __     __
- / __ \|  __ \|  __ \\ \   / /
-| |  | | |__) | |__) |\ \_/ / 
-| |  | |  ___/|  ___/  \   /  
-| |__| | |    | |       | |   
- \____/|_|    |_|       |_|   
+  ██████╗ ██████╗ ██████╗ _   _
+ ██╔═══██╗██╔══██╗██╔══██╗\ \ / /
+ ██║   ██║██████╔╝██████╔╝ \ V / 
+ ██║   ██║██╔═══╝ ██╔═══╝   \ /  
+ ╚██████╔╝██║     ██║       | |  
+  ╚═════╝ ╚═╝     ╚═╝       |_|  
 """
     header_panel = Panel(
         Align.center(f"[bold magenta]{ascii_art}[/bold magenta]\n[dim]Oppy - Terminal-Native Opportunity Scout & Indexer[/dim]"),
@@ -126,31 +159,44 @@ def browse_ledger():
     cursor = conn.cursor()
     
     # Get keywords filter if any
-    keyword = Prompt.ask("\nSearch [bold yellow](leave blank for all)[/bold yellow]").strip()
+    keyword = Prompt.ask("\nSearch query (leave blank for all)").strip()
     
     # Paginated view loop
     limit = 10
     offset = 0
+    message = ""
     
     while True:
         clear_screen()
         render_header()
         
-        query_val = f"%{keyword}%"
-        cursor.execute("""
+        # Build flexible conditions by splitting terms and stripping trailing 's'
+        words = [w.lower().rstrip('s') for w in keyword.split() if w]
+        conditions = []
+        params = []
+        for word in words:
+            conditions.append("(LOWER(title) LIKE ? OR LOWER(company) LIKE ? OR LOWER(platform) LIKE ?)")
+            params.extend([f"%{word}%", f"%{word}%", f"%{word}%"])
+            
+        where_clause = " AND ".join(conditions) if conditions else "1"
+        
+        # Fetch rows
+        query_params = params.copy()
+        query_params.extend([limit, offset])
+        cursor.execute(f"""
             SELECT title, company, platform, opportunity_type, stipend_or_prize, deadline, opportunity_url
             FROM opportunities
-            WHERE (title LIKE ? OR company LIKE ? OR platform LIKE ?)
+            WHERE {where_clause}
             ORDER BY discovered_at DESC
             LIMIT ? OFFSET ?
-        """, (query_val, query_val, query_val, limit, offset))
-        
+        """, query_params)
         rows = cursor.fetchall()
         
-        cursor.execute("""
+        # Count total matches
+        cursor.execute(f"""
             SELECT COUNT(*) FROM opportunities
-            WHERE (title LIKE ? OR company LIKE ? OR platform LIKE ?)
-        """, (query_val, query_val, query_val))
+            WHERE {where_clause}
+        """, params)
         total_rows = cursor.fetchone()[0]
         
         table = Table(title=f"Opportunities Ledger (Showing {offset+1}-{offset+len(rows)} of {total_rows} matches)", expand=True)
@@ -172,16 +218,24 @@ def browse_ledger():
             
         console.print(table)
         
+        if message:
+            console.print(f"\n{message}")
+            message = ""
+            
         console.print("\n[dim]Navigation: [N]ext Page  •  [P]revious Page  •  [Q]uit to Main Menu[/dim]")
-        choice = Prompt.ask("Choose action", choices=["n", "p", "q"], default="q").lower()
+        choice = read_key()
         
         if choice == "n":
             if offset + limit < total_rows:
                 offset += limit
+            else:
+                message = "[bold red]Notice: You have reached the end of the ledger.[/bold red]"
         elif choice == "p":
             if offset - limit >= 0:
                 offset -= limit
-        elif choice == "q":
+            else:
+                message = "[bold red]Notice: Already at the first page of the ledger.[/bold red]"
+        elif choice == "q" or choice == "\x03": # 'q' or Ctrl+C
             break
             
     conn.close()
