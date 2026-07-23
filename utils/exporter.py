@@ -2,9 +2,10 @@ import os
 from datetime import datetime
 from pathlib import Path
 from database.connection import get_connection
+from utils.config import load_config
 
-HOME = str(Path.home())
-DEFAULT_OBSIDIAN = os.path.join(HOME, "Documents", "obsidian", "Brain", "00 Inbox", "Opportunities.md")
+config = load_config()
+DEFAULT_OBSIDIAN = config.get("export_path")
 # Support environment override for customized dashboard export paths using Oppy namespace
 OBSIDIAN_PATH = os.environ.get("OPPY_EXPORT_PATH", DEFAULT_OBSIDIAN)
 
