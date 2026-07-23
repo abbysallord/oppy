@@ -16,7 +16,7 @@ class UnstopScraper(BaseScraper):
         print(f"Scraping Unstop internships from {url}...")
         markdown_content = self.fetch_url(url, use_jina=True)
         if not markdown_content:
-            return []
+            return None
         
         return self.parse_content(markdown_content, opportunity_type="internship")
 
@@ -25,7 +25,7 @@ class UnstopScraper(BaseScraper):
         print(f"Scraping Unstop open hackathons from {url}...")
         markdown_content = self.fetch_url(url, use_jina=True)
         if not markdown_content:
-            return []
+            return None
         
         return self.parse_content(markdown_content, opportunity_type="hackathon")
 

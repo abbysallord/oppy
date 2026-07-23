@@ -10,7 +10,7 @@ class WeWorkRemotelyScraper(BaseScraper):
         # We throttle using fetch_url, but since feedparser parses URLs, we fetch text first
         response_text = self.fetch_url(url, use_jina=False)
         if not response_text:
-            return []
+            return None
             
         try:
             feed = feedparser.parse(response_text)

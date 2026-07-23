@@ -7,7 +7,7 @@ class RemoteOkScraper(BaseScraper):
         print(f"Scraping RemoteOk internships from {url}...")
         response_json = self.fetch_url(url, use_jina=False)
         if not response_json:
-            return []
+            return None
             
         try:
             data = json.loads(response_json)

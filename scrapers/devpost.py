@@ -14,7 +14,7 @@ class DevpostScraper(BaseScraper):
         print(f"Scraping Devpost hackathons from {url}...")
         markdown_content = self.fetch_url(url, use_jina=True)
         if not markdown_content:
-            return []
+            return None
             
         return self.parse_content(markdown_content)
 

@@ -40,6 +40,10 @@ def main():
                 method = getattr(scraper_instance, method_name)
                 results = method()
                 
+                if results is None:
+                    print(f"Failed to sync {platform_name}: Platform offline or request timed out.")
+                    continue
+                
                 new_in_platform = 0
                 for item in results:
                     try:
