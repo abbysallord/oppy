@@ -12,7 +12,9 @@ DEFAULT_CONFIG = {
     "selected_platforms": ["unstop", "devpost", "remoteok", "weworkremotely"],
     "export_path": os.path.join(HOME, "Documents", "obsidian", "Brain", "00 Inbox", "Opportunities.md"),
     "search_keywords": [],
-    "custom_rss_feeds": []
+    "custom_rss_feeds": [
+        "https://weworkremotely.com/categories/remote-full-stack-programming-jobs.rss"
+    ]
 }
 
 def load_config():

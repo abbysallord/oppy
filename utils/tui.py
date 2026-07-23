@@ -138,11 +138,30 @@ def run_sync_progress(scrapers_to_run):
             try:
                 method = getattr(scraper_instance, method_name)
                 
-                # Silence crawler print outputs to keep TUI screen clean
+                # Run blocking network call in a separate thread to keep spinner animated
                 import io
                 import contextlib
-                with contextlib.redirect_stdout(io.StringIO()):
-                    results = method()
+                import threading
+                
+                results = None
+                exc = None
+                
+                def worker():
+                    nonlocal results, exc
+                    try:
+                        with contextlib.redirect_stdout(io.StringIO()):
+                            results = method()
+                    except Exception as e:
+                        exc = e
+                
+                t = threading.Thread(target=worker)
+                t.start()
+                
+                while t.is_alive():
+                    time.sleep(0.05)
+                    
+                if exc is not None:
+                    raise exc
                 
                 if results is None:
                     raise Exception("Offline")
