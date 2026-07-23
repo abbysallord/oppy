@@ -39,13 +39,13 @@ def generate_markdown():
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     md_lines = []
-    md_lines.append("# 🛰️ Live Opportunities Dashboard")
+    md_lines.append("# Live Opportunities Dashboard")
     md_lines.append(f"*Last Scan Execution: {now_str}*")
     md_lines.append("\n*This dashboard aggregates paid/prize-pool hackathons and paid virtual internships. Updated automatically.*")
     md_lines.append("\n---\n")
     
     # Hackathons Section
-    md_lines.append("## 🏆 Top Active Hackathons")
+    md_lines.append("## Top Active Hackathons")
     if len(hackathons) == 0:
         md_lines.append("*No open hackathons discovered yet. Run scanner to populate.*")
     else:
@@ -59,7 +59,7 @@ def generate_markdown():
     md_lines.append("\n---\n")
     
     # Internships Section
-    md_lines.append("## 💼 Paid Remote Internships")
+    md_lines.append("## Paid Remote Internships")
     if len(internships) == 0:
         md_lines.append("*No internships discovered yet. Run scanner to populate.*")
     else:
@@ -72,7 +72,7 @@ def generate_markdown():
             md_lines.append(f"| **{clean_title}** | {clean_company} | `{platform.upper()}` | {clean_stipend} | [Apply ↗]({url}) |")
             
     md_lines.append("\n---\n")
-    md_lines.append("💡 *Note: Opportunities are uniquely indexed in the database to prevent duplicate entries.*")
+    md_lines.append("*Note: Opportunities are uniquely indexed in the database to prevent duplicate entries.*")
     
     markdown_content = "\n".join(md_lines)
     
