@@ -20,18 +20,21 @@ try {
   }
 }
 
-// Auto-check and install python package dependencies (like feedparser)
-try {
-  execSync(`${pythonCmd} -c "import feedparser"`, { stdio: 'ignore' });
-} catch (e) {
-  console.log('\x1b[33mWarning: Python dependency "feedparser" is missing. Attempting automatic installation...\x1b[0m');
+// Auto-check and install python package dependencies (feedparser and rich)
+const requiredDeps = ['feedparser', 'rich'];
+for (const dep of requiredDeps) {
   try {
-    execSync(`${pythonCmd} -m pip install feedparser`, { stdio: 'inherit' });
-    console.log('\x1b[32mSuccessfully installed feedparser.\x1b[0m\n');
-  } catch (err) {
-    console.error('\x1b[31mError: Failed to install feedparser automatically.\x1b[0m');
-    console.error('Please run: pip install feedparser');
-    process.exit(1);
+    execSync(`${pythonCmd} -c "import ${dep}"`, { stdio: 'ignore' });
+  } catch (e) {
+    console.log(`\x1b[33mWarning: Python dependency "${dep}" is missing. Attempting automatic installation...\x1b[0m`);
+    try {
+      execSync(`${pythonCmd} -m pip install ${dep}`, { stdio: 'inherit' });
+      console.log(`\x1b[32mSuccessfully installed ${dep}.\x1b[0m\n`);
+    } catch (err) {
+      console.error(`\x1b[31mError: Failed to install ${dep} automatically.\x1b[0m`);
+      console.error(`Please run: pip install ${dep}`);
+      process.exit(1);
+    }
   }
 }
 
