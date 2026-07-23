@@ -68,6 +68,7 @@ While there are static lists and standalone scripts online, they either require 
 
 *   **Main Menu**: Press keys `[1-5]` to trigger options immediately (no Enter key required).
 *   **Ledger Paging**: Use **Left Arrow** / **P** to page backward, and **Right Arrow** / **N** to page forward.
+*   **Ledger Filters**: Press **T** to cycle results between `ALL`, `INTERNSHIP`, `HACKATHON`, and `JOB` filters dynamically.
 *   **Settings Toggles**: Press `Y` or `N` to toggle active settings instantly.
 *   **Text Queries**: Binds standard GNU `readline` for smooth character editing, arrow cursor keys, and backspaces inside text fields.
 
@@ -96,7 +97,8 @@ oppy/
 │   ├── unstop.py        # Unstop crawler (block-splitting markdown parser)
 │   ├── devpost.py       # Devpost crawler (subdomain regex parser)
 │   ├── remoteok.py      # RemoteOK JSON feed parser
-│   └── weworkremotely.py# WeWorkRemotely RSS feed crawler
+│   ├── weworkremotely.py# WeWorkRemotely RSS feed crawler
+│   └── custom_rss.py    # Custom RSS feed crawler (internships/hackathons/jobs matcher)
 ├── utils/
 │   ├── config.py        # Global settings manager (JSON persistence)
 │   ├── exporter.py      # Markdown table generator
