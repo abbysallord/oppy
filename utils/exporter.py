@@ -1,8 +1,12 @@
 import os
 from datetime import datetime
+from pathlib import Path
 from database.connection import get_connection
 
-OBSIDIAN_PATH = "/home/dhanush/Documents/obsidian/Brain/00 Inbox/Opportunities.md"
+HOME = str(Path.home())
+DEFAULT_OBSIDIAN = os.path.join(HOME, "Documents", "obsidian", "Brain", "00 Inbox", "Opportunities.md")
+# Support environment override for customized dashboard export paths
+OBSIDIAN_PATH = os.environ.get("OPPSCOUT_EXPORT_PATH", DEFAULT_OBSIDIAN)
 
 def generate_markdown():
     conn = get_connection()
@@ -71,13 +75,19 @@ def generate_markdown():
     
     markdown_content = "\n".join(md_lines)
     
-    # Ensure Obsidian inbox directories exist
-    os.makedirs(os.path.dirname(OBSIDIAN_PATH), exist_ok=True)
+    # Resolve write path safely
+    global OBSIDIAN_PATH
+    parent_dir = os.path.dirname(OBSIDIAN_PATH)
+    if parent_dir and not os.path.exists(parent_dir):
+        OBSIDIAN_PATH = os.path.join(os.getcwd(), "Opportunities.md")
+        print(f"Target folder {parent_dir} not found. Exporting locally to: {OBSIDIAN_PATH}")
+    else:
+        os.makedirs(parent_dir, exist_ok=True)
     
     with open(OBSIDIAN_PATH, "w", encoding="utf-8") as f:
         f.write(markdown_content)
         
-    print(f"Markdown dashboard generated successfully in Obsidian vault: {OBSIDIAN_PATH}")
+    print(f"Markdown dashboard generated successfully: {OBSIDIAN_PATH}")
 
 if __name__ == "__main__":
     generate_markdown()
