@@ -3,8 +3,8 @@ import os
 from pathlib import Path
 
 HOME = str(Path.home())
-# Dynamic path for persistent database storage
-DB_PATH = os.environ.get("OPPSCOUT_DB_PATH", os.path.join(HOME, ".config", "oppscout", "opportunities.db"))
+# Dynamic path for persistent database storage using Oppy namespace
+DB_PATH = os.environ.get("OPPY_DB_PATH", os.path.join(HOME, ".config", "oppy", "opportunities.db"))
 
 def get_connection():
     # Ensure database directory exists

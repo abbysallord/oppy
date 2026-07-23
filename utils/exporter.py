@@ -5,8 +5,8 @@ from database.connection import get_connection
 
 HOME = str(Path.home())
 DEFAULT_OBSIDIAN = os.path.join(HOME, "Documents", "obsidian", "Brain", "00 Inbox", "Opportunities.md")
-# Support environment override for customized dashboard export paths
-OBSIDIAN_PATH = os.environ.get("OPPSCOUT_EXPORT_PATH", DEFAULT_OBSIDIAN)
+# Support environment override for customized dashboard export paths using Oppy namespace
+OBSIDIAN_PATH = os.environ.get("OPPY_EXPORT_PATH", DEFAULT_OBSIDIAN)
 
 def generate_markdown():
     conn = get_connection()
