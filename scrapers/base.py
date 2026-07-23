@@ -1,6 +1,13 @@
 import urllib.request
 import urllib.parse
 import time
+import ssl
+
+# Bypass macOS local SSL certificate verification failures
+try:
+    ssl._create_default_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
 
 class BaseScraper:
     def __init__(self):

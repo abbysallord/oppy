@@ -2,7 +2,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from rich.console import Console
+from rich.console import Console, Group
 from rich.panel import Panel
 from rich.table import Table
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
@@ -92,8 +92,15 @@ def render_header():
 ╚██████╔╝██║     ██║        ██║   
  ╚═════╝ ╚═╝     ╚═╝        ╚═╝   
 """
+    logo_lines = [line for line in ascii_art.split('\n') if line.strip()]
+    max_len = max(len(line) for line in logo_lines)
+    logo_clean = "\n".join(line.ljust(max_len) for line in logo_lines)
+    
+    logo_align = Align.center(f"[bold magenta]{logo_clean}[/bold magenta]")
+    subtext_align = Align.center("\n[dim]Oppy - Terminal-Native Opportunity Scout & Indexer[/dim]")
+    
     header_panel = Panel(
-        Align.center(f"[bold magenta]{ascii_art}[/bold magenta]\n[dim]Oppy - Terminal-Native Opportunity Scout & Indexer[/dim]"),
+        Group(logo_align, subtext_align),
         border_style="magenta"
     )
     console.print(header_panel)
