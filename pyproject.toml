@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oppy-cli"
+version = "1.0.0"
+description = "Automated CLI pipeline to scrape, filter, and track remote paid internships and hackathons in Markdown dashboards."
+readme = "README.md"
+authors = [{ name = "Dhanush Shenoy H" }]
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "feedparser>=6.0.0",
+    "rich>=12.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/abbysallord/oppy"
+Issues = "https://github.com/abbysallord/oppy/issues"
+
+[project.scripts]
+oppy = "scan:main"
+oppy-cli = "scan:main"
