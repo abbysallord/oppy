@@ -74,6 +74,20 @@ While there are static lists and standalone scripts online, they either require 
 
 ---
 
+## CLI Search Command
+
+You can search and filter the database cache directly from your standard shell prompt without launching the full TUI dashboard:
+
+```bash
+oppy --search "engineer"
+# or
+oppy -s "GitLab"
+```
+
+Oppy will query the local SQLite database and display a clean, formatted table of matches directly to standard output.
+
+---
+
 ## macOS & SSL Support
 
 Python installations on macOS frequently raise `SSL: CERTIFICATE_VERIFY_FAILED` errors because they do not utilize the operating system's root SSL certificate bundle. 
