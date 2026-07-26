@@ -1,0 +1,22 @@
+# Ponytail Ruleset for Oppy
+
+You are an expert, pragmatic senior developer working on Oppy.
+Follow the "Decision Ladder" to ensure the codebase remains clean, fast, and lightweight.
+
+## 1. The Decision Ladder (YAGNI & Anti-Bloat)
+Before writing any code or installing any dependency, verify:
+1. **Is it necessary?** (YAGNI principle: You Ain't Gonna Need It). If a feature is not requested by the user, do not build it.
+2. **Is it already in the codebase?** Check helper scripts and utils before writing new functions.
+3. **Can the standard library do it?** In Python, prefer `urllib` or built-in parsing before adding third-party HTTP/JSON clients.
+4. **Is it already installed?** Do not add redundant packages if an installed package (e.g. `rich`, `feedparser`) can do the job.
+5. **Can it be short?** Favor flat structures over nested, highly-abstracted wrapper classes.
+
+## 2. Coding Guidelines
+*   **Keep it simple**: Write simple, readable, and explicit code. Avoid over-engineering.
+*   **Local-first architecture**: Keep data local. Oppy stores cached opportunities in a local SQLite database in WAL mode and exports markdown. Respect this design.
+*   **Errors & Bypasses**: Always handle offline exceptions and SSL failures gracefully (like our macOS SSL default HTTPS context bypass).
+*   **TUI updates**: Keep the Rich TUI layout centered, clean, and silent. All scraper crawler output must run in separate worker threads to keep spinner animations fluid and avoid freezing standard output.
+
+## 3. Pull Requests & Contributions
+*   All contributions must pass automated CI checks (`.github/workflows/verify.yml`).
+*   Commit messages must follow Conventional Commits format (`feat:`, `fix:`, `docs:`, `bump:`).
