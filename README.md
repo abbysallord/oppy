@@ -88,6 +88,26 @@ Oppy will query the local SQLite database and display a clean, formatted table o
 
 ---
 
+## CLI Resume Auditor
+
+Audit all indexed opportunities in your local SQLite database against your personal technical skillset and rank them by compatible fit:
+
+```bash
+oppy --audit
+# or
+oppy -a
+```
+
+On first run, Oppy creates a default plain-text resume template at:
+`~/.config/oppy/resume.txt`
+
+Fill in your programming languages, frameworks, databases, and AI skills. Oppy parses this file locally using fuzzy keyword boundary matching and displays a ranking table detailing:
+*   **Fit Score (%)**: Percentage compatibility of requirements.
+*   **Matching Skills**: Skills you have that are requested.
+*   **Missing Skills**: Stack requirements requested by the listing that are missing from your resume.
+
+---
+
 ## macOS & SSL Support
 
 Python installations on macOS frequently raise `SSL: CERTIFICATE_VERIFY_FAILED` errors because they do not utilize the operating system's root SSL certificate bundle. 

@@ -14,7 +14,8 @@ DEFAULT_CONFIG = {
     "search_keywords": [],
     "custom_rss_feeds": [
         "https://weworkremotely.com/categories/remote-full-stack-programming-jobs.rss"
-    ]
+    ],
+    "resume_path": os.path.join(CONFIG_DIR, "resume.txt")
 }
 
 def load_config():

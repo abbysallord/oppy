@@ -82,6 +82,55 @@ def main():
         console.print(table)
         sys.exit(0)
 
+    # Check for CLI audit argument
+    if "--audit" in sys.argv or "-a" in sys.argv:
+        from utils.config import load_config
+        config = load_config()
+        resume_path = config.get("resume_path")
+        
+        from utils.auditor import audit_opportunities
+        audited, resume_skills = audit_opportunities(resume_path)
+        
+        from rich.console import Console
+        from rich.table import Table
+        console = Console()
+        
+        if not resume_skills:
+            console.print(f"\n[bold red]Error: No resume skills detected. Please fill in your details at: '{resume_path}'[/bold red]\n")
+            sys.exit(1)
+            
+        if not audited:
+            console.print("\n[bold red]No cached opportunities found in the database. Run sync first to populate.[/bold red]\n")
+            sys.exit(0)
+            
+        console.print(f"\n[bold green]Analyzed {len(audited)} opportunities against your resume ({resume_path})[/bold green]")
+        console.print(f"[bold cyan]Detected Resume Skills:[/bold cyan] {', '.join(sorted(list(resume_skills)))}\n")
+        
+        table = Table(title="Oppy AI Resume Audit Rankings", expand=True)
+        table.add_column("Fit", justify="center", style="bold yellow")
+        table.add_column("Type & Platform", justify="center", style="cyan")
+        table.add_column("Opportunity & Company", justify="left")
+        table.add_column("Matching Skills", justify="left", style="green")
+        table.add_column("Missing Skills", justify="left", style="red")
+        
+        # Display top 15 matches
+        for item in audited[:15]:
+            matched_str = ", ".join(sorted(list(item['matched_skills']))) if item['matched_skills'] else "[dim]None[/dim]"
+            missing_str = ", ".join(sorted(list(item['missing_skills']))) if item['missing_skills'] else "[dim]None[/dim]"
+            
+            display_cell = f"[bold white]{item['title']}[/bold white]\n[dim]{item['company']}[/dim]\n[blue]{item['url']}[/blue]"
+            
+            table.add_row(
+                f"{item['match_score']}%",
+                f"{item['opp_type'].upper()}\n`{item['platform'].upper()}`",
+                display_cell,
+                matched_str,
+                missing_str
+            )
+            
+        console.print(table)
+        sys.exit(0)
+
     if "--headless" in sys.argv or "-h" in sys.argv:
         # Run silent background scan (ideal for systemd timers and cron jobs)
         print("🚀 Starting Headless Opportunities Scan...")
