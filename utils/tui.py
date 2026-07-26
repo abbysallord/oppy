@@ -207,7 +207,8 @@ def run_sync_progress(scrapers_to_run):
     from utils.exporter import generate_markdown
     generate_markdown()
     
-    Prompt.ask("\n[bold yellow]Press Enter to return to main menu[/bold yellow]")
+    console.print("\n[bold yellow]Press any key to return to main menu[/bold yellow]", end="")
+    read_key()
 
 def browse_ledger():
     clear_screen()
@@ -217,7 +218,7 @@ def browse_ledger():
     conn = get_connection()
     cursor = conn.cursor()
     
-    keyword = Prompt.ask("\nSearch query (leave blank for all)").strip()
+    keyword = input("\nSearch query (leave blank for all): ").strip()
     
     limit = 10
     offset = 0
