@@ -16,6 +16,7 @@ try:
     import readline
     readline.set_completer(None)
     readline.parse_and_bind("tab: self-insert")
+    readline.parse_and_bind("set disable-completion on")
 except ImportError:
     pass
 
@@ -149,8 +150,7 @@ def run_sync_progress(scrapers_to_run):
                 def worker():
                     nonlocal results, exc
                     try:
-                        with contextlib.redirect_stdout(io.StringIO()):
-                            results = method()
+                        results = method()
                     except Exception as e:
                         exc = e
                 
@@ -459,7 +459,8 @@ Oppy scans career opportunities, caches them in local SQLite, and exports markdo
     
     # Combined Layout Panel
     console.print(Panel(help_text + f"\n[dim]{mascot}[/dim]", border_style="yellow"))
-    Prompt.ask("\n[bold yellow]Press Enter to return to main menu[/bold yellow]")
+    console.print("\n[bold yellow]Press any key to return to main menu[/bold yellow]", end="")
+    read_key()
 
 def tui_main(scrapers_full_list):
     """

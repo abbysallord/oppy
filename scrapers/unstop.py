@@ -13,7 +13,6 @@ class UnstopScraper(BaseScraper):
             params.append("workMode=virtual")
             
         url = f"https://unstop.com/internships?{'&'.join(params)}"
-        print(f"Scraping Unstop internships from {url}...")
         markdown_content = self.fetch_url(url, use_jina=True)
         if not markdown_content:
             return None
@@ -22,7 +21,6 @@ class UnstopScraper(BaseScraper):
 
     def scrape_hackathons(self):
         url = "https://unstop.com/hackathons?opportunityStatus=open"
-        print(f"Scraping Unstop open hackathons from {url}...")
         markdown_content = self.fetch_url(url, use_jina=True)
         if not markdown_content:
             return None

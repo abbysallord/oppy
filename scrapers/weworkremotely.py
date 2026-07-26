@@ -4,7 +4,6 @@ from scrapers.base import BaseScraper
 class WeWorkRemotelyScraper(BaseScraper):
     def scrape_internships(self):
         url = "https://weworkremotely.com/remote-jobs.rss"
-        print(f"Scraping WeWorkRemotely internships from {url}...")
         
         # We fetch via Jina or direct, but direct feedparser works since RSS feeds are open
         # We throttle using fetch_url, but since feedparser parses URLs, we fetch text first
@@ -16,7 +15,6 @@ class WeWorkRemotelyScraper(BaseScraper):
             feed = feedparser.parse(response_text)
             return self.parse_entries(feed.entries)
         except Exception as e:
-            print(f"Error parsing WeWorkRemotely RSS: {e}")
             return []
 
     def parse_entries(self, entries):

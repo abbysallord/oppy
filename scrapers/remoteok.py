@@ -4,7 +4,6 @@ from scrapers.base import BaseScraper
 class RemoteOkScraper(BaseScraper):
     def scrape_internships(self):
         url = "https://remoteok.com/api"
-        print(f"Scraping RemoteOk internships from {url}...")
         response_json = self.fetch_url(url, use_jina=False)
         if not response_json:
             return None
@@ -16,7 +15,6 @@ class RemoteOkScraper(BaseScraper):
                 return self.parse_data(data[1:])
             return []
         except Exception as e:
-            print(f"Error parsing RemoteOk JSON: {e}")
             return []
 
     def parse_data(self, job_list):
