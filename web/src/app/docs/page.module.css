@@ -71,7 +71,7 @@
 }
 
 /* Docs Main Layout */
-.layout {
+.docsLayout {
   display: grid;
   grid-template-cols: 260px 1fr;
   max-width: 1200px;
@@ -83,7 +83,7 @@
 }
 
 @media (max-width: 768px) {
-  .layout {
+  .docsLayout {
     grid-template-cols: 1fr;
     padding: 1rem;
     gap: 2rem;
@@ -91,7 +91,7 @@
 }
 
 /* Sidebar */
-.sidebar {
+.docsSidebar {
   border-right: 1px solid var(--border-wire);
   padding-right: 2rem;
   height: calc(100vh - 120px);
@@ -101,7 +101,7 @@
 }
 
 @media (max-width: 768px) {
-  .sidebar {
+  .docsSidebar {
     height: auto;
     position: static;
     border-right: none;
@@ -137,7 +137,7 @@
 }
 
 /* Content Area */
-.content {
+.docsContent {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;

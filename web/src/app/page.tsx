@@ -129,14 +129,52 @@ export default function Home() {
             </div>
           </div>
           <div className={styles.heroVisual}>
-            <Image
-              src="/tui-screenshot.png"
-              alt="Oppy Interactive CLI Terminal Dashboard showing active categories and command instructions"
-              width={800}
-              height={500}
-              className={styles.screenshot}
-              priority
-            />
+            <div className={styles.terminalMock}>
+              <div className={styles.terminalHeader}>
+                <div className={styles.terminalDots}>
+                  <div className={`${styles.terminalDot} ${styles.dotRed}`} />
+                  <div className={`${styles.terminalDot} ${styles.dotYellow}`} />
+                  <div className={`${styles.terminalDot} ${styles.dotGreen}`} />
+                </div>
+                <span className={styles.terminalTitle}>oppy --interactive</span>
+              </div>
+              <div className={styles.terminalBody}>
+                <div className={styles.terminalLogo}>
+                  {`██████╗ ██████╗ ██████╗ ██╗   ██╗
+██╔══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝
+██║  ██║██████╔╝██████╔╝ ╚████╔╝ 
+██║  ██║██╔═══╝ ██╔═══╝   ╚██╔╝  
+██████╔╝██║     ██║        ██║   
+╚═════╝ ╚═╝     ╚═╝        ╚═╝   `}
+                </div>
+                <div className={styles.terminalSub}>
+                  Oppy - Terminal-Native Opportunity Scout & Indexer
+                </div>
+                <div className={styles.terminalDivider}>
+                  ────────────────── Main Menu ──────────────────
+                </div>
+                <div className={styles.terminalMenu}>
+                  <div className={styles.menuItem}>
+                    <span className={styles.menuIndex}>[1]</span> Synchronize Opportunities (Index Feeds)
+                  </div>
+                  <div className={styles.menuItem}>
+                    <span className={styles.menuIndex}>[2]</span> Browse Opportunities Ledger (Query & Filter)
+                  </div>
+                  <div className={styles.menuItem}>
+                    <span className={styles.menuIndex}>[3]</span> Configure Scan Settings (Filter Toggles)
+                  </div>
+                  <div className={styles.menuItem}>
+                    <span className={styles.menuIndex}>[4]</span> Help & Repository Details
+                  </div>
+                  <div className={styles.menuItem}>
+                    <span className={styles.menuIndex}>[5]</span> Exit Console
+                  </div>
+                </div>
+                <div className={styles.terminalPrompt}>
+                  Press key <span className={styles.promptAccent}>[1-5]</span> to select... <span className={styles.cursor}>█</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -240,8 +240,127 @@
   border: 1px solid var(--border-wire);
   border-radius: 8px;
   overflow: hidden;
-  background-color: var(--bg-card);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  background-color: #0b0b0d;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  width: 100%;
+}
+
+.terminalMock {
+  width: 100%;
+  font-family: var(--font-mono), monospace;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.terminalHeader {
+  height: 38px;
+  background-color: rgba(17, 17, 19, 0.8);
+  border-bottom: 1px solid var(--border-wire);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  position: relative;
+}
+
+.terminalDots {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.terminalDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dotRed { background-color: #ff5f56; }
+.dotYellow { background-color: #ffbd2e; }
+.dotGreen { background-color: #27c93f; }
+
+.terminalTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono), monospace;
+  letter-spacing: 0.05em;
+}
+
+.terminalBody {
+  padding: 2rem;
+  background-color: #080809;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  text-align: left;
+}
+
+.terminalLogo {
+  color: #ff007f;
+  font-weight: 700;
+  font-size: 1.1rem;
+  white-space: pre;
+}
+
+.terminalSub {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.terminalDivider {
+  color: var(--border-wire);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+
+.terminalMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menuItem {
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  transition: color 0.2s ease;
+}
+
+.menuItem:hover {
+  color: var(--accent-beam);
+}
+
+.menuIndex {
+  color: #ff007f;
+  margin-right: 0.5rem;
+}
+
+.terminalPrompt {
+  display: flex;
+  align-items: center;
+  font-size: 0.82rem;
+  margin-top: 0.5rem;
+}
+
+.promptAccent {
+  color: var(--accent-beam);
+  font-weight: bold;
+}
+
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  background-color: var(--accent-beam);
+  margin-left: 0.5rem;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
 }
 
 .screenshot {

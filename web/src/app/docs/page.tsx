@@ -30,9 +30,9 @@ export default function Docs() {
       </header>
 
       {/* Docs Layout */}
-      <div className={styles.layout}>
+      <div className={styles.docsLayout}>
         {/* Sidebar */}
-        <aside className={styles.sidebar}>
+        <aside className={styles.docsSidebar}>
           <h3 className={styles.sidebarTitle}>Navigation</h3>
           <nav className={styles.sidebarNav}>
             <a href="#introduction" className={styles.sidebarLink}>
@@ -54,7 +54,7 @@ export default function Docs() {
         </aside>
 
         {/* Content */}
-        <main className={styles.content}>
+        <main className={styles.docsContent}>
           <section id="introduction" className={styles.section}>
             <h1 className={styles.title}>Documentation</h1>
             <p className={styles.paragraph}>
