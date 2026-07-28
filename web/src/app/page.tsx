@@ -58,6 +58,7 @@ export default function Home() {
     <div className={styles.wrapper}>
       {/* Grid background overlay */}
       <div className={styles.gridBg} />
+      <div className={styles.ambientGlow} />
 
       {/* GitHub Star Eyebrow Banner */}
       <div className={styles.starBanner}>
@@ -257,49 +258,60 @@ export default function Home() {
           <div className={styles.showcaseVisual}>
             <div className={styles.auditorMock}>
               <div className={styles.auditorHeader}>
-                <div className={styles.auditorFile}>
-                  resume.txt <span className={styles.headerMuted}>• 2.4 KB • verified local</span>
+                <div className={styles.terminalDots}>
+                  <div className={`${styles.terminalDot} ${styles.dotRed}`} />
+                  <div className={`${styles.terminalDot} ${styles.dotYellow}`} />
+                  <div className={`${styles.terminalDot} ${styles.dotGreen}`} />
                 </div>
-                <span className={styles.auditorStatus}>Audit complete</span>
+                <span className={styles.auditorTitle}>oppy-auditor --file resume.txt</span>
               </div>
               <div className={styles.auditorBody}>
-                <div className={styles.scoreSection}>
-                  <div className={styles.scoreCircle}>
-                    <span className={styles.scorePercent}>85%</span>
-                    <span className={styles.scoreLabel}>Match</span>
-                  </div>
-                  <div className={styles.scoreDetails}>
-                    <h4 className={styles.scoreTitle}>Full-Stack Developer Role</h4>
-                    <p className={styles.scoreMuted}>crawled locally via Devpost / RemoteOK</p>
-                  </div>
-                </div>
-                <div className={styles.skillsSection}>
-                  <div className={styles.skillsCol}>
-                    <span className={styles.skillsTitle}>Matched Stack</span>
-                    <div className={styles.skillsList}>
-                      <span className={styles.tagMatched}>
-                        <span className={styles.dotMatched}>●</span> Python
-                      </span>
-                      <span className={styles.tagMatched}>
-                        <span className={styles.dotMatched}>●</span> React
-                      </span>
-                      <span className={styles.tagMatched}>
-                        <span className={styles.dotMatched}>●</span> TypeScript
-                      </span>
-                      <span className={styles.tagMatched}>
-                        <span className={styles.dotMatched}>●</span> SQLite
-                      </span>
+                <div className={styles.auditorGrid}>
+                  {/* Left Column: Score Info */}
+                  <div className={styles.auditorLeft}>
+                    <div className={styles.scoreCircle}>
+                      <span className={styles.scorePercent}>85%</span>
+                      <span className={styles.scoreLabel}>Match</span>
+                    </div>
+                    <div className={styles.scoreDetails}>
+                      <h4 className={styles.scoreTitle}>Full-Stack Developer</h4>
+                      <p className={styles.scoreMuted}>crawled via Devpost / RemoteOK</p>
+                      <div className={styles.fileDetails}>
+                        <span>resume.txt</span>
+                        <span>•</span>
+                        <span>2.4 KB</span>
+                      </div>
                     </div>
                   </div>
-                  <div className={styles.skillsCol}>
-                    <span className={styles.skillsTitle}>Missing Requirements</span>
-                    <div className={styles.skillsList}>
-                      <span className={styles.tagMissing}>
-                        <span className={styles.dotMissing}>●</span> FastAPI
-                      </span>
-                      <span className={styles.tagMissing}>
-                        <span className={styles.dotMissing}>●</span> PostgreSQL
-                      </span>
+                  {/* Right Column: Stack Breakdown */}
+                  <div className={styles.auditorRight}>
+                    <div className={styles.skillsCol}>
+                      <span className={styles.skillsTitle}>Matched Stack</span>
+                      <div className={styles.skillsList}>
+                        <span className={styles.tagMatched}>
+                          <span className={styles.dotMatched}>●</span> Python
+                        </span>
+                        <span className={styles.tagMatched}>
+                          <span className={styles.dotMatched}>●</span> React
+                        </span>
+                        <span className={styles.tagMatched}>
+                          <span className={styles.dotMatched}>●</span> TypeScript
+                        </span>
+                        <span className={styles.tagMatched}>
+                          <span className={styles.dotMatched}>●</span> SQLite
+                        </span>
+                      </div>
+                    </div>
+                    <div className={styles.skillsCol}>
+                      <span className={styles.skillsTitle}>Missing Requirements</span>
+                      <div className={styles.skillsList}>
+                        <span className={styles.tagMissing}>
+                          <span className={styles.dotMissing}>●</span> FastAPI
+                        </span>
+                        <span className={styles.tagMissing}>
+                          <span className={styles.dotMissing}>●</span> PostgreSQL
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

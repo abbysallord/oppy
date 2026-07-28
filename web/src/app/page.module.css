@@ -8,17 +8,32 @@
   position: relative;
 }
 
-/* Dotted Matrix Background Grid */
+/* Premium Linear Mesh Grid & Ambient Glow */
 .gridBg {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background-image: radial-gradient(var(--border-wire) 1px, transparent 1px);
-  background-size: 24px 24px;
-  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 30%, #000 40%, transparent 100%);
-  mask-image: radial-gradient(ellipse 65% 55% at 50% 30%, #000 40%, transparent 100%);
-  opacity: 0.55;
+  background-image: 
+    linear-gradient(rgba(255, 121, 198, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 121, 198, 0.015) 1px, transparent 1px);
+  background-size: 50px 50px;
+  -webkit-mask-image: radial-gradient(circle at 50% 25%, #000 20%, transparent 80%);
+  mask-image: radial-gradient(circle at 50% 25%, #000 20%, transparent 80%);
+  opacity: 0.8;
   pointer-events: none;
+}
+
+.ambientGlow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1400px;
+  height: 700px;
+  background: radial-gradient(circle at 50% 20%, rgba(255, 121, 198, 0.05) 0%, rgba(139, 92, 246, 0.01) 40%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .container {
@@ -547,8 +562,10 @@
   border-radius: 8px;
   overflow: hidden;
   background-color: #0b0b0d;
-  box-shadow: 0 20px 45px rgba(255, 121, 198, 0.05), 0 5px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 45px rgba(255, 121, 198, 0.04), 0 5px 15px rgba(0, 0, 0, 0.4);
   width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
 }
 
 .auditorMock {
@@ -573,20 +590,23 @@
 .auditorFile {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   font-size: 0.82rem;
   color: var(--text-primary);
 }
 
-.fileIcon {
-  font-size: 0.95rem;
+.auditorTitle {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono), monospace;
+  letter-spacing: 0.05em;
 }
 
 .auditorStatus {
-  font-size: 0.72rem;
-  color: var(--accent-beam);
-  background-color: rgba(0, 229, 188, 0.1);
-  padding: 0.2rem 0.5rem;
+  font-size: 0.68rem;
+  color: var(--accent-success);
+  background-color: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 0.15rem 0.45rem;
   border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -596,31 +616,72 @@
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
 }
 
-.scoreSection {
+.auditorGrid {
+  display: grid;
+  grid-template-cols: 1fr 1.2fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 560px) {
+  .auditorGrid {
+    grid-template-cols: 1fr;
+    gap: 2rem;
+  }
+}
+
+.auditorLeft {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  text-align: center;
+  border-right: 1px solid var(--border-wire);
+  padding-right: 2rem;
+}
+
+@media (max-width: 560px) {
+  .auditorLeft {
+    border-right: none;
+    padding-right: 0;
+    border-bottom: 1px solid var(--border-wire);
+    padding-bottom: 1.5rem;
+  }
+}
+
+.auditorRight {
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
-  border-bottom: 1px solid var(--border-wire);
-  padding-bottom: 1.5rem;
+}
+
+.fileDetails {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono), monospace;
 }
 
 .scoreCircle {
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   border: 3px solid var(--accent-beam);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 229, 188, 0.03);
+  background-color: rgba(255, 121, 198, 0.02);
+  box-shadow: 0 0 15px rgba(255, 121, 198, 0.08);
 }
 
 .scorePercent {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--accent-beam);
   line-height: 1;
@@ -636,32 +697,20 @@
 .scoreDetails {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  text-align: left;
+  gap: 0.35rem;
+  text-align: center;
 }
 
 .scoreTitle {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   font-family: var(--font-bricolage), sans-serif;
+  color: var(--text-primary);
 }
 
 .scoreMuted {
   color: var(--text-secondary);
-  font-size: 0.8rem;
-}
-
-.skillsSection {
-  display: grid;
-  grid-template-cols: 1fr 1fr;
-  gap: 2rem;
-}
-
-@media (max-width: 640px) {
-  .skillsSection {
-    grid-template-cols: 1fr;
-    gap: 1.5rem;
-  }
+  font-size: 0.75rem;
 }
 
 .skillsCol {
@@ -687,19 +736,23 @@
 .tagMatched {
   font-size: 0.78rem;
   color: var(--accent-success);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  background-color: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  background-color: rgba(16, 185, 129, 0.04);
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
+  display: flex;
+  align-items: center;
 }
 
 .tagMissing {
   font-size: 0.78rem;
   color: var(--accent-warning);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  background-color: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  background-color: rgba(245, 158, 11, 0.04);
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
+  display: flex;
+  align-items: center;
 }
 
 /* Meme showcase section */
