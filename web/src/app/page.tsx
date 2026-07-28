@@ -103,10 +103,10 @@ export default function Home() {
         <div className={`${styles.container} ${styles.heroGrid}`}>
           <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>
-              Scout opportunities. <br />
-              Cache locally. <br />
+              Internships won&apos;t apply to you. <br />
+              Automate the search. <br />
               <span className={styles.heroTitleHighlight}>
-                Sync to Obsidian.
+                Score the fit.
               </span>
             </h1>
             <p className={styles.heroSubtext}>
