@@ -27,12 +27,13 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
         animate={{
           height: isOpen ? "auto" : 0,
           opacity: isOpen ? 1 : 0,
-          marginTop: isOpen ? "1rem" : 0,
-          paddingTop: isOpen ? "1rem" : 0,
         }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        style={{ overflow: "hidden" }}
       >
-        <p>{answer}</p>
+        <div style={{ paddingTop: "1rem" }}>
+          <p>{answer}</p>
+        </div>
       </motion.div>
     </div>
   );
