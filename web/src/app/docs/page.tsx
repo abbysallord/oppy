@@ -6,7 +6,7 @@ export default function Docs() {
     <div className={styles.wrapper}>
       {/* Navbar */}
       <header className={styles.navbar}>
-        <div className={styles.navContainer}>
+        <div className={`${styles.container} ${styles.navContainer}`}>
           <div className={styles.brand}>
             <Link href="/" className={styles.logoText}>
               Oppy

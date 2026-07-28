@@ -73,7 +73,7 @@ export default function Home() {
 
       {/* Navbar */}
       <header className={styles.navbar}>
-        <div className={styles.navContainer}>
+        <div className={`${styles.container} ${styles.navContainer}`}>
           <div className={styles.brand}>
             <span className={styles.logoText}>Oppy</span>
             <span className={styles.logoVersion}>v1.0.6</span>
