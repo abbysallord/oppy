@@ -259,7 +259,7 @@ export default function Home() {
             <div className={styles.auditorMock}>
               <div className={styles.auditorHeader}>
                 <div className={styles.auditorFile}>
-                  <span className={styles.fileIcon}>📄</span> resume.txt
+                  resume.txt
                 </div>
                 <span className={styles.auditorStatus}>Audit complete</span>
               </div>
