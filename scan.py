@@ -103,15 +103,15 @@ def main():
             console.print("\n[bold red]No cached opportunities found in the database. Run sync first to populate.[/bold red]\n")
             sys.exit(0)
             
-        console.print(f"\n[bold green]Analyzed {len(audited)} opportunities against your resume ({resume_path})[/bold green]")
-        console.print(f"[bold cyan]Detected Resume Skills:[/bold cyan] {', '.join(sorted(list(resume_skills)))}\n")
+        console.print(f"\n[bold #00ff85]Analyzed {len(audited)} opportunities against your resume ({resume_path})[/bold #00ff85]")
+        console.print(f"[bold #1e90ff]Detected Resume Skills:[/bold #1e90ff] {', '.join(sorted(list(resume_skills)))}\n")
         
         table = Table(title="Oppy AI Resume Audit Rankings", expand=True)
-        table.add_column("Fit", justify="center", style="bold yellow")
-        table.add_column("Type & Platform", justify="center", style="cyan")
+        table.add_column("Fit", justify="center", style="bold #00ff85")
+        table.add_column("Type & Platform", justify="center", style="#1e90ff")
         table.add_column("Opportunity & Company", justify="left")
-        table.add_column("Matching Skills", justify="left", style="green")
-        table.add_column("Missing Skills", justify="left", style="red")
+        table.add_column("Matching Skills", justify="left", style="#00ff85")
+        table.add_column("Missing Skills", justify="left", style="#ef4444")
         
         # Display top 15 matches
         for item in audited[:15]:

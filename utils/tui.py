@@ -263,15 +263,15 @@ def browse_ledger():
         total_rows = cursor.fetchone()[0]
         
         table = Table(title=f"Opportunities Ledger (Showing {offset+1}-{offset+len(rows)} of {total_rows} matches)", expand=True)
-        table.add_column("Type", justify="center", style="cyan")
-        table.add_column("Platform", justify="center", style="green")
+        table.add_column("Type", justify="center", style="#1e90ff")
+        table.add_column("Platform", justify="center", style="#00ff85")
         table.add_column("Opportunity, Company & URL", justify="left")
-        table.add_column("Compensation / Prize", justify="left", style="yellow")
-        table.add_column("Deadline", justify="left", style="blue")
+        table.add_column("Compensation / Prize", justify="left", style="#00ff85")
+        table.add_column("Deadline", justify="left", style="#1e90ff")
         
         for title, company, platform, opp_type, stipend, deadline, url in rows:
             # Inline stacked display containing clickable link
-            display_cell = f"[bold white]{title}[/bold white]\n[dim]{company}[/dim]\n[blue][link={url}]{url}[/link][/blue]"
+            display_cell = f"[bold white]{title}[/bold white]\n[dim]{company}[/dim]\n[#1e90ff][link={url}]{url}[/link][/#1e90ff]"
             table.add_row(
                 opp_type.upper(),
                 platform.upper(),
