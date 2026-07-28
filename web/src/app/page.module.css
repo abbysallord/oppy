@@ -92,9 +92,28 @@
   font-family: var(--font-mono), monospace;
   font-size: 0.75rem;
   color: var(--accent-beam);
-  background-color: rgba(0, 229, 188, 0.1);
-  padding: 0.2rem 0.5rem;
+  background-color: rgba(217, 70, 239, 0.08);
+  border: 1px solid rgba(217, 70, 239, 0.35);
+  padding: 0.15rem 0.45rem;
   border-radius: 4px;
+}
+
+.headerMuted {
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  margin-left: 0.5rem;
+}
+
+.dotMatched {
+  color: var(--accent-success);
+  margin-right: 0.3rem;
+  font-size: 0.7rem;
+}
+
+.dotMissing {
+  color: var(--accent-warning);
+  margin-right: 0.3rem;
+  font-size: 0.7rem;
 }
 
 .navLinks {
@@ -528,7 +547,7 @@
   border-radius: 8px;
   overflow: hidden;
   background-color: #0b0b0d;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 20px 45px rgba(217, 70, 239, 0.05), 0 5px 15px rgba(0, 0, 0, 0.3);
   width: 100%;
 }
 

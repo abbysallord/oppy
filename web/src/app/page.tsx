@@ -103,8 +103,8 @@ export default function Home() {
         <div className={`${styles.container} ${styles.heroGrid}`}>
           <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>
-              Internships won&apos;t apply to you. <br />
               Automate the search. <br />
+              Filter the noise. <br />
               <span className={styles.heroTitleHighlight}>
                 Score the fit.
               </span>
@@ -140,12 +140,11 @@ export default function Home() {
               </div>
               <div className={styles.terminalBody}>
                 <div className={styles.terminalLogo}>
-                  {`██████╗ ██████╗ ██████╗ ██╗   ██╗
-██╔══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝
-██║  ██║██████╔╝██████╔╝ ╚████╔╝ 
-██║  ██║██╔═══╝ ██╔═══╝   ╚██╔╝  
-██████╔╝██║     ██║        ██║   
-╚═════╝ ╚═╝     ╚═╝        ╚═╝   `}
+                  {` ___  ___  ___ _   _ 
+ / _ \\| _ \\| _ \\ | | |
+| (_) |  _/|  _/ |_| |
+ \\___/|_|  |_|  \\__, |
+                |___/ `}
                 </div>
                 <div className={styles.terminalSub}>
                   Oppy - Terminal-Native Opportunity Scout & Indexer
@@ -259,7 +258,7 @@ export default function Home() {
             <div className={styles.auditorMock}>
               <div className={styles.auditorHeader}>
                 <div className={styles.auditorFile}>
-                  resume.txt
+                  resume.txt <span className={styles.headerMuted}>• 2.4 KB • verified local</span>
                 </div>
                 <span className={styles.auditorStatus}>Audit complete</span>
               </div>
@@ -278,17 +277,29 @@ export default function Home() {
                   <div className={styles.skillsCol}>
                     <span className={styles.skillsTitle}>Matched Stack</span>
                     <div className={styles.skillsList}>
-                      <span className={styles.tagMatched}>Python</span>
-                      <span className={styles.tagMatched}>React</span>
-                      <span className={styles.tagMatched}>TypeScript</span>
-                      <span className={styles.tagMatched}>SQLite</span>
+                      <span className={styles.tagMatched}>
+                        <span className={styles.dotMatched}>●</span> Python
+                      </span>
+                      <span className={styles.tagMatched}>
+                        <span className={styles.dotMatched}>●</span> React
+                      </span>
+                      <span className={styles.tagMatched}>
+                        <span className={styles.dotMatched}>●</span> TypeScript
+                      </span>
+                      <span className={styles.tagMatched}>
+                        <span className={styles.dotMatched}>●</span> SQLite
+                      </span>
                     </div>
                   </div>
                   <div className={styles.skillsCol}>
                     <span className={styles.skillsTitle}>Missing Requirements</span>
                     <div className={styles.skillsList}>
-                      <span className={styles.tagMissing}>FastAPI</span>
-                      <span className={styles.tagMissing}>PostgreSQL</span>
+                      <span className={styles.tagMissing}>
+                        <span className={styles.dotMissing}>●</span> FastAPI
+                      </span>
+                      <span className={styles.tagMissing}>
+                        <span className={styles.dotMissing}>●</span> PostgreSQL
+                      </span>
                     </div>
                   </div>
                 </div>
