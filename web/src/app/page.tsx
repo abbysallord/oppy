@@ -228,40 +228,72 @@ export default function Home() {
               </p>
             </div>
             <div className={styles.card}>
-              <span className={styles.cardIcon}>03 / Feed</span>
-              <h3 className={styles.cardTitle}>Custom RSS Feeds</h3>
+              <span className={styles.cardIcon}>03 / Export</span>
+              <h3 className={styles.cardTitle}>Obsidian Vault Exporter</h3>
               <p className={styles.cardBody}>
-                Add custom RSS URLs directly through the interactive settings panel.
-                Oppy dynamically integrates custom career pages, newsletters, or
-                listings into the unified search pool.
+                Compile crawled and filtered listings into clean, structured
+                markdown tables. Oppy exports metadata like apply deadlines and company
+                headers straight to your personal knowledge base directory.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Vault Sync Split Showcase */}
+      {/* Primary Showcase Split - Local Resume Auditor */}
       <section className={styles.showcase}>
         <div className={`${styles.container} ${styles.showcaseGrid}`}>
           <div className={styles.showcaseContent}>
             <h2 className={styles.showcaseTitle}>
-               Obsidian Vault Integration
+               Local Resume Compatibility Auditor
             </h2>
             <p className={styles.showcaseBody}>
-              Scour internships, jobs, and hackathons, filter out unpaid
-              postings automatically, and beam a compiled list directly to your
-              inbox. Oppy exports structured markdown tables with direct apply links
-              and compensation details to match your second-brain structure.
+              Pass your plain-text resume file locally to check your compatibility
+              score against crawled listings. Oppy parses requirement profiles
+              completely offline using word boundary matching. It lists matching
+              technologies and flags exact missing skills, helping you target
+              the right openings without sharing your personal data.
             </p>
           </div>
           <div className={styles.showcaseVisual}>
-            <Image
-              src="/obsidian-screenshot.png"
-              alt="Obsidian Markdown vault showing integrated tech opportunities table with platform, company, and deadline fields"
-              width={800}
-              height={500}
-              className={styles.screenshot}
-            />
+            <div className={styles.auditorMock}>
+              <div className={styles.auditorHeader}>
+                <div className={styles.auditorFile}>
+                  <span className={styles.fileIcon}>📄</span> resume.txt
+                </div>
+                <span className={styles.auditorStatus}>Audit complete</span>
+              </div>
+              <div className={styles.auditorBody}>
+                <div className={styles.scoreSection}>
+                  <div className={styles.scoreCircle}>
+                    <span className={styles.scorePercent}>85%</span>
+                    <span className={styles.scoreLabel}>Match</span>
+                  </div>
+                  <div className={styles.scoreDetails}>
+                    <h4 className={styles.scoreTitle}>Full-Stack Developer Role</h4>
+                    <p className={styles.scoreMuted}>crawled locally via Devpost / RemoteOK</p>
+                  </div>
+                </div>
+                <div className={styles.skillsSection}>
+                  <div className={styles.skillsCol}>
+                    <span className={styles.skillsTitle}>Matched Stack</span>
+                    <div className={styles.skillsList}>
+                      <span className={styles.tagMatched}>Python</span>
+                      <span className={styles.tagMatched}>React</span>
+                      <span className={styles.tagMatched}>TypeScript</span>
+                      <span className={styles.tagMatched}>SQLite</span>
+                    </div>
+                  </div>
+                  <div className={styles.skillsCol}>
+                    <span className={styles.skillsTitle}>Missing Requirements</span>
+                    <div className={styles.skillsList}>
+                      <span className={styles.tagMissing}>FastAPI</span>
+                      <span className={styles.tagMissing}>PostgreSQL</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
