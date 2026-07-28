@@ -1092,11 +1092,11 @@
 }
 
 .statusLineSuccess {
-  color: var(--accent-success);
+  color: #10b981; /* ANSI Green */
 }
 
 .statusLineInfo {
-  color: var(--accent-secondary);
+  color: #06b6d4; /* ANSI Cyan */
   margin-top: 0.25rem;
 }
 
@@ -1165,22 +1165,22 @@
 }
 
 .fitActive {
-  color: var(--accent-success);
+  color: #eab308; /* ANSI Yellow */
   font-weight: 700;
   text-align: center;
 }
 
 .platformCol {
-  color: var(--accent-secondary);
+  color: #06b6d4; /* ANSI Cyan */
   font-size: 0.72rem;
 }
 
 .matchSkill {
-  color: var(--accent-success);
+  color: #10b981; /* ANSI Green */
 }
 
 .noneSkill {
-  color: var(--accent-warning);
+  color: #ef4444; /* ANSI Red */
 }
 
 .jobTitle {
