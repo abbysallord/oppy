@@ -1,0 +1,34 @@
+{
+  "name": "@dshenoyh/oppy-cli",
+  "version": "1.0.3",
+  "description": "Automated CLI pipeline to scrape, filter, and track remote paid internships and hackathons in Markdown dashboards.",
+  "main": "bin/cli.js",
+  "bin": {
+    "oppy": "./bin/cli.js",
+    "oppy-cli": "./bin/cli.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "preferGlobal": true,
+  "engines": {
+    "node": ">=14"
+  },
+  "keywords": [
+    "oppy",
+    "internship",
+    "hackathon",
+    "remote",
+    "paid",
+    "scraper",
+    "crawler",
+    "automation",
+    "obsidian",
+    "cli"
+  ],
+  "author": "Dhanush Shenoy H",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dshenoyh/oppy/issues"
+  }
+}
