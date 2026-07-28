@@ -141,7 +141,7 @@ export default function Home() {
               </div>
               <div className={styles.terminalBody}>
                 <div className={styles.terminalLogo}>
-                  {` ___  ___  ___ _   _ 
+                  {`  ___  ___  ___ _   _ 
  / _ \\| _ \\| _ \\ | | |
 | (_) |  _/|  _/ |_| |
  \\___/|_|  |_|  \\__, |
@@ -283,34 +283,44 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  {/* Right Column: Stack Breakdown */}
+                  {/* Right Column: Terminal Check Ledger */}
                   <div className={styles.auditorRight}>
-                    <div className={styles.skillsCol}>
-                      <span className={styles.skillsTitle}>Matched Stack</span>
-                      <div className={styles.skillsList}>
-                        <span className={styles.tagMatched}>
-                          <span className={styles.dotMatched}>●</span> Python
-                        </span>
-                        <span className={styles.tagMatched}>
-                          <span className={styles.dotMatched}>●</span> React
-                        </span>
-                        <span className={styles.tagMatched}>
-                          <span className={styles.dotMatched}>●</span> TypeScript
-                        </span>
-                        <span className={styles.tagMatched}>
-                          <span className={styles.dotMatched}>●</span> SQLite
-                        </span>
+                    <div className={styles.ledgerBox}>
+                      <div className={styles.ledgerLine}>
+                        <span className={styles.ledgerNo}>01</span>
+                        <span className={styles.ledgerStatusMatched}>[ OK ]</span>
+                        <span className={styles.ledgerName}>python</span>
+                        <span className={styles.ledgerDetail}>matched resume</span>
                       </div>
-                    </div>
-                    <div className={styles.skillsCol}>
-                      <span className={styles.skillsTitle}>Missing Requirements</span>
-                      <div className={styles.skillsList}>
-                        <span className={styles.tagMissing}>
-                          <span className={styles.dotMissing}>●</span> FastAPI
-                        </span>
-                        <span className={styles.tagMissing}>
-                          <span className={styles.dotMissing}>●</span> PostgreSQL
-                        </span>
+                      <div className={styles.ledgerLine}>
+                        <span className={styles.ledgerNo}>02</span>
+                        <span className={styles.ledgerStatusMatched}>[ OK ]</span>
+                        <span className={styles.ledgerName}>react</span>
+                        <span className={styles.ledgerDetail}>matched resume</span>
+                      </div>
+                      <div className={styles.ledgerLine}>
+                        <span className={styles.ledgerNo}>03</span>
+                        <span className={styles.ledgerStatusMatched}>[ OK ]</span>
+                        <span className={styles.ledgerName}>typescript</span>
+                        <span className={styles.ledgerDetail}>matched resume</span>
+                      </div>
+                      <div className={styles.ledgerLine}>
+                        <span className={styles.ledgerNo}>04</span>
+                        <span className={styles.ledgerStatusMatched}>[ OK ]</span>
+                        <span className={styles.ledgerName}>sqlite</span>
+                        <span className={styles.ledgerDetail}>matched resume</span>
+                      </div>
+                      <div className={styles.ledgerLineWarning}>
+                        <span className={styles.ledgerNo}>05</span>
+                        <span className={styles.ledgerStatusMissing}>[ ?? ]</span>
+                        <span className={styles.ledgerNameWarning}>fastapi</span>
+                        <span className={styles.ledgerDetailWarning}>missing stack</span>
+                      </div>
+                      <div className={styles.ledgerLineWarning}>
+                        <span className={styles.ledgerNo}>06</span>
+                        <span className={styles.ledgerStatusMissing}>[ ?? ]</span>
+                        <span className={styles.ledgerNameWarning}>postgresql</span>
+                        <span className={styles.ledgerDetailWarning}>missing stack</span>
                       </div>
                     </div>
                   </div>

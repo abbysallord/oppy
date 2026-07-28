@@ -47,7 +47,7 @@
 
 /* Humble Star GitHub Banner */
 .starBanner {
-  background-color: rgba(0, 229, 188, 0.05);
+  background-color: rgba(255, 121, 198, 0.05);
   border-bottom: 1px solid var(--border-wire);
   height: 40px;
   display: flex;
@@ -160,9 +160,9 @@
 }
 
 .navCTA:hover {
-  border-color: rgba(0, 229, 188, 0.4);
+  border-color: rgba(255, 121, 198, 0.4);
   color: var(--accent-beam);
-  background-color: rgba(0, 229, 188, 0.05);
+  background-color: rgba(255, 121, 198, 0.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
@@ -242,7 +242,7 @@
 .buttonPrimary:hover {
   filter: brightness(1.1);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 229, 188, 0.25);
+  box-shadow: 0 8px 24px rgba(255, 121, 198, 0.25);
 }
 
 .buttonPrimary:active {
@@ -409,7 +409,7 @@
   padding: 6rem 0;
   border-top: 1px solid var(--border-wire);
   border-bottom: 1px solid var(--border-wire);
-  background: radial-gradient(circle at 50% 50%, rgba(0, 229, 188, 0.02) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 121, 198, 0.02) 0%, transparent 60%);
 }
 
 .storyContent {
@@ -493,9 +493,9 @@
 }
 
 .card:hover {
-  border-color: rgba(0, 229, 188, 0.4);
+  border-color: rgba(255, 121, 198, 0.4);
   background-color: rgba(17, 17, 19, 0.8);
-  box-shadow: inset 0 0 0 1px rgba(0, 229, 188, 0.05),
+  box-shadow: inset 0 0 0 1px rgba(255, 121, 198, 0.05),
               0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
@@ -888,7 +888,7 @@
 }
 
 .faqItem:hover {
-  border-color: rgba(0, 229, 188, 0.3);
+  border-color: rgba(255, 121, 198, 0.3);
 }
 
 .faqHeader {
@@ -957,4 +957,76 @@
 
 .footerLink:hover {
   color: var(--accent-beam);
+}
+
+/* Terminal Check Ledger styles */
+.ledgerBox {
+  background-color: #0b0b0d;
+  border: 1px solid var(--border-wire);
+  border-radius: 6px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.ledgerLine {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.ledgerLineWarning {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1;
+  color: var(--accent-warning);
+}
+
+.ledgerNo {
+  color: var(--text-secondary);
+  opacity: 0.6;
+  user-select: none;
+  width: 15px;
+  text-align: right;
+}
+
+.ledgerStatusMatched {
+  color: var(--accent-success);
+  font-weight: 700;
+}
+
+.ledgerStatusMissing {
+  color: var(--accent-warning);
+  font-weight: 700;
+}
+
+.ledgerName {
+  color: var(--text-primary);
+  font-weight: 700;
+  width: 90px;
+}
+
+.ledgerNameWarning {
+  color: var(--accent-warning);
+  font-weight: 700;
+  width: 90px;
+}
+
+.ledgerDetail {
+  color: var(--text-secondary);
+  opacity: 0.7;
+  font-size: 0.75rem;
+}
+
+.ledgerDetailWarning {
+  color: var(--accent-warning);
+  opacity: 0.75;
+  font-size: 0.75rem;
 }
