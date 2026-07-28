@@ -33,6 +33,16 @@ def generate_markdown():
     """)
     internships = cursor.fetchall()
     
+    # 3. Fetch Jobs (Custom RSS)
+    cursor.execute("""
+        SELECT title, company, platform, opportunity_url, stipend_or_prize, deadline, discovered_at
+        FROM opportunities
+        WHERE opportunity_type = 'job'
+        ORDER BY discovered_at DESC
+        LIMIT 25
+    """)
+    jobs = cursor.fetchall()
+    
     conn.close()
     
     # Compile Markdown Document
@@ -41,7 +51,7 @@ def generate_markdown():
     md_lines = []
     md_lines.append("# Live Opportunities Dashboard")
     md_lines.append(f"*Last Scan Execution: {now_str}*")
-    md_lines.append("\n*This dashboard aggregates paid/prize-pool hackathons and paid virtual internships. Updated automatically.*")
+    md_lines.append("\n*This dashboard aggregates paid/prize-pool hackathons, paid virtual internships, and remote tech jobs. Updated automatically.*")
     md_lines.append("\n---\n")
     
     # Hackathons Section
@@ -69,6 +79,21 @@ def generate_markdown():
             clean_title = title.replace("|", "\\|")
             clean_company = company.replace("|", "\\|") if company else "Unknown"
             clean_stipend = stipend.replace("|", "\\|") if stipend else "Paid"
+            md_lines.append(f"| **{clean_title}** | {clean_company} | `{platform.upper()}` | {clean_stipend} | [Apply ↗]({url}) |")
+            
+    md_lines.append("\n---\n")
+    
+    # Jobs Section
+    md_lines.append("## Remote Tech Jobs")
+    if len(jobs) == 0:
+        md_lines.append("*No remote tech jobs discovered yet. Run scanner to populate.*")
+    else:
+        md_lines.append("| Job Title | Company | Platform / Feed | Salary / Comp | Link |")
+        md_lines.append("| :--- | :--- | :---: | :--- | :--- |")
+        for title, company, platform, url, stipend, deadline, _ in jobs:
+            clean_title = title.replace("|", "\\|")
+            clean_company = company.replace("|", "\\|") if company else "Unknown"
+            clean_stipend = stipend.replace("|", "\\|") if stipend else "N/A"
             md_lines.append(f"| **{clean_title}** | {clean_company} | `{platform.upper()}` | {clean_stipend} | [Apply ↗]({url}) |")
             
     md_lines.append("\n---\n")

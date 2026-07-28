@@ -68,8 +68,43 @@ While there are static lists and standalone scripts online, they either require 
 
 *   **Main Menu**: Press keys `[1-5]` to trigger options immediately (no Enter key required).
 *   **Ledger Paging**: Use **Left Arrow** / **P** to page backward, and **Right Arrow** / **N** to page forward.
+*   **Ledger Filters**: Press **T** to cycle results between `ALL`, `INTERNSHIP`, `HACKATHON`, and `JOB` filters dynamically.
 *   **Settings Toggles**: Press `Y` or `N` to toggle active settings instantly.
 *   **Text Queries**: Binds standard GNU `readline` for smooth character editing, arrow cursor keys, and backspaces inside text fields.
+
+---
+
+## CLI Search Command
+
+You can search and filter the database cache directly from your standard shell prompt without launching the full TUI dashboard:
+
+```bash
+oppy --search "engineer"
+# or
+oppy -s "GitLab"
+```
+
+Oppy will query the local SQLite database and display a clean, formatted table of matches directly to standard output.
+
+---
+
+## CLI Resume Auditor
+
+Audit all indexed opportunities in your local SQLite database against your personal technical skillset and rank them by compatible fit:
+
+```bash
+oppy --audit
+# or
+oppy -a
+```
+
+On first run, Oppy creates a default plain-text resume template at:
+`~/.config/oppy/resume.txt`
+
+Fill in your programming languages, frameworks, databases, and AI skills. Oppy parses this file locally using fuzzy keyword boundary matching and displays a ranking table detailing:
+*   **Fit Score (%)**: Percentage compatibility of requirements.
+*   **Matching Skills**: Skills you have that are requested.
+*   **Missing Skills**: Stack requirements requested by the listing that are missing from your resume.
 
 ---
 
@@ -96,7 +131,8 @@ oppy/
 │   ├── unstop.py        # Unstop crawler (block-splitting markdown parser)
 │   ├── devpost.py       # Devpost crawler (subdomain regex parser)
 │   ├── remoteok.py      # RemoteOK JSON feed parser
-│   └── weworkremotely.py# WeWorkRemotely RSS feed crawler
+│   ├── weworkremotely.py# WeWorkRemotely RSS feed crawler
+│   └── custom_rss.py    # Custom RSS feed crawler (internships/hackathons/jobs matcher)
 ├── utils/
 │   ├── config.py        # Global settings manager (JSON persistence)
 │   ├── exporter.py      # Markdown table generator

@@ -16,6 +16,7 @@ try:
     import readline
     readline.set_completer(None)
     readline.parse_and_bind("tab: self-insert")
+    readline.parse_and_bind("set disable-completion on")
 except ImportError:
     pass
 
@@ -138,11 +139,29 @@ def run_sync_progress(scrapers_to_run):
             try:
                 method = getattr(scraper_instance, method_name)
                 
-                # Silence crawler print outputs to keep TUI screen clean
+                # Run blocking network call in a separate thread to keep spinner animated
                 import io
                 import contextlib
-                with contextlib.redirect_stdout(io.StringIO()):
-                    results = method()
+                import threading
+                
+                results = None
+                exc = None
+                
+                def worker():
+                    nonlocal results, exc
+                    try:
+                        results = method()
+                    except Exception as e:
+                        exc = e
+                
+                t = threading.Thread(target=worker)
+                t.start()
+                
+                while t.is_alive():
+                    time.sleep(0.05)
+                    
+                if exc is not None:
+                    raise exc
                 
                 if results is None:
                     raise Exception("Offline")
@@ -188,7 +207,8 @@ def run_sync_progress(scrapers_to_run):
     from utils.exporter import generate_markdown
     generate_markdown()
     
-    Prompt.ask("\n[bold yellow]Press Enter to return to main menu[/bold yellow]")
+    console.print("\n[bold yellow]Press any key to return to main menu[/bold yellow]", end="")
+    read_key()
 
 def browse_ledger():
     clear_screen()
@@ -198,7 +218,7 @@ def browse_ledger():
     conn = get_connection()
     cursor = conn.cursor()
     
-    keyword = Prompt.ask("\nSearch query (leave blank for all)").strip()
+    keyword = input("\nSearch query (leave blank for all): ").strip()
     
     limit = 10
     offset = 0
@@ -419,19 +439,29 @@ def show_help():
     help_text = f"""
 [bold cyan]Oppy CLI Help Console[/bold cyan]
 
-Oppy scans popular developer databases to find career opportunities and export them to your second brain.
+Oppy scans career opportunities, caches them in local SQLite, and exports markdown tables.
 
-*   [bold yellow]Synchronize[/bold yellow]: Pulls current records from selected feeds and saves them to local SQLite.
-*   [bold yellow]Markdown Exporter[/bold yellow]: Compiles entries to clean tables in your vault file.
-*   [bold yellow]Global Configuration[/bold yellow]: Configurations persist in `~/.config/oppy/config.json`.
-*   [bold yellow]Headless Execution[/bold yellow]: Run `oppy --headless` for background scripts or cron schedules.
+[bold yellow]Ledger Keyboard Controls:[/bold yellow]
+*   [bold white]Left Arrow / P[/bold white] : Go to Previous Page
+*   [bold white]Right Arrow / N[/bold white] : Go to Next Page
+*   [bold white]T[/bold white]             : Toggle Type Filter (ALL ➔ INTERNSHIPS ➔ HACKATHONS ➔ JOBS)
+*   [bold white]Q[/bold white]             : Return to Main Menu
+
+[bold yellow]Settings Console Controls:[/bold yellow]
+*   [bold white]1 - 6[/bold white]         : Instant Option Selection (no Enter required)
+*   [bold white]Y / N[/bold white]         : Instant Toggle confirmation
+*   [bold white]5[/bold white]             : Open Custom RSS Feed Manager (add/delete URL feeds)
+
+[bold yellow]Automation / Headless Mode:[/bold yellow]
+*   Run [dim]oppy --headless[/dim] to sync in background (ideal for cron / systemd).
 
 [dim]Repository: https://github.com/abbysallord/oppy[/dim]
 """
     
     # Combined Layout Panel
     console.print(Panel(help_text + f"\n[dim]{mascot}[/dim]", border_style="yellow"))
-    Prompt.ask("\n[bold yellow]Press Enter to return to main menu[/bold yellow]")
+    console.print("\n[bold yellow]Press any key to return to main menu[/bold yellow]", end="")
+    read_key()
 
 def tui_main(scrapers_full_list):
     """
