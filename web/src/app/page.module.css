@@ -5,6 +5,20 @@
   background-color: var(--bg-base);
   color: var(--text-primary);
   overflow-x: hidden;
+  position: relative;
+}
+
+/* Dotted Matrix Background Grid */
+.gridBg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: radial-gradient(var(--border-wire) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 30%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 65% 55% at 50% 30%, #000 40%, transparent 100%);
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .container {
@@ -12,6 +26,34 @@
   margin: 0 auto;
   padding: 0 2rem;
   width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+/* Humble Star GitHub Banner */
+.starBanner {
+  background-color: rgba(0, 229, 188, 0.05);
+  border-bottom: 1px solid var(--border-wire);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-family: var(--font-mono), monospace;
+  color: var(--text-secondary);
+  z-index: 110;
+  position: relative;
+}
+
+.starLink {
+  color: var(--accent-beam);
+  text-decoration: underline;
+  margin-left: 0.5rem;
+  transition: opacity 0.2s ease;
+}
+
+.starLink:hover {
+  opacity: 0.8;
 }
 
 /* Navbar */
@@ -22,8 +64,8 @@
   align-items: center;
   position: sticky;
   top: 0;
-  background-color: rgba(8, 8, 9, 0.85);
-  backdrop-filter: blur(8px);
+  background-color: rgba(8, 8, 9, 0.9);
+  backdrop-filter: blur(12px);
   z-index: 100;
 }
 
@@ -75,25 +117,30 @@
   font-family: var(--font-mono), monospace;
   font-size: 0.85rem;
   color: var(--accent-beam);
-  border: 1px solid var(--accent-beam);
+  border: 1px solid rgba(0, 229, 188, 0.3);
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  background-color: rgba(0, 229, 188, 0.02);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .navCTA:hover {
+  border-color: var(--accent-beam);
   background-color: rgba(0, 229, 188, 0.1);
+  box-shadow: 0 0 16px rgba(0, 229, 188, 0.15);
   transform: translateY(-1px);
 }
 
 /* Hero Section */
 .hero {
   padding: 6rem 0 4rem 0;
+  position: relative;
 }
 
 .heroGrid {
   display: grid;
-  grid-template-cols: 1.1fr 0.9fr;
+  grid-template-cols: 1.15fr 0.85fr;
   gap: 4rem;
   align-items: center;
 }
@@ -154,13 +201,14 @@
   padding: 0.8rem 1.6rem;
   border-radius: 8px;
   font-size: 0.95rem;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
 }
 
 .buttonPrimary:hover {
   filter: brightness(1.1);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 229, 188, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 229, 188, 0.25);
 }
 
 .buttonPrimary:active {
@@ -174,6 +222,7 @@
   border-radius: 8px;
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  background: none;
 }
 
 .buttonSecondary:hover {
@@ -192,7 +241,7 @@
   border-radius: 8px;
   overflow: hidden;
   background-color: var(--bg-card);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
 .screenshot {
@@ -207,7 +256,7 @@
   padding: 6rem 0;
   border-top: 1px solid var(--border-wire);
   border-bottom: 1px solid var(--border-wire);
-  background: radial-gradient(circle at 50% 50%, rgba(0, 229, 188, 0.03) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(0, 229, 188, 0.02) 0%, transparent 60%);
 }
 
 .storyContent {
@@ -283,13 +332,17 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card:hover {
-  border-color: rgba(0, 229, 188, 0.3);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-beam);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(0, 229, 188, 0.15);
 }
 
 .cardIcon {
@@ -355,7 +408,36 @@
   border-radius: 8px;
   overflow: hidden;
   background-color: var(--bg-card);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Meme showcase section */
+.memeSection {
+  padding: 6rem 0;
+  border-bottom: 1px solid var(--border-wire);
+  text-align: center;
+  background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.01) 0%, transparent 60%);
+}
+
+.memeWrapper {
+  max-width: 600px;
+  margin: 3rem auto 0 auto;
+  border: 1px solid var(--border-wire);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--bg-card);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.memePlaceholder {
+  padding: 4rem 2rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.9rem;
+  border: 2px dashed var(--border-wire);
+  margin: 1.5rem;
+  border-radius: 6px;
+  line-height: 1.6;
 }
 
 /* Getting Started CLI block */
@@ -426,6 +508,7 @@
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
   transition: all 0.15s ease;
+  background: none;
 }
 
 .copyButton:hover {
@@ -456,41 +539,38 @@
   border-radius: 8px;
   background-color: var(--bg-card);
   padding: 1.5rem;
+  cursor: pointer;
+  transition: border-color 0.25s ease;
 }
 
-.faqSummary {
-  font-family: var(--font-bricolage), sans-serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  cursor: pointer;
+.faqItem:hover {
+  border-color: rgba(0, 229, 188, 0.3);
+}
+
+.faqHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  list-style: none;
 }
 
-.faqSummary::-webkit-details-marker {
-  display: none;
+.faqQuestion {
+  font-family: var(--font-bricolage), sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .faqIcon {
   font-family: var(--font-mono), monospace;
   font-size: 0.85rem;
   color: var(--accent-beam);
-  transition: transform 0.2s ease;
-}
-
-.faqItem[open] .faqIcon {
-  transform: rotate(45deg);
 }
 
 .faqBody {
-  margin-top: 1rem;
   color: var(--text-secondary);
   font-size: 0.95rem;
   line-height: 1.6;
-  border-top: 1px solid var(--border-wire);
-  padding-top: 1rem;
+  overflow: hidden;
 }
 
 /* Footer */

@@ -2,7 +2,41 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { motion } from "motion/react";
 import styles from "./page.module.css";
+
+const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className={styles.faqItem} onClick={() => setIsOpen(!isOpen)}>
+      <div className={styles.faqHeader}>
+        <span className={styles.faqQuestion}>{question}</span>
+        <motion.span
+          className={styles.faqIcon}
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        >
+          +
+        </motion.span>
+      </div>
+      <motion.div
+        className={styles.faqBody}
+        initial={false}
+        animate={{
+          height: isOpen ? "auto" : 0,
+          opacity: isOpen ? 1 : 0,
+          marginTop: isOpen ? "1rem" : 0,
+          paddingTop: isOpen ? "1rem" : 0,
+        }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <p>{answer}</p>
+      </motion.div>
+    </div>
+  );
+};
 
 export default function Home() {
   const [copyText, setCopyText] = useState("Copy");
@@ -15,16 +49,39 @@ export default function Home() {
     }, 2000);
   };
 
+  const handleScrollToCLI = () => {
+    document.getElementById("getting-started")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div className={styles.wrapper}>
+      {/* Grid background overlay */}
+      <div className={styles.gridBg} />
+
+      {/* GitHub Star Eyebrow Banner */}
+      <div className={styles.starBanner}>
+        ★ Open-source & local-first. Help us grow:
+        <a
+          href="https://github.com/abbysallord/oppy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.starLink}
+        >
+          Star Oppy on GitHub
+        </a>
+      </div>
+
       {/* Navbar */}
       <header className={styles.navbar}>
-        <div className={`${styles.container} ${styles.navContainer}`}>
+        <div className={styles.navContainer}>
           <div className={styles.brand}>
             <span className={styles.logoText}>Oppy</span>
             <span className={styles.logoVersion}>v1.0.6</span>
           </div>
           <nav className={styles.navLinks}>
+            <Link href="/docs" className={styles.navLink}>
+              Docs
+            </Link>
             <a
               href="https://github.com/abbysallord/oppy"
               target="_blank"
@@ -32,22 +89,6 @@ export default function Home() {
               className={styles.navLink}
             >
               GitHub
-            </a>
-            <a
-              href="https://www.npmjs.com/package/@dshenoyh/oppy-cli"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.navLink}
-            >
-              NPM
-            </a>
-            <a
-              href="https://pypi.org/project/oppy-cli/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.navLink}
-            >
-              PyPI
             </a>
             <button onClick={handleCopy} className={styles.navCTA}>
               npx @dshenoyh/oppy-cli
@@ -73,7 +114,7 @@ export default function Home() {
               knowledge base managers.
             </p>
             <div className={styles.heroButtons}>
-              <button onClick={handleCopy} className={styles.buttonPrimary}>
+              <button onClick={handleScrollToCLI} className={styles.buttonPrimary}>
                 Run instant CLI
               </button>
               <a
@@ -186,8 +227,30 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Meme Section */}
+      <section className={styles.memeSection}>
+        <div className={styles.container}>
+          <h2 className={styles.sectionTitle}>The Job-Hunting Loop</h2>
+          <p className={styles.sectionSubtitle}>
+            We have all been there: keeping 20 tabs open, copying details manually, missing deadlines.
+          </p>
+          <div className={styles.memeWrapper}>
+            <div className={styles.memePlaceholder}>
+              <p>[ Meme Graphic Placeholder ]</p>
+              <p style={{ marginTop: "1rem", fontSize: "0.85rem", opacity: 0.7 }}>
+                Drake Meme Concept:
+                <br />
+                ❌ Drake rejects: Scouring 15 tabs of Unstop & Devpost manually
+                <br />
+                ✅ Drake accepts: Running `oppy` in your terminal to sync Obsidian tables
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Interactive Command Panel */}
-      <section className={styles.gettingStarted}>
+      <section id="getting-started" className={styles.gettingStarted}>
         <div className={styles.container}>
           <h2 className={styles.sectionTitle}>Get Started Instantly</h2>
           <p className={styles.sectionSubtitle}>
@@ -224,39 +287,18 @@ export default function Home() {
             <h2 className={styles.sectionTitle}>Frequently Asked Questions</h2>
           </div>
           <div className={styles.faqWrapper}>
-            <details className={styles.faqItem}>
-              <summary className={styles.faqSummary}>
-                <span>Where is the cached database stored?</span>
-                <span className={styles.faqIcon}>+</span>
-              </summary>
-              <p className={styles.faqBody}>
-                Oppy caches all data in a local SQLite file located at
-                <code>~/.config/oppy/opportunities.db</code>. It remains fully offline
-                on your host machine.
-              </p>
-            </details>
-            <details className={styles.faqItem}>
-              <summary className={styles.faqSummary}>
-                <span>Does the resume auditor send my file to any server?</span>
-                <span className={styles.faqIcon}>+</span>
-              </summary>
-              <p className={styles.faqBody}>
-                No. The auditor parses your local plain-text resume completely on your
-                computer. Skill mapping is handled by local regex matching—no data
-                is transmitted.
-              </p>
-            </details>
-            <details className={styles.faqItem}>
-              <summary className={styles.faqSummary}>
-                <span>How do I configure headless automation?</span>
-                <span className={styles.faqIcon}>+</span>
-              </summary>
-              <p className={styles.faqBody}>
-                Run <code>oppy --headless</code> to sync opportunities silently and
-                export the markdown table. This can be scheduled using standard crontab
-                or systemd timers.
-              </p>
-            </details>
+            <FAQItem
+              question="Where is the cached database stored?"
+              answer="Oppy caches all data in a local SQLite database in WAL mode at ~/.config/oppy/opportunities.db. Your data remains fully offline on your own machine."
+            />
+            <FAQItem
+              question="Does the resume auditor send my file to any server?"
+              answer="No. The auditor parses your local plain-text resume completely offline using fuzzy string boundary matches. No network queries or API keys are required."
+            />
+            <FAQItem
+              question="How do I configure headless automation?"
+              answer="Run oppy --headless to trigger a silent scraper cycle and update your markdown tables. This can be scheduled easily using crontabs or systemd timers."
+            />
           </div>
         </div>
       </section>
@@ -268,6 +310,9 @@ export default function Home() {
             &copy; {new Date().getFullYear()} Oppy. Open source under MIT.
           </span>
           <div className={styles.footerLinks}>
+            <Link href="/docs" className={styles.footerLink}>
+              Docs
+            </Link>
             <a
               href="https://github.com/abbysallord/oppy"
               target="_blank"
@@ -283,6 +328,14 @@ export default function Home() {
               className={styles.footerLink}
             >
               NPM
+            </a>
+            <a
+              href="https://pypi.org/project/oppy-cli/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.footerLink}
+            >
+              PyPI
             </a>
           </div>
         </div>
