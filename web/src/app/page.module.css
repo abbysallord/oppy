@@ -14,9 +14,9 @@
   inset: 0;
   z-index: 1;
   background-image: 
-    linear-gradient(rgba(255, 121, 198, 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 121, 198, 0.015) 1px, transparent 1px);
-  background-size: 50px 50px;
+    linear-gradient(rgba(30, 144, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 144, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
   -webkit-mask-image: radial-gradient(circle at 50% 25%, #000 20%, transparent 80%);
   mask-image: radial-gradient(circle at 50% 25%, #000 20%, transparent 80%);
   opacity: 0.8;
@@ -31,7 +31,7 @@
   width: 100%;
   max-width: 1400px;
   height: 700px;
-  background: radial-gradient(circle at 50% 20%, rgba(255, 121, 198, 0.05) 0%, rgba(139, 92, 246, 0.01) 40%, transparent 70%);
+  background: radial-gradient(circle at 50% 20%, rgba(255, 0, 153, 0.04) 0%, rgba(30, 144, 255, 0.01) 40%, transparent 70%);
   pointer-events: none;
   z-index: 1;
 }
@@ -47,7 +47,7 @@
 
 /* Humble Star GitHub Banner */
 .starBanner {
-  background-color: rgba(255, 121, 198, 0.05);
+  background-color: rgba(255, 0, 153, 0.05);
   border-bottom: 1px solid var(--border-wire);
   height: 40px;
   display: flex;
@@ -107,8 +107,8 @@
   font-family: var(--font-mono), monospace;
   font-size: 0.75rem;
   color: var(--accent-beam);
-  background-color: rgba(255, 121, 198, 0.08);
-  border: 1px solid rgba(255, 121, 198, 0.35);
+  background-color: rgba(255, 0, 153, 0.08);
+  border: 1px solid rgba(255, 0, 153, 0.35);
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
 }
@@ -160,9 +160,9 @@
 }
 
 .navCTA:hover {
-  border-color: rgba(255, 121, 198, 0.4);
+  border-color: rgba(255, 0, 153, 0.4);
   color: var(--accent-beam);
-  background-color: rgba(255, 121, 198, 0.05);
+  background-color: rgba(255, 0, 153, 0.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
@@ -242,7 +242,7 @@
 .buttonPrimary:hover {
   filter: brightness(1.1);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(255, 121, 198, 0.25);
+  box-shadow: 0 8px 24px rgba(255, 0, 153, 0.25);
 }
 
 .buttonPrimary:active {
@@ -409,7 +409,7 @@
   padding: 6rem 0;
   border-top: 1px solid var(--border-wire);
   border-bottom: 1px solid var(--border-wire);
-  background: radial-gradient(circle at 50% 50%, rgba(255, 121, 198, 0.02) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 0, 153, 0.02) 0%, transparent 60%);
 }
 
 .storyContent {
@@ -493,9 +493,9 @@
 }
 
 .card:hover {
-  border-color: rgba(255, 121, 198, 0.4);
+  border-color: rgba(255, 0, 153, 0.4);
   background-color: rgba(17, 17, 19, 0.8);
-  box-shadow: inset 0 0 0 1px rgba(255, 121, 198, 0.05),
+  box-shadow: inset 0 0 0 1px rgba(255, 0, 153, 0.05),
               0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
@@ -562,7 +562,7 @@
   border-radius: 8px;
   overflow: hidden;
   background-color: #0b0b0d;
-  box-shadow: 0 20px 45px rgba(255, 121, 198, 0.04), 0 5px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 45px rgba(255, 0, 153, 0.04), 0 5px 15px rgba(0, 0, 0, 0.4);
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
@@ -676,8 +676,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 121, 198, 0.02);
-  box-shadow: 0 0 15px rgba(255, 121, 198, 0.08);
+  background-color: rgba(255, 0, 153, 0.02);
+  box-shadow: 0 0 15px rgba(255, 0, 153, 0.08);
 }
 
 .scorePercent {
@@ -888,7 +888,7 @@
 }
 
 .faqItem:hover {
-  border-color: rgba(255, 121, 198, 0.3);
+  border-color: rgba(255, 0, 153, 0.3);
 }
 
 .faqHeader {
@@ -1029,4 +1029,167 @@
   color: var(--accent-warning);
   opacity: 0.75;
   font-size: 0.75rem;
+}
+
+/* Decorative Side Status Ribbons */
+.sideRibbonLeft {
+  position: fixed;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: left center;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  opacity: 0.25;
+  letter-spacing: 0.15em;
+  pointer-events: none;
+  z-index: 50;
+  white-space: nowrap;
+}
+
+.sideRibbonRight {
+  position: fixed;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: right center;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  opacity: 0.25;
+  letter-spacing: 0.15em;
+  pointer-events: none;
+  z-index: 50;
+  white-space: nowrap;
+}
+
+.ribbonDivider {
+  width: 20px;
+  height: 1px;
+  background-color: var(--border-wire);
+}
+
+@media (max-width: 1200px) {
+  .sideRibbonLeft, .sideRibbonRight {
+    display: none;
+  }
+}
+
+/* Console Rankings Table styles */
+.consoleStatusBlock {
+  margin-bottom: 1.25rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.statusLineSuccess {
+  color: var(--accent-success);
+}
+
+.statusLineInfo {
+  color: var(--accent-secondary);
+  margin-top: 0.25rem;
+}
+
+.consoleTableHeader {
+  text-align: center;
+  color: var(--text-primary);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.consoleTableWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-wire);
+  border-radius: 6px;
+  background-color: rgba(13, 13, 13, 0.9);
+}
+
+.consoleTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.consoleTable th {
+  background-color: rgba(26, 26, 26, 0.8);
+  border-bottom: 1px solid var(--border-wire);
+  border-right: 1px solid var(--border-wire);
+  padding: 0.65rem 0.85rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+
+.consoleTable th:last-child {
+  border-right: none;
+}
+
+.consoleTable td {
+  border-bottom: 1px solid var(--border-wire);
+  border-right: 1px solid var(--border-wire);
+  padding: 0.75rem 0.85rem;
+  vertical-align: top;
+  line-height: 1.4;
+}
+
+.consoleTable td:last-child {
+  border-right: none;
+}
+
+.consoleTable tr:last-child td {
+  border-bottom: none;
+}
+
+.fitActive {
+  color: var(--accent-success);
+  font-weight: 700;
+  text-align: center;
+}
+
+.platformCol {
+  color: var(--accent-secondary);
+  font-size: 0.7rem;
+}
+
+.matchSkill {
+  color: var(--accent-success);
+}
+
+.noneSkill {
+  color: var(--accent-warning);
+}
+
+.jobTitle {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.jobCompany {
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  margin: 0.15rem 0;
+}
+
+.jobLink {
+  color: var(--accent-secondary);
+  font-size: 0.65rem;
+  opacity: 0.8;
+  word-break: break-all;
 }

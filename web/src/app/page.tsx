@@ -60,6 +60,22 @@ export default function Home() {
       <div className={styles.gridBg} />
       <div className={styles.ambientGlow} />
 
+      {/* Decorative Margin status ribbons */}
+      <div className={styles.sideRibbonLeft}>
+        <span>SYSTEM: ACTIVE</span>
+        <span className={styles.ribbonDivider} />
+        <span>OPPY // SCRAPER // LOCAL_DB</span>
+        <span className={styles.ribbonDivider} />
+        <span>PORT: 8080</span>
+      </div>
+      <div className={styles.sideRibbonRight}>
+        <span>SQLITE: WAL_MODE</span>
+        <span className={styles.ribbonDivider} />
+        <span>VAULT: OBSIDIAN_EXPORT</span>
+        <span className={styles.ribbonDivider} />
+        <span>v1.0.6</span>
+      </div>
+
       {/* GitHub Star Eyebrow Banner */}
       <div className={styles.starBanner}>
         ★ Open-source & local-first. Help us grow:
@@ -141,11 +157,12 @@ export default function Home() {
               </div>
               <div className={styles.terminalBody}>
                 <div className={styles.terminalLogo}>
-                  {`  ___  ___  ___ _   _ 
- / _ \\| _ \\| _ \\ | | |
-| (_) |  _/|  _/ |_| |
- \\___/|_|  |_|  \\__, |
-                |___/ `}
+                  {` ██████╗ ██████╗ ██████╗ ██╗   ██╗
+██╔═══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝
+██║   ██║██████╔╝██████╔╝ ╚████╔╝ 
+██║   ██║██╔═══╝ ██╔═══╝   ╚██╔╝  
+╚██████╔╝██║     ██║        ██║   
+ ╚═════╝ ╚═╝     ╚═╝        ╚═╝   `}
                 </div>
                 <div className={styles.terminalSub}>
                   Oppy - Terminal-Native Opportunity Scout & Indexer
@@ -263,67 +280,72 @@ export default function Home() {
                   <div className={`${styles.terminalDot} ${styles.dotYellow}`} />
                   <div className={`${styles.terminalDot} ${styles.dotGreen}`} />
                 </div>
-                <span className={styles.auditorTitle}>oppy-auditor --file resume.txt</span>
+                <span className={styles.auditorTitle}>oppy -a --rankings</span>
               </div>
-              <div className={styles.auditorBody}>
-                <div className={styles.auditorGrid}>
-                  {/* Left Column: Score Info */}
-                  <div className={styles.auditorLeft}>
-                    <div className={styles.scoreCircle}>
-                      <span className={styles.scorePercent}>85%</span>
-                      <span className={styles.scoreLabel}>Match</span>
-                    </div>
-                    <div className={styles.scoreDetails}>
-                      <h4 className={styles.scoreTitle}>Full-Stack Developer</h4>
-                      <p className={styles.scoreMuted}>crawled via Devpost / RemoteOK</p>
-                      <div className={styles.fileDetails}>
-                        <span>resume.txt</span>
-                        <span>•</span>
-                        <span>2.4 KB</span>
-                      </div>
-                    </div>
+              <div className={styles.auditorBody} style={{ padding: '1.25rem' }}>
+                {/* Terminal Status Output */}
+                <div className={styles.consoleStatusBlock}>
+                  <div className={styles.statusLineSuccess}>
+                    Analyzed 336 opportunities against your resume (~/.config/oppy/resume.txt)
                   </div>
-                  {/* Right Column: Terminal Check Ledger */}
-                  <div className={styles.auditorRight}>
-                    <div className={styles.ledgerBox}>
-                      <div className={styles.ledgerLine}>
-                        <span className={styles.ledgerNo}>01</span>
-                        <span className={styles.ledgerStatusMatched}>[ OK ]</span>
-                        <span className={styles.ledgerName}>python</span>
-                        <span className={styles.ledgerDetail}>matched resume</span>
-                      </div>
-                      <div className={styles.ledgerLine}>
-                        <span className={styles.ledgerNo}>02</span>
-                        <span className={styles.ledgerStatusMatched}>[ OK ]</span>
-                        <span className={styles.ledgerName}>react</span>
-                        <span className={styles.ledgerDetail}>matched resume</span>
-                      </div>
-                      <div className={styles.ledgerLine}>
-                        <span className={styles.ledgerNo}>03</span>
-                        <span className={styles.ledgerStatusMatched}>[ OK ]</span>
-                        <span className={styles.ledgerName}>typescript</span>
-                        <span className={styles.ledgerDetail}>matched resume</span>
-                      </div>
-                      <div className={styles.ledgerLine}>
-                        <span className={styles.ledgerNo}>04</span>
-                        <span className={styles.ledgerStatusMatched}>[ OK ]</span>
-                        <span className={styles.ledgerName}>sqlite</span>
-                        <span className={styles.ledgerDetail}>matched resume</span>
-                      </div>
-                      <div className={styles.ledgerLineWarning}>
-                        <span className={styles.ledgerNo}>05</span>
-                        <span className={styles.ledgerStatusMissing}>[ ?? ]</span>
-                        <span className={styles.ledgerNameWarning}>fastapi</span>
-                        <span className={styles.ledgerDetailWarning}>missing stack</span>
-                      </div>
-                      <div className={styles.ledgerLineWarning}>
-                        <span className={styles.ledgerNo}>06</span>
-                        <span className={styles.ledgerStatusMissing}>[ ?? ]</span>
-                        <span className={styles.ledgerNameWarning}>postgresql</span>
-                        <span className={styles.ledgerDetailWarning}>missing stack</span>
-                      </div>
-                    </div>
+                  <div className={styles.statusLineInfo}>
+                    Detected Resume Skills: aws, c++, docker, fastapi, git, go, javascript, next.js, python, react, sql, sqlite, typescript
                   </div>
+                </div>
+
+                {/* Table Centered Header */}
+                <div className={styles.consoleTableHeader}>
+                  Oppy AI Resume Audit Rankings
+                </div>
+
+                {/* Console Rankings Table */}
+                <div className={styles.consoleTableWrapper}>
+                  <table className={styles.consoleTable}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '60px' }}>Fit</th>
+                        <th style={{ width: '130px' }}>Type & Platform</th>
+                        <th>Opportunity & Company</th>
+                        <th style={{ width: '110px' }}>Matching Skills</th>
+                        <th style={{ width: '100px' }}>Missing Skills</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className={styles.fitActive}>100%</td>
+                        <td className={styles.platformCol}>INTERNSHIP<br/>'WEWORKREMOTELY'</td>
+                        <td>
+                          <div className={styles.jobTitle}>Full-Stack Engineer (Python + Temporal)</div>
+                          <div className={styles.jobCompany}>Toptal • Remote (LATAM & Europe)</div>
+                          <div className={styles.jobLink}>https://weworkremotely.com/jobs/toptal-full-stack</div>
+                        </td>
+                        <td className={styles.matchSkill}>python</td>
+                        <td className={styles.noneSkill}>None</td>
+                      </tr>
+                      <tr>
+                        <td className={styles.fitActive}>100%</td>
+                        <td className={styles.platformCol}>INTERNSHIP<br/>'WEWORKREMOTELY'</td>
+                        <td>
+                          <div className={styles.jobTitle}>AI Engineer - AWS Bedrock & Agentic Systems</div>
+                          <div className={styles.jobCompany}>Toptal • Remote (LATAM & Europe)</div>
+                          <div className={styles.jobLink}>https://weworkremotely.com/jobs/toptal-ai-engineer</div>
+                        </td>
+                        <td className={styles.matchSkill}>aws</td>
+                        <td className={styles.noneSkill}>None</td>
+                      </tr>
+                      <tr>
+                        <td className={styles.fitActive}>100%</td>
+                        <td className={styles.platformCol}>INTERNSHIP<br/>'WEWORKREMOTELY'</td>
+                        <td>
+                          <div className={styles.jobTitle}>AI Technical Lead - C++ Ecosystem</div>
+                          <div className={styles.jobCompany}>JetBrains • Remote</div>
+                          <div className={styles.jobLink}>https://weworkremotely.com/jobs/jetbrains-ai-technical-lead</div>
+                        </td>
+                        <td className={styles.matchSkill}>c++</td>
+                        <td className={styles.noneSkill}>None</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

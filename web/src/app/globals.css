@@ -1,16 +1,19 @@
 :root {
-  /* Brand color system: Dark Tech Mode */
-  --bg-base: #080809;       /* Velvet dark off-black background */
-  --bg-card: #111113;       /* Elevated container card */
-  --border-wire: #1f1f23;   /* High-precision wireframe borders */
+  /* Brand color system: OLED Dark Tech Theme */
+  --bg-base: #0d0d0d;       /* Almost black for OLED screens */
+  --bg-card: rgba(26, 26, 26, 0.7); /* Glassmorphism semi-transparent card container */
+  --bg-card-solid: #1a1a1a;  /* Solid fallback container */
+  --border-wire: #242426;   /* Precision wireframe borders */
   
-  --accent-beam: #ff79c6;   /* Cyber satellite Dracula magenta/pink accent */
-  --accent-success: #10b981;/* Emerald green success status */
-  --accent-warning: #f59e0b;/* Deadlines warning */
+  --accent-beam: #00ff85;   /* Neon green primary accent */
+  --accent-success: #00ff85;/* Neon green success */
+  --accent-secondary: #1e90ff;/* Electric blue secondary info */
+  --accent-hover: #ff0099;  /* Vivid pink highlight/hover */
+  --accent-warning: #ff3366;/* Red/pink warning / missing info */
   
   --text-primary: #f3f4f6;  /* Crisp body text */
   --text-secondary: #9ca3af;/* Muted grey descriptions */
-  --text-mono: #34d399;     /* Console logs */
+  --text-mono: #00ff85;     /* Console logs */
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
