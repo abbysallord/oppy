@@ -49,8 +49,8 @@
   font-family: var(--font-mono), monospace;
   font-size: 0.75rem;
   color: var(--accent-beam);
-  background-color: rgba(217, 70, 239, 0.08);
-  border: 1px solid rgba(217, 70, 239, 0.35);
+  background-color: rgba(255, 121, 198, 0.08);
+  border: 1px solid rgba(255, 121, 198, 0.35);
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
 }
