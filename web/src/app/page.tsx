@@ -235,16 +235,13 @@ export default function Home() {
             We have all been there: keeping 20 tabs open, copying details manually, missing deadlines.
           </p>
           <div className={styles.memeWrapper}>
-            <div className={styles.memePlaceholder}>
-              <p>[ Meme Graphic Placeholder ]</p>
-              <p style={{ marginTop: "1rem", fontSize: "0.85rem", opacity: 0.7 }}>
-                Drake Meme Concept:
-                <br />
-                ❌ Drake rejects: Scouring 15 tabs of Unstop & Devpost manually
-                <br />
-                ✅ Drake accepts: Running `oppy` in your terminal to sync Obsidian tables
-              </p>
-            </div>
+            <Image
+              src="/meme.png"
+              alt="Drake Hotline Bling Meme: Rejecting manual browser scouring, approving Oppy terminal Obsidian sync"
+              width={736}
+              height={660}
+              className={styles.screenshot}
+            />
           </div>
         </div>
       </section>
