@@ -8,8 +8,8 @@
   --accent-beam: #00ff85;   /* Neon green primary accent */
   --accent-success: #00ff85;/* Neon green success */
   --accent-secondary: #1e90ff;/* Electric blue secondary info */
-  --accent-hover: #ff0099;  /* Vivid pink highlight/hover */
-  --accent-warning: #ff3366;/* Red/pink warning / missing info */
+  --accent-hover: #00ff85;  /* Neon green hover highlight */
+  --accent-warning: #ef4444;/* Standard warning red */
   
   --text-primary: #f3f4f6;  /* Crisp body text */
   --text-secondary: #9ca3af;/* Muted grey descriptions */

@@ -60,22 +60,6 @@ export default function Home() {
       <div className={styles.gridBg} />
       <div className={styles.ambientGlow} />
 
-      {/* Decorative Margin status ribbons */}
-      <div className={styles.sideRibbonLeft}>
-        <span>SYSTEM: ACTIVE</span>
-        <span className={styles.ribbonDivider} />
-        <span>OPPY // SCRAPER // LOCAL_DB</span>
-        <span className={styles.ribbonDivider} />
-        <span>PORT: 8080</span>
-      </div>
-      <div className={styles.sideRibbonRight}>
-        <span>SQLITE: WAL_MODE</span>
-        <span className={styles.ribbonDivider} />
-        <span>VAULT: OBSIDIAN_EXPORT</span>
-        <span className={styles.ribbonDivider} />
-        <span>v1.0.6</span>
-      </div>
-
       {/* GitHub Star Eyebrow Banner */}
       <div className={styles.starBanner}>
         ★ Open-source & local-first. Help us grow:
