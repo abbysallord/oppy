@@ -334,7 +334,7 @@
 }
 
 .terminalLogo {
-  color: #ff007f;
+  color: var(--accent-beam);
   font-weight: 700;
   font-size: 1.1rem;
   white-space: pre;
