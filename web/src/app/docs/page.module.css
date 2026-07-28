@@ -20,9 +20,9 @@
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 4rem;
   width: 100%;
 }
 
@@ -74,10 +74,10 @@
 .docsLayout {
   display: grid;
   grid-template-cols: 260px 1fr;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   width: 100%;
-  padding: 2rem;
+  padding: 2rem 4rem;
   gap: 3rem;
   flex: 1;
 }
@@ -144,7 +144,7 @@
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-  max-width: 750px;
+  max-width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -262,9 +262,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 4rem;
   width: 100%;
 }
 
