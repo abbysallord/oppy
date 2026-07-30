@@ -16,9 +16,38 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Oppy — Automate your internship & hackathon scout",
+  title: "Oppy — Local-First Career & Hackathon Scout",
   description:
-    "Oppy is a local-first CLI utility that crawls listings, filters out unpaid work, and compiles career opportunity dashboards directly to your notes and Obsidian vault.",
+    "Oppy is a local-first command-line scout that aggregates remote internships and hackathons, caches listings in a local SQLite WAL database, and compiles Obsidian second-brain dashboards.",
+  keywords: [
+    "job scraper",
+    "internship crawler",
+    "hackathon aggregator",
+    "local-first CLI",
+    "Obsidian career tracker",
+    "sqlite jobs db",
+    "remote internships",
+    "scout utility",
+    "resume compatibility auditor"
+  ],
+  authors: [{ name: "Dhanush Shenoy" }],
+  metadataBase: new URL("https://oppy-cli.vercel.app"),
+  openGraph: {
+    title: "Oppy — Local-First Career & Hackathon Scout",
+    description:
+      "Automate your career scout locally. Scrape listings silently, filter out unpaid work, audit resume compatibility offline, and compile Obsidian dashboards.",
+    url: "https://oppy-cli.vercel.app",
+    siteName: "Oppy",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Oppy — Local-First Career & Hackathon Scout",
+    description:
+      "Automate your career scout locally. Scrape listings silently, filter out unpaid work, audit resume compatibility offline, and compile Obsidian dashboards.",
+    creator: "@dshenoyh",
+  },
 };
 
 export default function RootLayout({

@@ -1,5 +1,12 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import styles from "./page.module.css";
+
+export const metadata: Metadata = {
+  title: "Documentation — Oppy",
+  description:
+    "Official reference guide for installing configuration files, custom RSS feeds, and executing the local resume auditor in Oppy.",
+};
 
 export default function Docs() {
   return (
