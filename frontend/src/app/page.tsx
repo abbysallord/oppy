@@ -15,7 +15,7 @@ export default function Home() {
 
   const fetchOpportunities = async () => {
     setLoading(true);
-    try:
+    try {
       const params = new URLSearchParams();
       if (search) params.set('query', search);
       if (category !== 'all') params.set('category', category);
