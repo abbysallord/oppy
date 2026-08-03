@@ -78,7 +78,7 @@ export default function Home() {
         <div className={`${styles.container} ${styles.navContainer}`}>
           <div className={styles.brand}>
             <span className={styles.logoText}>Oppy</span>
-            <span className={styles.logoVersion}>v1.0.6</span>
+            <span className={styles.logoVersion}>v1.0.7</span>
           </div>
           <nav className={styles.navLinks}>
             <Link href="/docs" className={styles.navLink}>

@@ -18,7 +18,7 @@ export default function Docs() {
             <Link href="/" className={styles.logoText}>
               Oppy
             </Link>
-            <span className={styles.logoVersion}>v1.0.6</span>
+            <span className={styles.logoVersion}>v1.0.7</span>
           </div>
           <nav className={styles.navLinks}>
             <Link href="/" className={styles.navLink}>
