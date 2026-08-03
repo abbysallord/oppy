@@ -41,8 +41,10 @@ export const metadata: Metadata = {
     images: [
       {
         url: "https://oppy-cli.vercel.app/opengraph-image.png",
+        secureUrl: "https://oppy-cli.vercel.app/opengraph-image.png",
         width: 1200,
         height: 630,
+        type: "image/png",
         alt: "Oppy — Local-First Career & Hackathon Scout",
       },
     ],
