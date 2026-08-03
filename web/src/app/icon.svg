@@ -36,88 +36,87 @@
     <rect x="328" y="328" width="48" height="72" />
   </g>
 
-  <!-- Double line borders group - Decomposed with tight offsets to align perfectly -->
+  <!-- Double line borders group - 16px/32px cell offset grid -->
   <g stroke="#00FF85" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <!-- Row 0: col 7 (╗) -->
-    <line x1="376" y1="52" x2="396" y2="52" fill="none" />
-    <line x1="396" y1="52" x2="396" y2="112" fill="none" />
-    <line x1="376" y1="68" x2="384" y2="68" fill="none" />
-    <line x1="384" y1="68" x2="384" y2="112" fill="none" />
+    <line x1="392" y1="56" x2="408" y2="56" fill="none" />
+    <line x1="408" y1="56" x2="408" y2="112" fill="none" />
+    <line x1="392" y1="72" x2="392" y2="112" fill="none" />
 
     <!-- Row 1: col 2 (╔) -->
-    <line x1="144" y1="124" x2="144" y2="184" fill="none" />
-    <line x1="144" y1="124" x2="184" y2="124" fill="none" />
-    <line x1="156" y1="140" x2="156" y2="184" fill="none" />
-    <line x1="156" y1="140" x2="184" y2="140" fill="none" />
+    <line x1="152" y1="128" x2="184" y2="128" fill="none" />
+    <line x1="152" y1="128" x2="152" y2="184" fill="none" />
+    <line x1="168" y1="144" x2="184" y2="144" fill="none" />
+    <line x1="168" y1="144" x2="168" y2="184" fill="none" />
     <!-- Row 1: col 3 (═) -->
-    <line x1="184" y1="124" x2="232" y2="124" fill="none" />
-    <line x1="184" y1="140" x2="232" y2="140" fill="none" />
+    <line x1="184" y1="128" x2="232" y2="128" fill="none" />
+    <line x1="184" y1="144" x2="232" y2="144" fill="none" />
     <!-- Row 1: col 4 (═) -->
-    <line x1="232" y1="124" x2="280" y2="124" fill="none" />
-    <line x1="232" y1="140" x2="280" y2="140" fill="none" />
+    <line x1="232" y1="128" x2="280" y2="128" fill="none" />
+    <line x1="232" y1="144" x2="280" y2="144" fill="none" />
     <!-- Row 1: col 5 (═) -->
-    <line x1="280" y1="124" x2="328" y2="124" fill="none" />
-    <line x1="280" y1="140" x2="328" y2="140" fill="none" />
+    <line x1="280" y1="128" x2="328" y2="128" fill="none" />
+    <line x1="280" y1="144" x2="328" y2="144" fill="none" />
     <!-- Row 1: col 8 (╗) -->
-    <line x1="424" y1="124" x2="444" y2="124" fill="none" />
-    <line x1="444" y1="124" x2="444" y2="184" fill="none" />
-    <line x1="424" y1="140" x2="432" y2="140" fill="none" />
-    <line x1="432" y1="140" x2="432" y2="184" fill="none" />
+    <line x1="424" y1="128" x2="456" y2="128" fill="none" />
+    <line x1="456" y1="128" x2="456" y2="184" fill="none" />
+    <line x1="424" y1="144" x2="440" y2="144" fill="none" />
+    <line x1="440" y1="144" x2="440" y2="184" fill="none" />
 
     <!-- Row 2: col 2 (║) -->
-    <line x1="144" y1="184" x2="144" y2="256" fill="none" />
-    <line x1="156" y1="184" x2="156" y2="256" fill="none" />
+    <line x1="152" y1="184" x2="152" y2="256" fill="none" />
+    <line x1="168" y1="184" x2="168" y2="256" fill="none" />
     <!-- Row 2: col 8 (║) -->
-    <line x1="432" y1="184" x2="432" y2="256" fill="none" />
-    <line x1="444" y1="184" x2="444" y2="256" fill="none" />
+    <line x1="440" y1="184" x2="440" y2="256" fill="none" />
+    <line x1="456" y1="184" x2="456" y2="256" fill="none" />
 
     <!-- Row 3: col 2 (║) -->
-    <line x1="144" y1="256" x2="144" y2="328" fill="none" />
-    <line x1="156" y1="256" x2="156" y2="328" fill="none" />
+    <line x1="152" y1="256" x2="152" y2="328" fill="none" />
+    <line x1="168" y1="256" x2="168" y2="328" fill="none" />
     <!-- Row 3: col 8 (║) -->
-    <line x1="432" y1="256" x2="432" y2="328" fill="none" />
-    <line x1="444" y1="256" x2="444" y2="328" fill="none" />
+    <line x1="440" y1="256" x2="440" y2="328" fill="none" />
+    <line x1="456" y1="256" x2="456" y2="328" fill="none" />
 
     <!-- Row 4: col 0 (╚) -->
-    <line x1="48" y1="328" x2="48" y2="376" fill="none" />
-    <line x1="48" y1="376" x2="88" y2="376" fill="none" />
-    <line x1="60" y1="328" x2="60" y2="360" fill="none" />
-    <line x1="60" y1="360" x2="88" y2="360" fill="none" />
+    <line x1="56" y1="328" x2="56" y2="360" fill="none" />
+    <line x1="56" y1="360" x2="88" y2="360" fill="none" />
+    <line x1="72" y1="328" x2="72" y2="344" fill="none" />
+    <line x1="72" y1="344" x2="88" y2="344" fill="none" />
     <!-- Row 4: col 7 (╔) -->
-    <line x1="396" y1="352" x2="396" y2="400" fill="none" />
-    <line x1="396" y1="352" x2="424" y2="352" fill="none" />
-    <line x1="408" y1="376" x2="408" y2="400" fill="none" />
-    <line x1="408" y1="376" x2="424" y2="376" fill="none" />
+    <line x1="392" y1="344" x2="392" y2="400" fill="none" />
+    <line x1="392" y1="344" x2="424" y2="344" fill="none" />
+    <line x1="408" y1="360" x2="408" y2="400" fill="none" />
+    <line x1="408" y1="360" x2="424" y2="360" fill="none" />
     <!-- Row 4: col 8 (╝) -->
-    <line x1="444" y1="328" x2="444" y2="376" fill="none" />
-    <line x1="444" y1="376" x2="424" y2="376" fill="none" />
-    <line x1="432" y1="328" x2="432" y2="360" fill="none" />
-    <line x1="432" y1="360" x2="424" y2="360" fill="none" />
+    <line x1="456" y1="328" x2="456" y2="360" fill="none" />
+    <line x1="424" y1="360" x2="456" y2="360" fill="none" />
+    <line x1="440" y1="328" x2="440" y2="344" fill="none" />
+    <line x1="424" y1="344" x2="440" y2="344" fill="none" />
 
     <!-- Row 5: col 1 (╚) -->
-    <line x1="96" y1="400" x2="96" y2="448" fill="none" />
-    <line x1="96" y1="448" x2="136" y2="448" fill="none" />
-    <line x1="108" y1="400" x2="108" y2="424" fill="none" />
-    <line x1="108" y1="424" x2="136" y2="424" fill="none" />
+    <line x1="104" y1="400" x2="104" y2="432" fill="none" />
+    <line x1="104" y1="432" x2="136" y2="432" fill="none" />
+    <line x1="120" y1="400" x2="120" y2="416" fill="none" />
+    <line x1="120" y1="416" x2="136" y2="416" fill="none" />
     <!-- Row 5: col 2 (═) -->
-    <line x1="136" y1="424" x2="184" y2="424" fill="none" />
-    <line x1="136" y1="448" x2="184" y2="448" fill="none" />
+    <line x1="136" y1="416" x2="184" y2="416" fill="none" />
+    <line x1="136" y1="432" x2="184" y2="432" fill="none" />
     <!-- Row 5: col 3 (═) -->
-    <line x1="184" y1="424" x2="232" y2="424" fill="none" />
-    <line x1="184" y1="448" x2="232" y2="448" fill="none" />
+    <line x1="184" y1="416" x2="232" y2="416" fill="none" />
+    <line x1="184" y1="432" x2="232" y2="432" fill="none" />
     <!-- Row 5: col 4 (═) -->
-    <line x1="232" y1="424" x2="280" y2="424" fill="none" />
-    <line x1="232" y1="448" x2="280" y2="448" fill="none" />
+    <line x1="232" y1="416" x2="280" y2="416" fill="none" />
+    <line x1="232" y1="432" x2="280" y2="432" fill="none" />
     <!-- Row 5: col 5 (═) -->
-    <line x1="280" y1="424" x2="328" y2="424" fill="none" />
-    <line x1="280" y1="448" x2="328" y2="448" fill="none" />
+    <line x1="280" y1="416" x2="328" y2="416" fill="none" />
+    <line x1="280" y1="432" x2="328" y2="432" fill="none" />
     <!-- Row 5: col 6 (═) -->
-    <line x1="328" y1="424" x2="376" y2="424" fill="none" />
-    <line x1="328" y1="448" x2="376" y2="448" fill="none" />
+    <line x1="328" y1="416" x2="376" y2="416" fill="none" />
+    <line x1="328" y1="432" x2="376" y2="432" fill="none" />
     <!-- Row 5: col 7 (╝) -->
-    <line x1="396" y1="400" x2="396" y2="448" fill="none" />
-    <line x1="396" y1="448" x2="376" y2="448" fill="none" />
-    <line x1="384" y1="400" x2="384" y2="424" fill="none" />
-    <line x1="384" y1="424" x2="376" y2="424" fill="none" />
+    <line x1="408" y1="400" x2="408" y2="432" fill="none" />
+    <line x1="376" y1="432" x2="408" y2="432" fill="none" />
+    <line x1="392" y1="400" x2="392" y2="416" fill="none" />
+    <line x1="376" y1="416" x2="392" y2="416" fill="none" />
   </g>
 </svg>
