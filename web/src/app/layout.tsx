@@ -38,6 +38,14 @@ export const metadata: Metadata = {
       "Automate your career scout locally. Scrape listings silently, filter out unpaid work, audit resume compatibility offline, and compile Obsidian dashboards.",
     url: "https://oppy-cli.vercel.app",
     siteName: "Oppy",
+    images: [
+      {
+        url: "https://oppy-cli.vercel.app/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Oppy — Local-First Career & Hackathon Scout",
+      },
+    ],
     locale: "en_US",
     type: "website",
   },
@@ -46,7 +54,11 @@ export const metadata: Metadata = {
     title: "Oppy — Local-First Career & Hackathon Scout",
     description:
       "Automate your career scout locally. Scrape listings silently, filter out unpaid work, audit resume compatibility offline, and compile Obsidian dashboards.",
+    images: ["https://oppy-cli.vercel.app/opengraph-image.png"],
     creator: "@dshenoyh",
+  },
+  other: {
+    "og:logo": "https://oppy-cli.vercel.app/icon.svg",
   },
 };
 
