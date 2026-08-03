@@ -10,6 +10,7 @@
     "postinstall": "node ./scripts/fix-lightningcss.js"
   },
   "dependencies": {
+    "lucide-react": "^1.28.0",
     "motion": "^12.42.2",
     "next": "^16.2.12",
     "react": "19.2.4",

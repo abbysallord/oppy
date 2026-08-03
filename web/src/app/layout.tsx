@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Space_Mono } from "next/font/google";
+import Navbar from "@/components/Navbar";
 import "./globals.css";
 
 const bricolage = Bricolage_Grotesque({
@@ -16,9 +17,9 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Oppy — Local-First Career & Hackathon Scout",
+  title: "Oppy — Local-First & Web Career & Hackathon Scout",
   description:
-    "Oppy is a local-first command-line scout that aggregates remote internships and hackathons, caches listings in a local SQLite WAL database, and compiles Obsidian second-brain dashboards.",
+    "Oppy is a local-first command-line and web scout that aggregates remote internships and hackathons, caches listings in SQLite, and compiles Obsidian second-brain dashboards.",
   keywords: [
     "job scraper",
     "internship crawler",
@@ -33,9 +34,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Dhanush Shenoy" }],
   metadataBase: new URL("https://oppy-cli.vercel.app"),
   openGraph: {
-    title: "Oppy — Local-First Career & Hackathon Scout",
+    title: "Oppy — Local-First & Web Career Scout",
     description:
-      "Automate your career scout locally. Scrape listings silently, filter out unpaid work, audit resume compatibility offline, and compile Obsidian dashboards.",
+      "Automate your career scout locally & on the web. Scrape listings silently, filter out unpaid work, audit resume compatibility offline, and compile Obsidian dashboards.",
     url: "https://oppy-cli.vercel.app",
     siteName: "Oppy",
     locale: "en_US",
@@ -43,9 +44,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Oppy — Local-First Career & Hackathon Scout",
+    title: "Oppy — Local-First & Web Career Scout",
     description:
-      "Automate your career scout locally. Scrape listings silently, filter out unpaid work, audit resume compatibility offline, and compile Obsidian dashboards.",
+      "Automate your career scout locally & on the web. Scrape listings silently, filter out unpaid work, audit resume compatibility offline, and compile Obsidian dashboards.",
     creator: "@dshenoyh",
   },
 };
@@ -57,7 +58,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${bricolage.variable} ${spaceMono.variable}`}>
-      <body>{children}</body>
+      <body className="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+        <Navbar />
+        <main className="flex-1">{children}</main>
+      </body>
     </html>
   );
 }
