@@ -1,0 +1,75 @@
+:root {
+  /* Brand color system: OLED Dark Tech Theme */
+  --bg-base: #0d0d0d;       /* Almost black for OLED screens */
+  --bg-card: rgba(26, 26, 26, 0.7); /* Glassmorphism semi-transparent card container */
+  --bg-card-solid: #1a1a1a;  /* Solid fallback container */
+  --border-wire: #242426;   /* Precision wireframe borders */
+  
+  --accent-beam: #00ff85;   /* Neon green primary accent */
+  --accent-success: #00ff85;/* Neon green success */
+  --accent-secondary: #1e90ff;/* Electric blue secondary info */
+  --accent-hover: #00ff85;  /* Neon green hover highlight */
+  --accent-warning: #ef4444;/* Standard warning red */
+  
+  --text-primary: #f3f4f6;  /* Crisp body text */
+  --text-secondary: #9ca3af;/* Muted grey descriptions */
+  --text-mono: #00ff85;     /* Console logs */
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-bricolage), var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+code, pre, .mono-text {
+  font-family: var(--font-mono), monospace;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:focus, button:focus {
+  outline: none;
+}
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent-beam);
+  outline-offset: 4px;
+}
+
+button {
+  font-family: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

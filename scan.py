@@ -82,6 +82,46 @@ def main():
         console.print(table)
         sys.exit(0)
 
+    # Check for CLI edit resume argument
+    if "--edit" in sys.argv or "-e" in sys.argv:
+        from utils.config import load_config
+        config = load_config()
+        resume_path = config.get("resume_path")
+        
+        # Ensure resume directory and template exist
+        if not os.path.exists(resume_path):
+            os.makedirs(os.path.dirname(resume_path), exist_ok=True)
+            with open(resume_path, "w", encoding="utf-8") as f:
+                f.write("# Oppy Skills Resume Template\n# Add your technical skills, programming languages, databases, or frameworks below.\n# Keywords are matched case-insensitively.\n\npython, javascript, react, next.js, fastapi, sql, git, docker\n")
+        
+        import subprocess
+        print(f"Opening resume for editing: {resume_path}")
+        try:
+            if sys.platform.startswith('win'):
+                os.startfile(resume_path)
+            elif sys.platform.startswith('darwin'):
+                subprocess.run(['open', resume_path])
+            else:
+                editor = os.environ.get('EDITOR')
+                if editor:
+                    import shlex
+                    editor_args = shlex.split(editor)
+                    subprocess.run(editor_args + [resume_path])
+                else:
+                    try:
+                        subprocess.run(['xdg-open', resume_path])
+                    except FileNotFoundError:
+                        for default_editor in ['nano', 'vi', 'vim']:
+                            try:
+                                subprocess.run([default_editor, resume_path])
+                                break
+                            except FileNotFoundError:
+                                continue
+        except Exception as e:
+            print(f"Failed to open editor: {e}")
+            print(f"Please open and edit the file manually at: {resume_path}")
+        sys.exit(0)
+
     # Check for CLI audit argument
     if "--audit" in sys.argv or "-a" in sys.argv:
         from utils.config import load_config
@@ -103,15 +143,15 @@ def main():
             console.print("\n[bold red]No cached opportunities found in the database. Run sync first to populate.[/bold red]\n")
             sys.exit(0)
             
-        console.print(f"\n[bold green]Analyzed {len(audited)} opportunities against your resume ({resume_path})[/bold green]")
-        console.print(f"[bold cyan]Detected Resume Skills:[/bold cyan] {', '.join(sorted(list(resume_skills)))}\n")
+        console.print(f"\n[bold #00ff85]Analyzed {len(audited)} opportunities against your resume ({resume_path})[/bold #00ff85]")
+        console.print(f"[bold #1e90ff]Detected Resume Skills:[/bold #1e90ff] {', '.join(sorted(list(resume_skills)))}\n")
         
         table = Table(title="Oppy AI Resume Audit Rankings", expand=True)
-        table.add_column("Fit", justify="center", style="bold yellow")
-        table.add_column("Type & Platform", justify="center", style="cyan")
+        table.add_column("Fit", justify="center", style="bold #00ff85")
+        table.add_column("Type & Platform", justify="center", style="#1e90ff")
         table.add_column("Opportunity & Company", justify="left")
-        table.add_column("Matching Skills", justify="left", style="green")
-        table.add_column("Missing Skills", justify="left", style="red")
+        table.add_column("Matching Skills", justify="left", style="#00ff85")
+        table.add_column("Missing Skills", justify="left", style="#ef4444")
         
         # Display top 15 matches
         for item in audited[:15]:

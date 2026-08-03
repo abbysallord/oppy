@@ -97,12 +97,12 @@ def render_header():
     max_len = max(len(line) for line in logo_lines)
     logo_clean = "\n".join(line.ljust(max_len) for line in logo_lines)
     
-    logo_align = Align.center(f"[bold magenta]{logo_clean}[/bold magenta]")
+    logo_align = Align.center(f"[bold #00ff85]{logo_clean}[/bold #00ff85]")
     subtext_align = Align.center("\n[dim]Oppy - Terminal-Native Opportunity Scout & Indexer[/dim]")
     
     header_panel = Panel(
         Group(logo_align, subtext_align),
-        border_style="magenta"
+        border_style="#00ff85"
     )
     console.print(header_panel)
 
@@ -263,15 +263,15 @@ def browse_ledger():
         total_rows = cursor.fetchone()[0]
         
         table = Table(title=f"Opportunities Ledger (Showing {offset+1}-{offset+len(rows)} of {total_rows} matches)", expand=True)
-        table.add_column("Type", justify="center", style="cyan")
-        table.add_column("Platform", justify="center", style="green")
+        table.add_column("Type", justify="center", style="#1e90ff")
+        table.add_column("Platform", justify="center", style="#00ff85")
         table.add_column("Opportunity, Company & URL", justify="left")
-        table.add_column("Compensation / Prize", justify="left", style="yellow")
-        table.add_column("Deadline", justify="left", style="blue")
+        table.add_column("Compensation / Prize", justify="left", style="#00ff85")
+        table.add_column("Deadline", justify="left", style="#1e90ff")
         
         for title, company, platform, opp_type, stipend, deadline, url in rows:
             # Inline stacked display containing clickable link
-            display_cell = f"[bold white]{title}[/bold white]\n[dim]{company}[/dim]\n[blue][link={url}]{url}[/link][/blue]"
+            display_cell = f"[bold white]{title}[/bold white]\n[dim]{company}[/dim]\n[#1e90ff][link={url}]{url}[/link][/#1e90ff]"
             table.add_row(
                 opp_type.upper(),
                 platform.upper(),
@@ -478,7 +478,7 @@ def tui_main(scrapers_full_list):
             "[bold white][4][/bold white] Help & Repository Details\n"
             "[bold white][5][/bold white] Exit Console",
             title="Main Menu",
-            border_style="magenta"
+            border_style="#00ff85"
         )
         console.print(menu_panel)
         
@@ -505,5 +505,5 @@ def tui_main(scrapers_full_list):
             show_help()
         elif choice == "5" or choice == "q":
             clear_screen()
-            console.print("[bold magenta]Goodbye! Keep scouting.[/bold magenta]")
+            console.print("[bold #00ff85]Goodbye! Keep scouting.[/bold #00ff85]")
             break
