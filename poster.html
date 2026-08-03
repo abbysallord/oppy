@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Oppy Poster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      width: 800px;
+      height: 1200px;
+      background-color: #050505;
+      margin: 0;
+      padding: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-family: 'Outfit', sans-serif;
+      color: #f3f4f6;
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    /* Background Gradients & Grid */
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(150px);
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-green {
+      width: 600px;
+      height: 600px;
+      background-color: #00ff85;
+      left: -200px;
+      top: 200px;
+    }
+    .glow-blue {
+      width: 600px;
+      height: 600px;
+      background-color: #1e90ff;
+      right: -200px;
+      bottom: 200px;
+    }
+    .grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: 30px 30px;
+      background-image: 
+        linear-gradient(to right, rgba(36, 36, 38, 0.2) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(36, 36, 38, 0.2) 1px, transparent 1px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Layout Z-Index */
+    header, main, footer {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Header Styling */
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: #1e90ff;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .ascii-logo {
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      line-height: 1.15;
+      color: #00ff85;
+      font-weight: bold;
+      white-space: pre;
+      margin: 0 auto 20px auto;
+    }
+    .hero-title {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin: 0 0 10px 0;
+    }
+    .hero-title span {
+      color: #00ff85;
+    }
+    .hero-subtitle {
+      font-size: 16px;
+      color: #9ca3af;
+      max-width: 550px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* Main Showcase Box */
+    main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 30px 0;
+    }
+    .mockup-window {
+      width: 620px;
+      background-color: rgba(20, 20, 21, 0.85);
+      border: 1.5px solid #1e90ff;
+      border-radius: 12px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .window-header {
+      background-color: rgba(13, 13, 13, 0.9);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #242426;
+    }
+    .window-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-red { background-color: #ef4444; }
+    .dot-yellow { background-color: #f59e0b; }
+    .dot-green { background-color: #10b981; }
+    .window-title {
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .window-body {
+      padding: 24px;
+      font-family: 'Fira Code', monospace;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+    .audit-summary {
+      background-color: rgba(0, 255, 133, 0.04);
+      border-left: 3px solid #00ff85;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      border-radius: 0 6px 6px 0;
+    }
+    .summary-title {
+      color: #00ff85;
+      font-weight: bold;
+    }
+    .summary-desc {
+      color: #9ca3af;
+      margin-top: 4px;
+      font-size: 11px;
+    }
+    .mock-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .mock-table th {
+      color: #1e90ff;
+      text-align: left;
+      font-weight: bold;
+      border-bottom: 1.5px solid #242426;
+      padding-bottom: 8px;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+    }
+    .mock-table td {
+      padding: 10px 0;
+      vertical-align: top;
+      border-bottom: 1px dotted rgba(36, 36, 38, 0.6);
+    }
+    .mock-table tr:last-child td {
+      border-bottom: none;
+    }
+    .fit-score {
+      color: #00ff85;
+      font-weight: bold;
+    }
+    .platform-tag {
+      color: #9ca3af;
+      font-size: 10px;
+    }
+    .job-title {
+      color: #f3f4f6;
+      font-weight: 500;
+    }
+    .job-desc {
+      color: #9ca3af;
+      font-size: 11px;
+    }
+
+    /* Features Grid */
+    .features-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 620px;
+      margin-top: 24px;
+    }
+    .feature-card {
+      background-color: rgba(26, 26, 26, 0.5);
+      border: 1px solid #242426;
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .feature-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #1e90ff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feature-title::before {
+      content: "✔";
+      color: #00ff85;
+    }
+    .feature-desc {
+      font-size: 12px;
+      color: #9ca3af;
+      line-height: 1.4;
+    }
+
+    /* Footer / Launcher Button */
+    footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .launcher-label {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+    .command-button {
+      background-color: #0d0d0d;
+      border: 1.5px solid #00ff85;
+      border-radius: 10px;
+      padding: 16px 36px;
+      font-family: 'Fira Code', monospace;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 0 30px rgba(0, 255, 133, 0.15);
+    }
+    .command-button .dollar {
+      color: #1e90ff;
+      font-weight: bold;
+    }
+    .command-button .text {
+      color: #00ff85;
+      font-weight: bold;
+    }
+    .copyright {
+      font-size: 11px;
+      color: #555;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow glow-green"></div>
+  <div class="glow glow-blue"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- Header Section -->
+  <header>
+    <div class="eyebrow">COMMAND-LINE SCOUT</div>
+    <pre class="ascii-logo">
+ ██████╗ ██████╗ ██████╗ ██╗   ██╗
+██╔═══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝
+██║   ██║██████╔╝██████╔╝ ╚████╔╝ 
+██║   ██║██╔═══╝ ██╔═══╝   ╚██╔╝  
+╚██████╔╝██║     ██║        ██║   
+ ╚═════╝ ╚═╝     ╚═╝        ╚═╝   </pre>
+    <h1 class="hero-title">Own your career <span>search.</span></h1>
+    <p class="hero-subtitle">Aggregating paid remote internships and cash hackathons locally into Obsidian vaults. Zero-config, offline-first, and completely private.</p>
+  </header>
+
+  <!-- Showcase Area -->
+  <main>
+    <div class="mockup-window">
+      <div class="window-header">
+        <div class="window-dots">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+        </div>
+        <span class="window-title">oppy -a --rankings</span>
+      </div>
+      <div class="window-body">
+        <div class="audit-summary">
+          <div class="summary-title">✔ Analyzed 336 opportunities against your resume</div>
+          <div class="summary-desc">Detected skills: python, react, next.js, fastapi, sql, git, docker</div>
+        </div>
+        <div class="table-title">Oppy AI Resume Audit Rankings</div>
+        <table class="mock-table">
+          <thead>
+            <tr>
+              <th style="width: 50px;">Fit</th>
+              <th style="width: 100px;">Platform</th>
+              <th>Opportunity & Company</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="fit-score">100%</td>
+              <td class="platform-tag">WEWORKREM</td>
+              <td>
+                <div class="job-title">Full-Stack Engineer (Python + Temporal)</div>
+                <div class="job-desc">Toptal • Paid (Remote)</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="fit-score">95%</td>
+              <td class="platform-tag">DEVPOST</td>
+              <td>
+                <div class="job-title">Specathon 2026 Hackathon</div>
+                <div class="job-desc">St. Peters College • $10,000 Prizes</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="fit-score">90%</td>
+              <td class="platform-tag">REMOTEOK</td>
+              <td>
+                <div class="job-title">Python / Django Developer</div>
+                <div class="job-desc">Astrolite Tech • Paid (Remote)</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Features Card Row -->
+    <div class="features-row">
+      <div class="feature-card">
+        <div class="feature-title">Local SQLite WAL Cache</div>
+        <div class="feature-desc">Maintains complete private indexes offline. No search tracking or analytics.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Obsidian Vault Exporter</div>
+        <div class="feature-desc">Compiles matching listings into formatted markdown tables in your second brain.</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer & Launcher Box -->
+  <footer>
+    <div class="launcher-label">RUN INSTANTLY ON ANY TERMINAL:</div>
+    <div class="command-button">
+      <span class="dollar">$</span>
+      <span class="text">npx @dshenoyh/oppy-cli</span>
+    </div>
+    <div class="copyright">MIT Licensed • open source on github.com/abbysallord/oppy</div>
+  </footer>
+</body>
+</html>
