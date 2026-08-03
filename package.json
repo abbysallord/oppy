@@ -28,7 +28,12 @@
   ],
   "author": "Dhanush Shenoy H",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abbysallord/oppy.git"
+  },
   "bugs": {
-    "url": "https://github.com/dshenoyh/oppy/issues"
-  }
+    "url": "https://github.com/abbysallord/oppy/issues"
+  },
+  "homepage": "https://github.com/abbysallord/oppy#readme"
 }
