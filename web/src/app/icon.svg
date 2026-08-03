@@ -1,34 +1,53 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
-  <defs>
-    <!-- Accent Gradient -->
-    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00FF85" />
-      <stop offset="100%" stop-color="#1E90FF" />
-    </linearGradient>
-    <!-- Soft Glow -->
-    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#00FF85" stop-opacity="0.18" />
-      <stop offset="100%" stop-color="#00FF85" stop-opacity="0" />
-    </radialGradient>
-  </defs>
+  <!-- Background Terminal window container -->
+  <rect x="16" y="16" width="480" height="480" rx="32" fill="#0D0D0D" stroke="#242426" stroke-width="12" />
   
-  <!-- Ambient Backdrop Glow -->
-  <circle cx="256" cy="256" r="230" fill="url(#glowGrad)" />
+  <!-- Terminal Header Bar -->
+  <path d="M16 48c0-17.7 14.3-32 32-32h416c17.7 0 32 14.3 32 32v48H16V48z" fill="#1A1A1A" />
   
-  <!-- Outer Precision Segments (Electric Blue) -->
-  <circle cx="256" cy="256" r="190" fill="none" stroke="#1E90FF" stroke-width="4" stroke-opacity="0.15" />
-  <circle cx="256" cy="256" r="190" fill="none" stroke="#1E90FF" stroke-width="8" stroke-dasharray="140 40 20 40 80 40" stroke-linecap="round" />
-  
-  <!-- Inner Dynamic Scanner Arc (Neon Green) -->
-  <circle cx="256" cy="256" r="140" fill="none" stroke="#00FF85" stroke-width="12" stroke-dasharray="280 140" stroke-linecap="round" />
-  
-  <!-- Reticle Crosshair Ticks -->
-  <line x1="256" y1="20" x2="256" y2="60" stroke="#00FF85" stroke-width="6" stroke-linecap="round" />
-  <line x1="256" y1="452" x2="256" y2="492" stroke="#00FF85" stroke-width="6" stroke-linecap="round" />
-  <line x1="20" y1="256" x2="60" y2="256" stroke="#00FF85" stroke-width="6" stroke-linecap="round" />
-  <line x1="452" y1="256" x2="492" y2="256" stroke="#00FF85" stroke-width="6" stroke-linecap="round" />
+  <!-- Header Window Dots -->
+  <circle cx="56" cy="56" r="12" fill="#FF605C" />
+  <circle cx="96" cy="56" r="12" fill="#FFBD2E" />
+  <circle cx="136" cy="56" r="12" fill="#27C93F" />
 
-  <!-- Center Glowing Scout Core (Oppy 'O') -->
-  <circle cx="256" cy="256" r="80" fill="none" stroke="url(#primaryGrad)" stroke-width="20" />
-  <circle cx="256" cy="256" r="20" fill="#00FF85" />
+  <!-- Terminal Window Title -->
+  <text x="256" y="62" fill="#9CA3AF" font-family="monospace" font-size="20" font-weight="bold" text-anchor="middle">oppy</text>
+  
+  <!-- Glowing Green grid blocks -->
+  <g fill="#00FF85" opacity="0.95">
+    <!-- Row 0 -->
+    <rect x="169" y="120" width="36" height="36" rx="4" />
+    <rect x="215" y="120" width="36" height="36" rx="4" />
+    <rect x="261" y="120" width="36" height="36" rx="4" />
+    <rect x="307" y="120" width="36" height="36" rx="4" />
+
+    <!-- Row 1 -->
+    <rect x="123" y="166" width="36" height="36" rx="4" />
+    <rect x="353" y="166" width="36" height="36" rx="4" />
+
+    <!-- Row 2 -->
+    <rect x="123" y="212" width="36" height="36" rx="4" />
+    <rect x="353" y="212" width="36" height="36" rx="4" />
+
+    <!-- Row 3 -->
+    <rect x="123" y="258" width="36" height="36" rx="4" />
+    <rect x="353" y="258" width="36" height="36" rx="4" />
+
+    <!-- Row 4 -->
+    <rect x="123" y="304" width="36" height="36" rx="4" />
+    <rect x="353" y="304" width="36" height="36" rx="4" />
+
+    <!-- Row 5 -->
+    <rect x="123" y="350" width="36" height="36" rx="4" />
+    <rect x="353" y="350" width="36" height="36" rx="4" />
+
+    <!-- Row 6 -->
+    <rect x="169" y="396" width="36" height="36" rx="4" />
+    <rect x="215" y="396" width="36" height="36" rx="4" />
+    <rect x="261" y="396" width="36" height="36" rx="4" />
+    <rect x="307" y="396" width="36" height="36" rx="4" />
+
+    <!-- Row 7 (Cursor) -->
+    <rect x="399" y="442" width="36" height="36" rx="4" />
+  </g>
 </svg>
