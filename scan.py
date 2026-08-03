@@ -104,7 +104,9 @@ def main():
             else:
                 editor = os.environ.get('EDITOR')
                 if editor:
-                    subprocess.run([editor, resume_path])
+                    import shlex
+                    editor_args = shlex.split(editor)
+                    subprocess.run(editor_args + [resume_path])
                 else:
                     try:
                         subprocess.run(['xdg-open', resume_path])
