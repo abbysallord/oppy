@@ -101,6 +101,13 @@ oppy -a
 On first run, Oppy creates a default plain-text resume template at:
 `~/.config/oppy/resume.txt`
 
+To edit your skills template file easily, run the edit command to automatically open it in your system's default text editor:
+```bash
+oppy --edit
+# or
+oppy -e
+```
+
 Fill in your programming languages, frameworks, databases, and AI skills. Oppy parses this file locally using fuzzy keyword boundary matching and displays a ranking table detailing:
 *   **Fit Score (%)**: Percentage compatibility of requirements.
 *   **Matching Skills**: Skills you have that are requested.

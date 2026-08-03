@@ -82,6 +82,44 @@ def main():
         console.print(table)
         sys.exit(0)
 
+    # Check for CLI edit resume argument
+    if "--edit" in sys.argv or "-e" in sys.argv:
+        from utils.config import load_config
+        config = load_config()
+        resume_path = config.get("resume_path")
+        
+        # Ensure resume directory and template exist
+        if not os.path.exists(resume_path):
+            os.makedirs(os.path.dirname(resume_path), exist_ok=True)
+            with open(resume_path, "w", encoding="utf-8") as f:
+                f.write("# Oppy Skills Resume Template\n# Add your technical skills, programming languages, databases, or frameworks below.\n# Keywords are matched case-insensitively.\n\npython, javascript, react, next.js, fastapi, sql, git, docker\n")
+        
+        import subprocess
+        print(f"Opening resume for editing: {resume_path}")
+        try:
+            if sys.platform.startswith('win'):
+                os.startfile(resume_path)
+            elif sys.platform.startswith('darwin'):
+                subprocess.run(['open', resume_path])
+            else:
+                editor = os.environ.get('EDITOR')
+                if editor:
+                    subprocess.run([editor, resume_path])
+                else:
+                    try:
+                        subprocess.run(['xdg-open', resume_path])
+                    except FileNotFoundError:
+                        for default_editor in ['nano', 'vi', 'vim']:
+                            try:
+                                subprocess.run([default_editor, resume_path])
+                                break
+                            except FileNotFoundError:
+                                continue
+        except Exception as e:
+            print(f"Failed to open editor: {e}")
+            print(f"Please open and edit the file manually at: {resume_path}")
+        sys.exit(0)
+
     # Check for CLI audit argument
     if "--audit" in sys.argv or "-a" in sys.argv:
         from utils.config import load_config

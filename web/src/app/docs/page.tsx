@@ -131,6 +131,14 @@ pip install oppy-cli`}
                 </tr>
                 <tr>
                   <td className={styles.td}>
+                    <code>oppy -e</code> or <code>--edit</code>
+                  </td>
+                  <td className={styles.td}>
+                    Opens your skills resume file automatically in the system's default text editor.
+                  </td>
+                </tr>
+                <tr>
+                  <td className={styles.td}>
                     <code>oppy -h</code> or <code>--headless</code>
                   </td>
                   <td className={styles.td}>
@@ -177,8 +185,9 @@ pip install oppy-cli`}
             </p>
             <p className={styles.paragraph}>
               Open this file in any text editor and fill in your technical stack
-              details (languages, libraries, frameworks). Oppy extracts your skills,
-              cross-references them against active database opportunities, and renders
+              details (languages, libraries, frameworks). You can open it instantly from your terminal by running:
+              {" "}<code className={styles.inlineCode}>oppy --edit</code> or <code className={styles.inlineCode}>oppy -e</code>.
+              Oppy extracts your skills, cross-references them against active database opportunities, and renders
               a fit rating alongside missing prerequisites.
             </p>
           </section>
