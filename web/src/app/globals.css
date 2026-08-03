@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   /* Brand color system: OLED Dark Tech Theme */
   --bg-base: #0d0d0d;       /* Almost black for OLED screens */
@@ -72,4 +74,23 @@ button {
   background: none;
   border: none;
   cursor: pointer;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d0d0d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #242426;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }

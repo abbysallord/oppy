@@ -14,34 +14,35 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md bg-slate-950/85 border-b border-slate-800/80 shadow-2xl">
+    <nav className="sticky top-0 z-50 w-full backdrop-blur-xl bg-black/80 border-b border-zinc-800/80 shadow-2xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 gap-4">
+          
           {/* Logo & Brand */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-indigo-500 p-0.5 shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform duration-200">
-              <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Terminal className="w-5 h-5 text-purple-400" />
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 via-purple-500 to-indigo-500 p-[1.5px] shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-all">
+              <div className="w-full h-full bg-zinc-950 rounded-[10.5px] flex items-center justify-center">
+                <Terminal className="w-4 h-4 text-emerald-400" />
               </div>
             </div>
-            <div>
-              <span className="text-xl font-black bg-gradient-to-r from-purple-400 via-pink-300 to-indigo-400 bg-clip-text text-transparent tracking-tight">
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-black tracking-tight text-white group-hover:text-emerald-400 transition-colors">
                 OPPY
               </span>
-              <span className="hidden sm:inline-block ml-2 text-xs px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 font-semibold">
-                v1.0.6
+              <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                v1.0.7
               </span>
             </div>
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-1 sm:space-x-3">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Link
               href="/"
-              className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 isActive('/') && pathname === '/'
-                  ? 'bg-purple-600/20 text-purple-300 border border-purple-500/30'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-zinc-800 text-emerald-400 border border-zinc-700'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
               }`}
             >
               <span>Home</span>
@@ -49,44 +50,44 @@ export default function Navbar() {
 
             <Link
               href="/explorer"
-              className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 isActive('/explorer')
-                  ? 'bg-purple-600/20 text-purple-300 border border-purple-500/30'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
               }`}
             >
-              <Compass className="w-3.5 h-3.5 text-purple-400" />
+              <Compass className="w-3.5 h-3.5 text-emerald-400" />
               <span>Explorer</span>
             </Link>
 
             <Link
               href="/audit"
-              className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 isActive('/audit')
-                  ? 'bg-pink-600/20 text-pink-300 border border-pink-500/30'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-purple-500/10 text-purple-400 border border-purple-500/30'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
               }`}
             >
-              <Target className="w-3.5 h-3.5 text-pink-400" />
+              <Target className="w-3.5 h-3.5 text-purple-400" />
               <span>Auditor</span>
             </Link>
 
             <Link
               href="/docs"
-              className={`flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 isActive('/docs')
-                  ? 'bg-cyan-600/20 text-cyan-300 border border-cyan-500/30'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                  ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
+              <BookOpen className="w-3.5 h-3.5 text-blue-400" />
               <span>Docs</span>
             </Link>
 
             {/* Launch App CTA */}
             <Link
               href="/explorer"
-              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 text-white font-bold text-xs shadow-lg shadow-purple-600/25 hover:opacity-95 transition-all ml-2"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-black font-bold text-xs shadow-lg shadow-emerald-400/20 transition-all ml-1 shrink-0"
             >
               <Rocket className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Launch App</span>
