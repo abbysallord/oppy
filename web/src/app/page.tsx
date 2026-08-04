@@ -42,6 +42,7 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
 export default function Home() {
   const [copyText, setCopyText] = useState("Copy");
   const [copyTextGlobal, setCopyTextGlobal] = useState("Copy");
+  const [navCopyText, setNavCopyText] = useState("npm i -g @dshenoyh/oppy-cli");
 
   const handleCopy = () => {
     navigator.clipboard.writeText("npx @dshenoyh/oppy-cli");
@@ -56,6 +57,14 @@ export default function Home() {
     setCopyTextGlobal("Copied!");
     setTimeout(() => {
       setCopyTextGlobal("Copy");
+    }, 2000);
+  };
+
+  const handleNavCopy = () => {
+    navigator.clipboard.writeText("npm install -g @dshenoyh/oppy-cli");
+    setNavCopyText("Copied!");
+    setTimeout(() => {
+      setNavCopyText("npm i -g @dshenoyh/oppy-cli");
     }, 2000);
   };
 
@@ -101,8 +110,8 @@ export default function Home() {
             >
               GitHub
             </a>
-            <button onClick={handleCopy} className={styles.navCTA}>
-              npx @dshenoyh/oppy-cli
+            <button onClick={handleNavCopy} className={styles.navCTA}>
+              {navCopyText}
             </button>
           </nav>
         </div>
