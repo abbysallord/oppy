@@ -41,12 +41,21 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
 
 export default function Home() {
   const [copyText, setCopyText] = useState("Copy");
+  const [copyTextGlobal, setCopyTextGlobal] = useState("Copy");
 
   const handleCopy = () => {
     navigator.clipboard.writeText("npx @dshenoyh/oppy-cli");
     setCopyText("Copied!");
     setTimeout(() => {
       setCopyText("Copy");
+    }, 2000);
+  };
+
+  const handleCopyGlobal = () => {
+    navigator.clipboard.writeText("npm install -g @dshenoyh/oppy-cli");
+    setCopyTextGlobal("Copied!");
+    setTimeout(() => {
+      setCopyTextGlobal("Copy");
     }, 2000);
   };
 
@@ -373,14 +382,24 @@ export default function Home() {
               <span className={styles.cliTitle}>terminal</span>
             </div>
             <div className={styles.cliContent}>
-              <div className={styles.commandRow}>
-                <span>
-                  <span className={styles.prompt}>$</span> npx
-                  @dshenoyh/oppy-cli
-                </span>
-                <button onClick={handleCopy} className={styles.copyButton}>
-                  {copyText}
-                </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div className={styles.commandRow}>
+                  <span>
+                    <span className={styles.prompt}>$</span> npx @dshenoyh/oppy-cli
+                  </span>
+                  <button onClick={handleCopy} className={styles.copyButton}>
+                    {copyText}
+                  </button>
+                </div>
+                <div style={{ borderTop: "1px dashed var(--border-wire)" }} />
+                <div className={styles.commandRow}>
+                  <span>
+                    <span className={styles.prompt}>$</span> npm install -g @dshenoyh/oppy-cli
+                  </span>
+                  <button onClick={handleCopyGlobal} className={styles.copyButton}>
+                    {copyTextGlobal}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
