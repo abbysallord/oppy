@@ -39,7 +39,102 @@ def init_db():
     """)
     conn.commit()
     conn.close()
-    print(f"Database initialized at {DB_PATH} in WAL mode.")
+    
+    try:
+        prune_expired_opportunities()
+    except Exception as e:
+        print(f"Warning: Failed to prune expired opportunities: {e}")
+
+def prune_expired_opportunities():
+    from datetime import datetime, timedelta
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT id, title, deadline, discovered_at FROM opportunities")
+    rows = cursor.fetchall()
+    
+    ids_to_delete = []
+    now = datetime.now()
+    today = now.date()
+    
+    for row in rows:
+        opp_id, title, deadline, discovered_at_str = row
+        if not deadline:
+            continue
+            
+        deadline_lower = deadline.lower().strip()
+        
+        # Check explicit expired keywords
+        if any(w in deadline_lower for w in ["ended", "closed", "expired"]):
+            ids_to_delete.append(opp_id)
+            continue
+            
+        # Parse discovered_at datetime
+        try:
+            disc_dt = datetime.strptime(discovered_at_str, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            try:
+                disc_dt = datetime.fromisoformat(discovered_at_str.replace("Z", "+00:00")).replace(tzinfo=None)
+            except Exception:
+                disc_dt = now
+                
+        # Case A: Parse absolute date 'DD MMM YYYY' (e.g., '13 Aug 2026')
+        is_absolute = False
+        try:
+            dt = datetime.strptime(deadline_lower, "%d %b %Y")
+            is_absolute = True
+            if dt.date() < today:
+                ids_to_delete.append(opp_id)
+                continue
+        except ValueError:
+            pass
+            
+        # Case B: Parse absolute date 'YYYY-MM-DD'
+        if not is_absolute:
+            try:
+                date_part = deadline_lower.split("t")[0].strip()
+                dt = datetime.strptime(date_part, "%Y-%m-%d")
+                is_absolute = True
+                if dt.date() < today:
+                    ids_to_delete.append(opp_id)
+                    continue
+            except ValueError:
+                pass
+                
+        # Case C: Parse relative deadline like "11 days left", "4 days left"
+        if not is_absolute:
+            import re
+            match = re.search(r"(\d+)\s+day", deadline_lower)
+            if match:
+                days_val = int(match.group(1))
+                expire_dt = disc_dt + timedelta(days=days_val)
+                if expire_dt < now:
+                    ids_to_delete.append(opp_id)
+                    continue
+                    
+            match_hour = re.search(r"(\d+)\s+hour", deadline_lower)
+            if match_hour:
+                hours_val = int(match_hour.group(1))
+                expire_dt = disc_dt + timedelta(hours=hours_val)
+                if expire_dt < now:
+                    ids_to_delete.append(opp_id)
+                    continue
+                    
+    if ids_to_delete:
+        cursor.execute(
+            f"DELETE FROM opportunities WHERE id IN ({','.join(map(str, ids_to_delete))})"
+        )
+        conn.commit()
+        print(f"Pruned {len(ids_to_delete)} expired/outdated opportunities from the ledger database.")
+        try:
+            from utils.exporter import generate_markdown
+            generate_markdown()
+        except Exception as ex:
+            print(f"Warning: Failed to regenerate markdown after pruning: {ex}")
+        
+    conn.close()
+
 
 if __name__ == "__main__":
     init_db()
