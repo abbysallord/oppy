@@ -1,3 +1,4 @@
+import json
 import re
 from scrapers.base import BaseScraper
 
@@ -6,69 +7,56 @@ class DevpostScraper(BaseScraper):
         from utils.config import load_config
         config = load_config()
         
+        params = []
         if config.get("remote_only"):
-            url = "https://devpost.com/hackathons?challenge_type[]=online"
-        else:
-            url = "https://devpost.com/hackathons"
+            params.append("challenge_type[]=online")
             
-        markdown_content = self.fetch_url(url, use_jina=True)
-        if not markdown_content:
-            return None
-            
-        return self.parse_content(markdown_content)
-
-    def parse_content(self, md_content):
         opportunities = []
-        
-        # Pattern matching the outer card anchor containing image, title, and metadata
-        # Excluding help, secure, info, blog, team, software, users, gallery, jobs
-        exclude_subs = r"help|secure|info|blog|team|software|users|gallery|jobs"
-        pattern = r"\[\!\[Image\s+\d+\]\([^\)]+\)\s+###\s+([^\]]+)\]\((https://(?!(" + exclude_subs + r")\.)[a-zA-Z0-9\-]+\.devpost\.com/[^\)]*)\)"
-        
-        matches = list(re.finditer(pattern, md_content))
-        for i, match in enumerate(matches):
-            details = match.group(1).strip()
-            opp_url = match.group(2).strip()
-            
-            # Split on common deadline indicators to isolate the title
-            split_indicators = ["days left", "day left", "month left", "months left", "hours left", "days to go", "to go"]
-            title = details
-            deadline = "Open"
-            
-            for ind in split_indicators:
-                if ind in details:
-                    parts = details.split(ind)
-                    title = parts[0].strip()
-                    # Extract number of days/months left
-                    words = title.split()
-                    if len(words) > 0:
-                        deadline = f"{words[-1]} {ind}"
-                        title = " ".join(words[:-1]).strip()
+        # Page through first 3 pages of listings
+        for page in range(1, 4):
+            url = f"https://devpost.com/api/hackathons?page={page}"
+            if params:
+                url += f"&{'&'.join(params)}"
+                
+            response_json = self.fetch_url(url, use_jina=False)
+            if not response_json:
+                break
+                
+            try:
+                data = json.loads(response_json)
+                hackathons = data.get("hackathons", [])
+                if not hackathons:
                     break
-            
-            # Clean up trailing words like 'about', 'around', 'ends'
-            title = re.sub(r"\s+(?:about|around|ends|ends in|in)$", "", title, flags=re.IGNORECASE).strip()
-            
-            # Extract prize pool
-            prize_match = re.search(r"(\$[0-9,]+\s*(?:in\s+prizes|cash)?|\$[0-9,]+)", details, re.IGNORECASE)
-            prize = prize_match.group(1).strip() if prize_match else "Paid / Prizes"
-            
-            opportunities.append({
-                'title': title,
-                'company': 'Devpost Host',
-                'platform': 'devpost',
-                'opportunity_type': 'hackathon',
-                'opportunity_url': opp_url,
-                'stipend_or_prize': prize,
-                'deadline': deadline,
-                'is_remote': 1,
-                'is_paid': 1
-            })
-            
+                    
+                for item in hackathons:
+                    # Filter for active/open state
+                    if item.get("open_state") != "open":
+                        continue
+                        
+                    title = item.get("title", "").strip()
+                    opp_url = item.get("url", "").strip()
+                    
+                    # Clean currency/prize amount html tags
+                    prize_html = item.get("prize_amount", "Paid / Prizes")
+                    prize = re.sub(r'<[^>]+>', '', prize_html).strip() if prize_html else "Paid / Prizes"
+                    
+                    # Estimate deadline
+                    deadline = item.get("time_left_to_submission", "Open")
+                    
+                    opportunities.append({
+                        'title': title,
+                        'company': item.get("organization_name", "Devpost Host") or "Devpost Host",
+                        'platform': 'devpost',
+                        'opportunity_type': 'hackathon',
+                        'opportunity_url': opp_url,
+                        'stipend_or_prize': prize,
+                        'deadline': deadline,
+                        'is_remote': 1,
+                        'is_paid': 1
+                    })
+            except Exception as e:
+                print(f"Error parsing Devpost page {page}: {e}")
+                continue
+                
         return opportunities
 
-if __name__ == "__main__":
-    scraper = DevpostScraper()
-    res = scraper.scrape_hackathons()
-    for r in res[:3]:
-        print(r)

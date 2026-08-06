@@ -35,5 +35,8 @@
   "bugs": {
     "url": "https://github.com/abbysallord/oppy/issues"
   },
-  "homepage": "https://github.com/abbysallord/oppy#readme"
+  "homepage": "https://github.com/abbysallord/oppy#readme",
+  "dependencies": {
+    "@pen.dev/cli": "^0.3.1"
+  }
 }

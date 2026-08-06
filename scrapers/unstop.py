@@ -1,4 +1,4 @@
-import re
+import json
 from scrapers.base import BaseScraper
 
 class UnstopScraper(BaseScraper):
@@ -6,116 +6,124 @@ class UnstopScraper(BaseScraper):
         from utils.config import load_config
         config = load_config()
         
-        params = ["opportunityStatus=open"]
-        if config.get("paid_only"):
-            params.append("financials=paid")
-        if config.get("remote_only"):
-            params.append("workMode=virtual")
-            
-        url = f"https://unstop.com/internships?{'&'.join(params)}"
-        markdown_content = self.fetch_url(url, use_jina=True)
-        if not markdown_content:
-            return None
-        
-        return self.parse_content(markdown_content, opportunity_type="internship")
-
-    def scrape_hackathons(self):
-        url = "https://unstop.com/hackathons?opportunityStatus=open"
-        markdown_content = self.fetch_url(url, use_jina=True)
-        if not markdown_content:
-            return None
-        
-        return self.parse_content(markdown_content, opportunity_type="hackathon")
-
-    def parse_content(self, md_content, opportunity_type):
         opportunities = []
-        
-        # Split blocks by headers
-        blocks = md_content.split("### [")
-        if len(blocks) <= 1:
-            return []
-            
-        for block in blocks[1:]:
-            # Find opportunity URL within block
-            url_match = re.search(r"\]\((https://unstop\.com/(?:internships|competitions|hackathons)/[^\)\?]+)\)", block)
-            if not url_match:
-                continue
-                
-            opp_url = url_match.group(1).strip()
-            
-            # The title text is in the block before the first closing markdown bracket/image
-            title_part = block.split("](")[0]
-            # Strip images and redundant spaces
-            title_clean = re.sub(r"!\[[^\]]*\]\([^\)]*\)", "", title_part)
-            title_clean = re.sub(r"\s+", " ", title_clean).strip()
-            
-            # Heuristically split Title and Company using the slug structure to ensure clean output
-            opp_title, comp_name = self.extract_title_company(title_clean, opp_url, opportunity_type)
-            
-            # Stipend / Prize Parsing
-            stipend_match = re.search(r"(\d+\s*K\s*-\s*\d+\s*K/Month|\d+,\d+/Month|\d+/Month|\*\*.*Month\*\*|\d+\s*K\s*-\s*\d+\s*K/Week)", block, re.IGNORECASE)
-            stipend = stipend_match.group(1).replace("**", "").strip() if stipend_match else "Paid"
-            
-            if opportunity_type == "hackathon":
-                # Look for prize pool
-                prize_match = re.search(r"(?:Cash|Prize|Pool|Worth|INR|Rs\.?)\s*(?:Pool\s+of\s+)?(\d+(?:,\d+)*(?:\s*K)?)", block, re.IGNORECASE)
-                stipend = f"Prize: {prize_match.group(1)}" if prize_match else "Prizes / Travel"
-                
-            # Deadline / Days left
-            deadline_match = re.search(r"(\d+\s+days?\s+left|Ended|Ends\s+[A-Za-z0-9\s]+)", block, re.IGNORECASE)
-            deadline = deadline_match.group(1).strip() if deadline_match else "Open"
-            
-            opportunities.append({
-                'title': opp_title,
-                'company': comp_name,
-                'platform': 'unstop',
-                'opportunity_type': opportunity_type,
-                'opportunity_url': opp_url,
-                'stipend_or_prize': stipend,
-                'deadline': deadline,
-                'is_remote': 1,
-                'is_paid': 1
-            })
-            
-        return opportunities
-
-    def extract_title_company(self, block_text, url, opp_type):
-        # Extract title using slug segment logic
-        slug = url.split("/")[-1]
-        slug_parts = slug.split("-")
-        if slug_parts[-1].isdigit():
-            slug_parts = slug_parts[:-1]
-            
-        # Common indicator keywords to split
-        split_indicators = [
-            "No prior experience", "Full Time", "Part Time", "Work from Home", 
-            "Work From Home", "In Office", "experience required", "Ambassador"
-        ]
-        header = block_text
-        for ind in split_indicators:
-            if ind in header:
-                header = header.split(ind)[0]
-        header = header.strip()
-        
-        opp_keywords = ["internship", "intern", "hackathon", "ambassador", "challenge", "quiz", "competition", "modelling"]
-        split_idx = -1
-        for kw in opp_keywords:
-            if kw in slug_parts:
-                split_idx = slug_parts.index(kw)
+        # Page through first 3 pages of listings
+        for page in range(1, 4):
+            url = f"https://unstop.com/api/public/opportunity/search-result?opportunity=internships&oppstatus=open&page={page}"
+            response_json = self.fetch_url(url, use_jina=False)
+            if not response_json:
                 break
                 
-        if split_idx != -1:
-            opp_slug_len = split_idx + 1
-        else:
-            opp_slug_len = len(slug_parts) // 2 if len(slug_parts) > 2 else 1
-            
-        header_words = header.split()
-        opp_title = " ".join(header_words[:opp_slug_len])
-        comp_name = " ".join(header_words[opp_slug_len:])
-        
-        if not comp_name:
-            comp_name = "-".join(slug_parts[opp_slug_len:]).replace("-", " ").title()
-        if not opp_title:
-            opp_title = "-".join(slug_parts[:opp_slug_len]).replace("-", " ").title()
-            
-        return opp_title.strip(), comp_name.strip()
+            try:
+                data = json.loads(response_json)
+                opps = data.get("data", {}).get("data", [])
+                if not opps:
+                    break
+                    
+                for opp in opps:
+                    job_detail = opp.get('jobDetail') or {}
+                    
+                    # 1. Paid filter
+                    is_paid = 1 if (job_detail.get('paid_unpaid') == 'paid' or opp.get('isPaid') is True) else 0
+                    if config.get("paid_only") and not is_paid:
+                        continue
+                        
+                    # 2. Remote filter
+                    is_remote = 0
+                    locations = opp.get('locations') or []
+                    if job_detail.get('type') == 'wfh' or any('home' in str(loc).lower() for loc in locations):
+                        is_remote = 1
+                    if config.get("remote_only") and not is_remote:
+                        continue
+                        
+                    title = opp.get("title", "").strip()
+                    opp_url = f"https://unstop.com/{opp.get('public_url')}"
+                    company = opp.get("organisation", {}).get("name", "Unstop Company") or "Unstop Company"
+                    
+                    # Stipend parsing
+                    min_sal = job_detail.get('min_salary')
+                    max_sal = job_detail.get('max_salary')
+                    if min_sal or max_sal:
+                        stipend = f"INR {min_sal:,}- {max_sal:,}/Month" if min_sal and max_sal else f"INR {min_sal or max_sal:,}/Month"
+                    else:
+                        stipend = "Paid" if is_paid else "Unpaid"
+                        
+                    deadline = self.format_deadline(opp.get("end_date"))
+                    
+                    opportunities.append({
+                        'title': title,
+                        'company': company,
+                        'platform': 'unstop',
+                        'opportunity_type': 'internship',
+                        'opportunity_url': opp_url,
+                        'stipend_or_prize': stipend,
+                        'deadline': deadline,
+                        'is_remote': is_remote,
+                        'is_paid': is_paid
+                    })
+            except Exception as e:
+                print(f"Error parsing Unstop internships page {page}: {e}")
+                continue
+                
+        return opportunities
+
+    def scrape_hackathons(self):
+        opportunities = []
+        # Page through first 3 pages of listings
+        for page in range(1, 4):
+            url = f"https://unstop.com/api/public/opportunity/search-result?opportunity=hackathons&oppstatus=open&page={page}"
+            response_json = self.fetch_url(url, use_jina=False)
+            if not response_json:
+                break
+                
+            try:
+                data = json.loads(response_json)
+                opps = data.get("data", {}).get("data", [])
+                if not opps:
+                    break
+                    
+                for opp in opps:
+                    title = opp.get("title", "").strip()
+                    opp_url = f"https://unstop.com/{opp.get('public_url')}"
+                    company = opp.get("organisation", {}).get("name", "Unstop Host") or "Unstop Host"
+                    
+                    # Prize parsing
+                    prizes = opp.get('prizes') or []
+                    cash_prizes = [p.get('cash') for p in prizes if p.get('cash')]
+                    if cash_prizes:
+                        total_cash = sum(cash_prizes)
+                        stipend = f"INR {total_cash:,}"
+                    else:
+                        others = [p.get('others') for p in prizes if p.get('others')]
+                        stipend = others[0] if others else "Prizes / Travel"
+                        
+                    deadline = self.format_deadline(opp.get("end_date"))
+                    
+                    opportunities.append({
+                        'title': title,
+                        'company': company,
+                        'platform': 'unstop',
+                        'opportunity_type': 'hackathon',
+                        'opportunity_url': opp_url,
+                        'stipend_or_prize': stipend,
+                        'deadline': deadline,
+                        'is_remote': 1,
+                        'is_paid': 1
+                    })
+            except Exception as e:
+                print(f"Error parsing Unstop hackathons page {page}: {e}")
+                continue
+                
+        return opportunities
+
+    def format_deadline(self, iso_str):
+        if not iso_str:
+            return "Open"
+        try:
+            from datetime import datetime
+            date_part = iso_str.split("T")[0]
+            dt = datetime.strptime(date_part, "%Y-%m-%d")
+            return dt.strftime("%d %b %Y")
+        except Exception:
+            return iso_str.split("T")[0]
+
