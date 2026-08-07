@@ -335,9 +335,16 @@
 
 .terminalLogo {
   color: var(--accent-beam);
-  font-weight: 700;
-  font-size: 1.1rem;
+  font-weight: 400; /* Bold weights in Consolas/system fonts stretch characters unevenly, breaking alignment */
+  font-size: 0.95rem; /* Clean readable scale */
   white-space: pre;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  line-height: 1.15; /* Restores vertical block boundaries so rows don't separate */
+  letter-spacing: 0;
+  font-variant-ligatures: none;
+  text-rendering: optimizeSpeed; /* Bypasses subpixel adjustments and custom kerning */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .terminalSub {
