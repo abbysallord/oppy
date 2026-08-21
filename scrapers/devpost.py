@@ -55,7 +55,7 @@ class DevpostScraper(BaseScraper):
                         'is_paid': 1
                     })
             except Exception as e:
-                print(f"Error parsing Devpost page {page}: {e}")
+                self.note(f"Error parsing Devpost page {page}: {e}")
                 continue
                 
         return opportunities

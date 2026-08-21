@@ -139,10 +139,19 @@ pip install oppy-cli`}
                 </tr>
                 <tr>
                   <td className={styles.td}>
-                    <code>oppy -h</code> or <code>--headless</code>
+                    <code>oppy -H</code> or <code>--headless</code>
                   </td>
                   <td className={styles.td}>
                     Trigger background crawler synchronization. Ideal for crontabs or systemd timers.
+                  </td>
+                </tr>
+                <tr>
+                  <td className={styles.td}>
+                    <code>oppy --export md|pdf|csv</code>
+                  </td>
+                  <td className={styles.td}>
+                    Writes the cached ledger to disk in the chosen format. Pass <code>--out PATH</code> to
+                    control the destination; defaults to <code>./Opportunities.&lt;format&gt;</code>.
                   </td>
                 </tr>
               </tbody>

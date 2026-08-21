@@ -3,6 +3,16 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Generated exports
+Opportunities.md
+Opportunities.pdf
+Opportunities.csv
+
 # Databases & local data
 database/data/
 *.db

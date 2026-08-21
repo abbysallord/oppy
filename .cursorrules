@@ -14,7 +14,8 @@ Before writing any code or installing any dependency, verify:
 ## 2. Coding Guidelines
 *   **Keep it simple**: Write simple, readable, and explicit code. Avoid over-engineering.
 *   **Local-first architecture**: Keep data local. Oppy stores cached opportunities in a local SQLite database in WAL mode and exports markdown. Respect this design.
-*   **Errors & Bypasses**: Always handle offline exceptions and SSL failures gracefully (like our macOS SSL default HTTPS context bypass).
+*   **Errors & TLS**: Handle offline exceptions gracefully. Certificate verification stays ON by default: `BaseScraper` retries a single request unverified only when the interpreter has no usable trust store, and records a note explaining it. Never disable verification process-wide (no `ssl._create_default_https_context` reassignment).
+*   **Scraper output**: Scrapers record problems on `self.notes` instead of printing. Stray prints from worker threads corrupt the live TUI frame.
 *   **TUI updates**: Keep the Rich TUI layout centered, clean, and silent. All scraper crawler output must run in separate worker threads to keep spinner animations fluid and avoid freezing standard output.
 
 ## 3. Pull Requests & Contributions

@@ -1,5 +1,5 @@
 import feedparser
-from scrapers.base import BaseScraper
+from scrapers.base import BaseScraper, CONTEST_WORDS, EARLY_CAREER_WORDS, matches_any
 from utils.config import load_config
 
 class CustomRSSScraper(BaseScraper):
@@ -18,19 +18,30 @@ class CustomRSSScraper(BaseScraper):
                 
             try:
                 feed = feedparser.parse(response_text)
+                feed_name = feed.feed.get('title', 'Custom RSS Source').strip()
+
                 for entry in feed.entries:
-                    title = entry.get('title', 'Unknown Position').strip()
+                    full_title = entry.get('title', 'Unknown Position').strip()
                     url_link = entry.get('link', '').strip()
                     summary = entry.get('summary', '').lower()
-                    
-                    # Heuristically evaluate if position is a job, internship, or hackathon
-                    opp_type = "job"
-                    title_lower = title.lower()
-                    if "intern" in title_lower or "intern" in summary or "co-op" in title_lower:
+
+                    # Many job feeds use "Company: Position"; keep them separate
+                    # so the company column is not just the feed name.
+                    if ":" in full_title:
+                        company, title = [part.strip() for part in full_title.split(":", 1)]
+                    else:
+                        company, title = feed_name, full_title
+
+                    # Classify from the title with whole-word matching. Summaries
+                    # say "internal"/"international" too often to be reliable.
+                    if matches_any(title, EARLY_CAREER_WORDS):
                         opp_type = "internship"
-                    elif "hackathon" in title_lower or "challenge" in title_lower or "competition" in title_lower:
+                    elif matches_any(title, CONTEST_WORDS):
                         opp_type = "hackathon"
-                        
+                    else:
+                        opp_type = "job"
+
+
                     pay_info = "Paid"
                     if "stipend" in summary or "salary" in summary or "$" in summary or "inr" in summary:
                         pay_info = "Paid (custom feed)"
@@ -51,7 +62,7 @@ class CustomRSSScraper(BaseScraper):
                         
                     opportunities.append({
                         'title': title,
-                        'company': feed.feed.get('title', 'Custom RSS Source').strip(),
+                        'company': company,
                         'platform': 'custom_rss',
                         'opportunity_type': opp_type,
                         'opportunity_url': url_link,
@@ -60,7 +71,7 @@ class CustomRSSScraper(BaseScraper):
                         'is_remote': is_remote,
                         'is_paid': 1 if pay_info != "Unpaid" else 0
                     })
-            except Exception:
-                pass
-                
+            except Exception as e:
+                self.note(f"Error parsing feed {url}: {e}")
+
         return opportunities

@@ -1,5 +1,5 @@
 import feedparser
-from scrapers.base import BaseScraper
+from scrapers.base import BaseScraper, EARLY_CAREER_WORDS, matches_any
 
 class WeWorkRemotelyScraper(BaseScraper):
     def scrape_internships(self):
@@ -15,12 +15,12 @@ class WeWorkRemotelyScraper(BaseScraper):
             feed = feedparser.parse(response_text)
             return self.parse_entries(feed.entries)
         except Exception as e:
+            self.note(f"Error parsing WeWorkRemotely feed: {e}")
             return []
 
     def parse_entries(self, entries):
         opportunities = []
-        intern_keywords = ["intern", "internship", "co-op", "junior", "student", "grad"]
-        
+
         for entry in entries:
             full_title = entry.get('title', '')
             
@@ -31,13 +31,9 @@ class WeWorkRemotelyScraper(BaseScraper):
                 company = "WeWorkRemotely Client"
                 title = full_title.strip()
                 
-            # Filter for internship keywords
-            is_intern = any(kw in title.lower() for kw in intern_keywords) or \
-                        any(kw in entry.get('description', '').lower() for kw in intern_keywords)
-                        
-            if not is_intern:
-                # Let's also check if it's a junior/entry-level tech opportunity
-                # We can loosen slightly to get enough remote opportunities
+            # Title only: descriptions routinely say "internal" or "international",
+            # which used to tag senior roles as internships.
+            if not matches_any(title, EARLY_CAREER_WORDS):
                 continue
                 
             opp_url = entry.get('link', '').strip()

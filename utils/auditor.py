@@ -46,34 +46,42 @@ def extract_skills(text):
             found.add(normalize_skill(skill))
     return found
 
-def ensure_default_resume(resume_path):
-    if not os.path.exists(resume_path):
-        os.makedirs(os.path.dirname(resume_path), exist_ok=True)
-        try:
-            template = """# Oppy AI Resume Auditor Template
-# Fill in your skills and details below.
-# Oppy will parse this file locally to score your fit against open opportunities.
+RESUME_TEMPLATE = """# Oppy Resume Skills Profile
+# Replace the placeholders below with your own details, then run `oppy --audit`.
+# Everything is parsed locally; nothing leaves your machine.
+# Keywords are matched case-insensitively, so a plain comma-separated list works.
 
-Name: Dhanush Shenoy H
-Email: dhanush@example.com
-Title: B.Tech CSE AI Student
+Name:
+Email:
+Title:
 
 [Languages]
-Python, TypeScript, JavaScript, SQL, C++, Go
+Python, JavaScript, SQL
 
 [Frameworks & Tools]
-React, Next.js, FastAPI, Docker, Git, Node.js
+React, Git, Docker
 
 [Databases]
-PostgreSQL, SQLite, Redis
+PostgreSQL, SQLite
 
 [Cloud & AI]
-AWS, PyTorch, LLM
+AWS
 """
-            with open(resume_path, "w", encoding="utf-8") as f:
-                f.write(template)
-        except Exception:
-            pass
+
+
+def ensure_default_resume(resume_path):
+    """Create the skills profile on first use. Returns True if it was created."""
+    if os.path.exists(resume_path):
+        return False
+    try:
+        parent = os.path.dirname(resume_path)
+        if parent:
+            os.makedirs(parent, exist_ok=True)
+        with open(resume_path, "w", encoding="utf-8") as f:
+            f.write(RESUME_TEMPLATE)
+        return True
+    except Exception:
+        return False
 
 def audit_opportunities(resume_path):
     ensure_default_resume(resume_path)

@@ -1,5 +1,5 @@
 import json
-from scrapers.base import BaseScraper
+from scrapers.base import BaseScraper, EARLY_CAREER_WORDS, matches_any
 
 class RemoteOkScraper(BaseScraper):
     def scrape_internships(self):
@@ -15,23 +15,20 @@ class RemoteOkScraper(BaseScraper):
                 return self.parse_data(data[1:])
             return []
         except Exception as e:
+            self.note(f"Error parsing RemoteOk feed: {e}")
             return []
 
     def parse_data(self, job_list):
         opportunities = []
         
-        # Filtering terms to target internships specifically
-        intern_keywords = ["intern", "internship", "co-op", "junior", "student", "grad"]
-        
         for job in job_list:
             title = job.get('position', '').strip()
             tags = job.get('tags', [])
-            
-            # Match keywords in title or tag array
-            is_intern = any(kw in title.lower() for kw in intern_keywords) or \
-                        any(any(kw in tag.lower() for kw in intern_keywords) for tag in tags)
-            
-            if not is_intern:
+
+            # Whole-word match on the title and tags only: descriptions mention
+            # "internal" and "international" far too often to be trusted.
+            if not matches_any(title, EARLY_CAREER_WORDS) and \
+               not matches_any(" ".join(str(tag) for tag in tags), EARLY_CAREER_WORDS):
                 continue
                 
             company = job.get('company', 'RemoteOk Company').strip()

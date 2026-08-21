@@ -16,7 +16,7 @@ def get_connection():
     conn.execute("PRAGMA busy_timeout = 5000;")
     return conn
 
-def init_db():
+def init_db(quiet=False):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
@@ -41,11 +41,13 @@ def init_db():
     conn.close()
     
     try:
-        prune_expired_opportunities()
+        return prune_expired_opportunities(quiet=quiet)
     except Exception as e:
-        print(f"Warning: Failed to prune expired opportunities: {e}")
+        if not quiet:
+            print(f"Warning: Failed to prune expired opportunities: {e}")
+        return 0
 
-def prune_expired_opportunities():
+def prune_expired_opportunities(quiet=False):
     from datetime import datetime, timedelta
     
     conn = get_connection()
@@ -122,18 +124,80 @@ def prune_expired_opportunities():
                     continue
                     
     if ids_to_delete:
+        placeholders = ",".join("?" for _ in ids_to_delete)
         cursor.execute(
-            f"DELETE FROM opportunities WHERE id IN ({','.join(map(str, ids_to_delete))})"
+            f"DELETE FROM opportunities WHERE id IN ({placeholders})", ids_to_delete
         )
         conn.commit()
-        print(f"Pruned {len(ids_to_delete)} expired/outdated opportunities from the ledger database.")
-        try:
-            from utils.exporter import generate_markdown
-            generate_markdown()
-        except Exception as ex:
-            print(f"Warning: Failed to regenerate markdown after pruning: {ex}")
-        
+        # Deliberately does not rewrite any export here: exporting is an
+        # explicit user action, so opening the app never touches your files.
+        if not quiet:
+            print(f"Pruned {len(ids_to_delete)} expired/outdated opportunities from the ledger database.")
+
     conn.close()
+    return len(ids_to_delete)
+
+
+# Columns refreshed when a listing we already track is seen again, so changed
+# deadlines and prize pools do not go stale in the ledger.
+_REFRESHABLE = (
+    "title", "company", "opportunity_type", "stipend_or_prize",
+    "deadline", "is_remote", "is_paid",
+)
+
+
+def upsert_opportunity(cursor, item):
+    """Insert a scraped listing, refreshing it if the URL is already tracked.
+
+    Returns "new", "updated" or "unchanged". Raises on real database errors so
+    callers can surface them instead of silently dropping rows.
+    """
+    cursor.execute(
+        """
+        INSERT OR IGNORE INTO opportunities (
+            title, company, platform, opportunity_type, opportunity_url,
+            stipend_or_prize, deadline, is_remote, is_paid
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            item["title"],
+            item["company"],
+            item["platform"],
+            item["opportunity_type"],
+            item["opportunity_url"],
+            item["stipend_or_prize"],
+            item["deadline"],
+            item["is_remote"],
+            item["is_paid"],
+        ),
+    )
+    if cursor.rowcount == 1:
+        return "new"
+
+    assignments = ", ".join(f"{column} = ?" for column in _REFRESHABLE)
+    values = [item[column] for column in _REFRESHABLE]
+    values.append(item["opportunity_url"])
+    cursor.execute(
+        f"UPDATE opportunities SET {assignments} WHERE opportunity_url = ?", values
+    )
+    return "updated" if cursor.rowcount else "unchanged"
+
+
+def get_stats():
+    """Ledger totals used by the TUI stats strip."""
+    stats = {"total": 0, "internship": 0, "hackathon": 0, "job": 0}
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT opportunity_type, COUNT(*) FROM opportunities GROUP BY opportunity_type")
+        for opp_type, count in cursor.fetchall():
+            stats["total"] += count
+            if opp_type in stats:
+                stats[opp_type] += count
+        conn.close()
+    except Exception:
+        pass
+    return stats
 
 
 if __name__ == "__main__":

@@ -62,7 +62,7 @@ class UnstopScraper(BaseScraper):
                         'is_paid': is_paid
                     })
             except Exception as e:
-                print(f"Error parsing Unstop internships page {page}: {e}")
+                self.note(f"Error parsing Unstop internships page {page}: {e}")
                 continue
                 
         return opportunities
@@ -111,7 +111,7 @@ class UnstopScraper(BaseScraper):
                         'is_paid': 1
                     })
             except Exception as e:
-                print(f"Error parsing Unstop hackathons page {page}: {e}")
+                self.note(f"Error parsing Unstop hackathons page {page}: {e}")
                 continue
                 
         return opportunities

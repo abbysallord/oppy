@@ -3,7 +3,8 @@ import json
 from pathlib import Path
 
 HOME = str(Path.home())
-CONFIG_DIR = os.path.join(HOME, ".config", "oppy")
+# Override mirrors OPPY_DB_PATH / OPPY_EXPORT_PATH for isolated runs and testing.
+CONFIG_DIR = os.environ.get("OPPY_CONFIG_DIR", os.path.join(HOME, ".config", "oppy"))
 CONFIG_PATH = os.path.join(CONFIG_DIR, "config.json")
 
 DEFAULT_CONFIG = {
@@ -15,7 +16,8 @@ DEFAULT_CONFIG = {
     "custom_rss_feeds": [
         "https://weworkremotely.com/categories/remote-full-stack-programming-jobs.rss"
     ],
-    "resume_path": os.path.join(CONFIG_DIR, "resume.txt")
+    "resume_path": os.path.join(CONFIG_DIR, "resume.txt"),
+    "last_sync": None
 }
 
 def load_config():
@@ -38,6 +40,13 @@ def load_config():
             return config
     except Exception:
         return DEFAULT_CONFIG.copy()
+
+def record_sync():
+    """Stamp the time of the last completed synchronization."""
+    from datetime import datetime
+    config = load_config()
+    config["last_sync"] = datetime.now().isoformat(timespec="seconds")
+    save_config(config)
 
 def save_config(config):
     try:
