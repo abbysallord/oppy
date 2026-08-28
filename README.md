@@ -71,6 +71,7 @@ The dashboard fills your terminal and every screen carries a keybind bar along t
 *   **Main Menu**: **Up** / **Down** to move the cursor, **Enter** to select, or press `[1-6]` to jump straight to an entry.
 *   **Ledger Paging**: Use **Left Arrow** / **P** to page backward, and **Right Arrow** / **N** to page forward. Page size adapts to your window height.
 *   **Ledger Filters**: Press **T** to cycle results between `ALL`, `INTERNSHIP`, `HACKATHON`, and `JOB`; **/** to search; **C** to clear search and filters.
+*   **Open in Browser**: Click any title or URL directly (OSC-8 link), or press **O** and enter the row number (`#`) to launch the opportunity in your default browser.
 *   **Settings**: **Up** / **Down** to move, **Enter** to toggle a filter or edit a value, `[1-6]` to jump. Platform selection is a checklist toggled with **Space**.
 *   **Text Queries**: Binds standard GNU `readline` for smooth character editing, arrow cursor keys, and backspaces inside text fields.
 *   **After a sync**: press **V** to browse the results straight away, or **E** to export them.

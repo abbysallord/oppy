@@ -248,11 +248,11 @@ export default function Home() {
             </div>
             <div className={styles.card}>
               <span className={styles.cardIcon}>03 / Export</span>
-              <h3 className={styles.cardTitle}>Obsidian Vault Exporter</h3>
+              <h3 className={styles.cardTitle}>Markdown, PDF & CSV Exporter</h3>
               <p className={styles.cardBody}>
                 Compile crawled and filtered listings into clean, structured
-                markdown tables. Oppy exports metadata like apply deadlines and company
-                headers straight to your personal knowledge base directory.
+                Markdown tables for your Obsidian vault, or export directly to
+                standalone PDF and CSV spreadsheets with zero external dependencies.
               </p>
             </div>
           </div>
