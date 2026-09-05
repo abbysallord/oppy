@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Oppy — Automate your internship & hackathon scout</title>
+<meta name="description" content="Oppy is a zero-config CLI that sweeps Unstop, Devpost, RemoteOK and WeWorkRemotely for paid remote internships and cash-prize hackathons — caching them locally and beaming a Markdown dashboard to your notes." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        bg: '#0F172A', deep: '#0B1120', surface: '#1E293B', border: '#334155',
+        primary: '#D946EF', secondary: '#06B6D4', success: '#10B981', warning: '#F59E0B',
+        ink: '#F8FAFC', muted: '#94A3B8',
+      },
+      fontFamily: {
+        sans: ['Outfit', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+      borderRadius: { lg: '8px' },
+    },
+  },
+};
+</script>
+
+<style>
+  :root {
+    --bg:#0F172A; --deep:#0B1120; --surface:#1E293B; --border:#334155;
+    --primary:#D946EF; --secondary:#06B6D4; --success:#10B981; --warning:#F59E0B;
+    --ink:#F8FAFC; --muted:#94A3B8;
+    /* z-index scale */
+    --z-sticky:40; --z-nav:50; --z-tooltip:60;
+  }
+  html { background:var(--deep); scroll-padding-top:90px; }
+  body { background:var(--bg); letter-spacing:-0.01em; }
+  h1,h2,h3 { letter-spacing:-0.02em; text-wrap:balance; }
+  p { text-wrap:pretty; }
+  ::selection { background:rgba(217,70,239,.3); }
+
+  /* ---- ambient starfield / grid ---- */
+  .starfield {
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(248,250,252,.6), transparent),
+      radial-gradient(1px 1px at 70% 20%, rgba(6,182,212,.7), transparent),
+      radial-gradient(1px 1px at 40% 70%, rgba(248,250,252,.4), transparent),
+      radial-gradient(1.5px 1.5px at 85% 60%, rgba(217,70,239,.6), transparent),
+      radial-gradient(1px 1px at 55% 45%, rgba(248,250,252,.5), transparent),
+      radial-gradient(1px 1px at 12% 80%, rgba(248,250,252,.4), transparent),
+      radial-gradient(1px 1px at 92% 88%, rgba(6,182,212,.5), transparent);
+    background-repeat:no-repeat;
+  }
+  .grid-mask {
+    background-image:
+      linear-gradient(to right, rgba(51,65,85,.30) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(51,65,85,.30) 1px, transparent 1px);
+    background-size:48px 48px;
+    -webkit-mask-image:radial-gradient(ellipse 75% 65% at 50% 30%, #000 35%, transparent 100%);
+            mask-image:radial-gradient(ellipse 75% 65% at 50% 30%, #000 35%, transparent 100%);
+  }
+
+  /* ---- satellite scene ---- */
+  .scene { perspective:1000px; }
+  .orbit { border-radius:50%; border:1px dashed rgba(51,65,85,.7); position:absolute; inset:0; margin:auto; }
+  .orbit.spin  { animation:spin 40s linear infinite; }
+  .orbit.spin-r{ animation:spin 60s linear infinite reverse; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .radar {
+    position:absolute; inset:0; margin:auto; border-radius:50%;
+    background:conic-gradient(from 0deg, rgba(217,70,239,0) 0deg, rgba(217,70,239,0) 300deg, rgba(217,70,239,.10) 340deg, rgba(217,70,239,.55) 358deg, rgba(6,182,212,.15) 360deg);
+    animation:spin 5.5s linear infinite;
+    -webkit-mask:radial-gradient(circle, #000 62%, transparent 63%);
+            mask:radial-gradient(circle, #000 62%, transparent 63%);
+  }
+
+  .ping { position:absolute; width:10px; height:10px; border-radius:50%; background:var(--secondary);
+    box-shadow:0 0 0 0 rgba(6,182,212,.5); animation:ping 3.2s ease-out infinite; }
+  .ping.mag { background:var(--primary); box-shadow:0 0 0 0 rgba(217,70,239,.5); animation-name:ping-m; }
+  @keyframes ping { 0%{ box-shadow:0 0 0 0 rgba(6,182,212,.55);} 70%,100%{ box-shadow:0 0 0 16px rgba(6,182,212,0);} }
+  @keyframes ping-m { 0%{ box-shadow:0 0 0 0 rgba(217,70,239,.55);} 70%,100%{ box-shadow:0 0 0 16px rgba(217,70,239,0);} }
+
+  .float { animation:float 7s ease-in-out infinite; }
+  @keyframes float { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-10px);} }
+
+  /* ambient aurora breathing behind the hero */
+  .aurora   { animation:aurora 14s ease-in-out infinite; }
+  .aurora-2 { animation:aurora-2 18s ease-in-out infinite; }
+  @keyframes aurora {
+    0%,100% { opacity:.75; transform:translate(-50%,0) scale(1); }
+    50%     { opacity:1;   transform:translate(-50%,26px) scale(1.14); }
+  }
+  @keyframes aurora-2 {
+    0%,100% { opacity:.6; transform:translate(0,0) scale(1); }
+    50%     { opacity:.95; transform:translate(40px,-30px) scale(1.2); }
+  }
+
+  .glow-primary { box-shadow:0 0 40px -8px rgba(217,70,239,.55); }
+  .glow-secondary { box-shadow:0 0 40px -8px rgba(6,182,212,.5); }
+
+  /* ---- scroll reveal (one keyframe, per-element start state via --from) ---- */
+  .reveal { --from:translateY(24px); --blur:6px;
+    opacity:0; transform:var(--from); filter:blur(var(--blur));
+    transition:opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1), filter .8s cubic-bezier(.22,1,.36,1); }
+  .reveal.in { opacity:1; transform:none; filter:none; }
+  .reveal[data-d="1"]{ transition-delay:.08s;} .reveal[data-d="2"]{ transition-delay:.16s;}
+  .reveal[data-d="3"]{ transition-delay:.24s;} .reveal[data-d="4"]{ transition-delay:.32s;}
+  /* varied per-section entrances */
+  .reveal[data-anim="left"]  { --from:translate3d(-42px,0,0); }
+  .reveal[data-anim="right"] { --from:translate3d(42px,0,0); }
+  .reveal[data-anim="zoom"]  { --from:scale(.93); --blur:10px; }
+  .reveal[data-anim="tilt"]  { --from:perspective(900px) rotateX(12deg) translateY(34px); --blur:4px; }
+  .reveal[data-anim="deep"]  { --from:translateY(64px) scale(.97); --blur:12px; }
+  @keyframes reveal-in { from { opacity:0; transform:var(--from); filter:blur(var(--blur)); }
+                         to   { opacity:1; transform:none;        filter:blur(0); } }
+
+  /* ---- scroll progress rail ---- */
+  .progress { position:fixed; inset:0 0 auto 0; height:2px; z-index:60; transform:scaleX(0); transform-origin:0 50%;
+    background:linear-gradient(90deg,var(--primary),var(--secondary)); box-shadow:0 0 12px rgba(217,70,239,.6); }
+  @keyframes progress-grow { to { transform:scaleX(1); } }
+
+  /* ---- word-by-word headline reveal ---- */
+  .word { display:inline-block; opacity:0; transform:translateY(.55em) rotate(2deg); filter:blur(6px);
+    animation:word-in .75s cubic-bezier(.22,1,.36,1) forwards paused; animation-delay:calc(var(--i) * 55ms + var(--base,0ms)); }
+  .split-in .word { animation-play-state:running; }
+  @keyframes word-in { to { opacity:1; transform:none; filter:blur(0); } }
+
+  /* ---- cursor spotlight on cards ---- */
+  .spot { position:relative; isolation:isolate; }
+  .spot::before { content:''; position:absolute; inset:0; z-index:-1; border-radius:inherit; opacity:0;
+    transition:opacity .35s ease;
+    background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%), rgba(217,70,239,.16), transparent 65%); }
+  .spot:hover::before { opacity:1; }
+  .spot::after { content:''; position:absolute; inset:-1px; z-index:-1; border-radius:inherit; padding:1px; opacity:0;
+    transition:opacity .35s ease;
+    background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(217,70,239,.55), transparent 60%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; }
+  .spot:hover::after { opacity:1; }
+  .spot { transition:transform .3s cubic-bezier(.22,1,.36,1), border-color .3s ease; }
+  .spot:hover { transform:translateY(-3px); border-color:rgba(217,70,239,.35); }
+
+  /* ---- magnetic buttons ---- */
+  .magnetic { transition:transform .35s cubic-bezier(.22,1,.36,1), box-shadow .25s ease, background-color .25s ease; }
+  .magnetic:active { transform:scale(.97) !important; transition-duration:.08s; }
+
+  /* ---- shimmer sweep across primary CTAs ---- */
+  .sheen { position:relative; overflow:hidden; }
+  .sheen::after { content:''; position:absolute; top:0; bottom:0; width:45%; left:-60%;
+    background:linear-gradient(100deg, transparent, rgba(255,255,255,.38), transparent); transform:skewX(-18deg);
+    animation:sheen 4.5s ease-in-out infinite; }
+  @keyframes sheen { 0%,68% { left:-60%; } 88%,100% { left:130%; } }
+
+  /* ---- section tag: drawn scan line ---- */
+  .tag-line { display:inline-flex; align-items:center; gap:.6rem; }
+  .tag-line::after { content:''; height:1px; width:0; background:linear-gradient(90deg,var(--secondary),transparent);
+    transition:width .9s cubic-bezier(.22,1,.36,1) .15s; }
+  .in .tag-line::after, .reveal.in.tag-line::after { width:120px; }
+
+  /* ---- micro-interactions ---- */
+  .type-pill, .toggle-pill, .install-tab { transition:transform .18s cubic-bezier(.34,1.56,.64,1), color .2s, background-color .2s, border-color .2s, box-shadow .2s; }
+  .type-pill:hover, .toggle-pill:hover, .install-tab:hover { transform:translateY(-1px); }
+  .type-pill:active, .toggle-pill:active, .install-tab:active { transform:scale(.94); }
+  .copy-btn { transition:transform .18s cubic-bezier(.34,1.56,.64,1), color .2s, border-color .2s; }
+  .copy-btn:active { transform:scale(.9); }
+  tbody tr { transition:background-color .2s ease, box-shadow .25s ease; }
+  tbody tr:hover { box-shadow:inset 2px 0 0 var(--primary); }
+  tbody tr .apply-arrow { transition:transform .25s cubic-bezier(.22,1,.36,1); }
+  tbody tr:hover .apply-arrow { transform:translate(2px,-2px); }
+  input:focus { box-shadow:0 0 24px -8px rgba(6,182,212,.8); }
+  :focus-visible { outline:2px solid var(--secondary); outline-offset:3px; border-radius:8px; }
+  .logo-mark { transition:transform .5s cubic-bezier(.22,1,.36,1), color .3s; }
+  a:hover > .logo-mark, .group:hover .logo-mark { transform:rotate(90deg); }
+
+  /* ---- native FAQ disclosure ---- */
+  details.faq { transition:border-color .25s ease, background-color .25s ease; }
+  details.faq:hover { border-color:rgba(6,182,212,.4); }
+  details.faq summary { list-style:none; cursor:pointer; }
+  details.faq summary::-webkit-details-marker { display:none; }
+  details.faq .chev { transition:transform .3s cubic-bezier(.22,1,.36,1); }
+  details.faq[open] .chev { transform:rotate(45deg); }
+  details.faq[open] .faq-body { animation:faq-open .4s cubic-bezier(.22,1,.36,1); }
+  @keyframes faq-open { from { opacity:0; transform:translateY(-6px); } }
+
+  /* ---- keycaps ---- */
+  .keycaps { display:inline-flex; gap:.25rem; }
+  kbd { display:grid; place-items:center; min-width:1.6rem; height:1.6rem; padding:0 .35rem; border-radius:6px;
+    border:1px solid var(--border); border-bottom-width:2px; background:var(--deep);
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink);
+    transition:transform .15s cubic-bezier(.34,1.56,.64,1), border-color .2s, color .2s; }
+  .keycaps:hover kbd { transform:translateY(-2px); border-color:var(--secondary); color:var(--secondary); }
+  .keycaps:hover kbd:nth-child(2){ transition-delay:.04s } .keycaps:hover kbd:nth-child(3){ transition-delay:.08s }
+  .keycaps:hover kbd:nth-child(4){ transition-delay:.12s } .keycaps:hover kbd:nth-child(5){ transition-delay:.16s }
+
+  .cmd-row { transition:transform .25s cubic-bezier(.22,1,.36,1); }
+  .cmd-row:hover { transform:translateX(4px); }
+
+  /* ---- terminal demo ---- */
+  .term-line { opacity:0; animation:rowin .35s ease-out forwards; }
+  .scanlines::after { content:''; position:absolute; inset:0; pointer-events:none; opacity:.25;
+    background:repeating-linear-gradient(to bottom, rgba(148,163,184,.07) 0 1px, transparent 1px 3px); }
+
+  /* =========================================================
+     Native scroll-driven layer — scrubbed to the scroll position.
+     Chromium/Safari today; everything above is the fallback.
+     ========================================================= */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .progress { animation:progress-grow linear both; animation-timeline:scroll(root block); }
+
+      /* range ends at entry 100% (element fully on screen) so nothing ever
+         fades back out while it is being read — only the strip entering
+         from the bottom edge is mid-animation. */
+      .reveal { animation:reveal-in linear both; animation-timeline:view(); animation-range:entry 5% entry 90%; transition:none; }
+      .reveal[data-d="1"]{ animation-range:entry 12% cover 2%; }
+      .reveal[data-d="2"]{ animation-range:entry 19% cover 5%; }
+      .reveal[data-d="3"]{ animation-range:entry 26% cover 8%; }
+      .reveal[data-d="4"]{ animation-range:entry 33% cover 11%; }
+      /* hero is above the fold — it plays on load, not on scroll */
+      #hero .reveal { animation:none;
+        transition:opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1), filter .8s cubic-bezier(.22,1,.36,1); }
+
+      /* drifting depth layers */
+      .par { animation:par linear both; animation-timeline:view(); animation-range:cover; }
+      @keyframes par { from { transform:translateY(var(--p,70px)); } to { transform:translateY(calc(var(--p,70px) * -1)); } }
+
+      /* hero recedes as you leave it */
+      #hero #scene { animation:hero-exit linear both; animation-timeline:scroll(root block); animation-range:0 90vh; }
+      @keyframes hero-exit { to { transform:translateY(-40px) scale(.9); opacity:.25; } }
+      #hero-copy { animation:copy-exit linear both; animation-timeline:scroll(root block); animation-range:0 90vh; }
+      @keyframes copy-exit { to { transform:translateY(30px); opacity:.15; } }
+      .starfield { animation:star-drift linear both; animation-timeline:scroll(root block); animation-range:0 100vh; }
+      @keyframes star-drift { to { transform:translateY(90px) scale(1.12); } }
+
+      /* timeline draws with the scroll, not on a timer */
+      .timeline-line { transition:none; animation:draw linear both; animation-timeline:view(); animation-range:entry 30% cover 70%; }
+      @keyframes draw { from { transform:scaleY(0); } to { transform:scaleY(1); } }
+
+      /* a signal packet rides the timeline as you scroll */
+      .packet { animation:packet linear both; animation-timeline:view(); animation-range:entry 30% cover 72%; }
+      @keyframes packet { 0% { top:0; opacity:0; } 8% { opacity:1; } 92% { opacity:1; } 100% { top:100%; opacity:0; } }
+
+      /* step nodes pop as they cross the fold */
+      .step-node { animation:node-in linear both; animation-timeline:view(); animation-range:entry 10% entry 90%; }
+      @keyframes node-in { from { transform:scale(.4) rotate(-25deg); opacity:.2; box-shadow:none; }
+                           to   { transform:none; opacity:1; } }
+
+      /* section headings track their own scroll range */
+      .scrub-head { animation:scrub-head linear both; animation-timeline:view(); animation-range:entry 0% entry 95%; }
+      @keyframes scrub-head { from { opacity:0; transform:translateY(40px) scale(.97); letter-spacing:.04em; }
+                              to   { opacity:1; transform:none; letter-spacing:-.02em; } }
+
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .word, .term-line { opacity:1 !important; animation:none !important; transform:none !important; filter:none !important; }
+  }
+
+  .caret::after { content:'▋'; color:var(--primary); animation:blink 1s steps(1) infinite; }
+  @keyframes blink { 50%{ opacity:0; } }
+
+  /* marquee */
+  .marquee { display:flex; width:max-content; animation:marq 26s linear infinite; }
+  @keyframes marq { to { transform:translateX(-50%); } }
+  .marquee-wrap:hover .marquee { animation-play-state:paused; }
+
+  /* timeline draw */
+  .timeline-line { transform:scaleY(0); transform-origin:top; transition:transform 1.1s cubic-bezier(.22,1,.36,1); }
+  .timeline-line.in { transform:scaleY(1); }
+  .packet { opacity:0; box-shadow:0 0 14px 4px rgba(6,182,212,.7); }
+
+  .btn-primary { transition:all .2s ease-out; }
+  .btn-primary:hover { transform:scale(1.02); box-shadow:0 0 30px -6px rgba(217,70,239,.6); }
+  .link-u { background-image:linear-gradient(var(--secondary),var(--secondary)); background-size:0% 1px; background-position:0 100%; background-repeat:no-repeat; transition:background-size .3s ease; }
+  .link-u:hover { background-size:100% 1px; }
+
+  .row-enter { animation:rowin .4s ease-out both; }
+  @keyframes rowin { from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, .orbit, .radar, .ping, .float, .marquee, .sheen::after { animation:none !important; }
+    .reveal { opacity:1 !important; transform:none !important; filter:none !important; transition:none; }
+    .spot:hover { transform:none; }
+    .progress { transform:scaleX(0); }
+    .timeline-line { transform:none; }
+    .caret::after { animation:none; }
+    html { scroll-behavior:auto; }
+  }
+</style>
+</head>
+
+<body class="font-sans text-ink antialiased">
+
+<div class="progress" aria-hidden="true"></div>
+
+<!-- ===================== NAV ===================== -->
+<header id="nav" class="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-all duration-300">
+  <nav id="navbar" class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 transition-all duration-300 md:px-6">
+    <a href="#top" class="group flex items-center gap-2.5 font-mono text-lg font-600 tracking-tight" aria-label="Oppy home">
+      <span class="logo-mark grid h-8 w-8 place-items-center rounded-lg border border-border bg-surface text-primary transition-colors group-hover:border-primary/60 group-hover:text-secondary">
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke-dasharray="2 3" opacity=".5"/></svg>
+      </span>
+      oppy
+    </a>
+    <div class="hidden items-center gap-8 text-sm text-muted md:flex" id="navlinks">
+      <a href="#ledger" class="link-u transition-colors hover:text-ink">Live ledger</a>
+      <a href="#features" class="link-u transition-colors hover:text-ink">Features</a>
+      <a href="#how" class="link-u transition-colors hover:text-ink">How it works</a>
+      <a href="#cli" class="link-u transition-colors hover:text-ink">CLI</a>
+      <a href="#install" class="link-u transition-colors hover:text-ink">Install</a>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="https://github.com/abbysallord/oppy" target="_blank" rel="noopener"
+         class="magnetic hidden items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-muted transition-colors hover:border-secondary/60 hover:text-ink sm:flex">
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12a11.5 11.5 0 0 0 7.9 10.9c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7 0-.7 0-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.6 18 4.9 18 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5Z"/></svg>
+        <span>Star</span>
+      </a>
+      <a href="#install" class="btn-primary magnetic sheen flex items-center gap-2 rounded-lg bg-primary px-3.5 py-2 text-sm font-600 text-deep">
+        Get started
+      </a>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+
+<!-- ===================== HERO ===================== -->
+<section id="hero" class="relative overflow-hidden px-4 pt-32 pb-24 md:px-6 md:pt-40">
+  <div class="starfield pointer-events-none absolute inset-0 opacity-70" aria-hidden="true"></div>
+  <div class="grid-mask pointer-events-none absolute inset-0" aria-hidden="true"></div>
+  <div class="aurora pointer-events-none absolute left-1/2 top-0 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" aria-hidden="true"></div>
+  <div class="aurora-2 pointer-events-none absolute -left-40 top-40 h-[380px] w-[560px] rounded-full bg-secondary/10 blur-[130px]" aria-hidden="true"></div>
+
+  <div class="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_.95fr]">
+    <!-- copy -->
+    <div id="hero-copy">
+      <div class="reveal inline-flex items-center gap-2 rounded-lg border border-border bg-surface/70 px-3 py-1.5 font-mono text-xs text-muted backdrop-blur">
+        <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-success"></span></span>
+        SATELLITE ONLINE · SWEEPING 4 PLATFORMS
+      </div>
+
+      <h1 class="mt-6 text-4xl font-700 leading-[1.05] sm:text-5xl md:text-[3.75rem]" data-split style="--base:200ms">
+        Automate your internship<br class="hidden sm:block" /> &amp; hackathon
+        <span class="text-primary">scout.</span>
+      </h1>
+
+      <p class="reveal mt-6 max-w-xl text-lg leading-relaxed text-muted" data-d="2">
+        Oppy orbits <span class="text-ink">Unstop, Devpost, RemoteOK</span> and <span class="text-ink">WeWorkRemotely</span>, sweeps them for <span class="text-ink">paid, remote</span> internships and <span class="text-ink">cash-prize</span> hackathons, and beams a clean Markdown dashboard straight to your notes. Zero config. Local-first.
+      </p>
+
+      <!-- command block -->
+      <div class="reveal mt-8 flex flex-col gap-3 sm:flex-row" data-d="3">
+        <div class="spot flex flex-1 items-center gap-3 rounded-lg border border-border bg-deep px-4 py-3.5 font-mono text-sm shadow-xl shadow-slate-950/40">
+          <span class="text-primary">$</span>
+          <code id="hero-cmd" class="flex-1 truncate caret"></code>
+          <button data-copy="npx @dshenoyh/oppy-cli" aria-label="Copy install command"
+                  class="copy-btn shrink-0 cursor-pointer rounded-md border border-border px-2.5 py-1 text-xs text-muted transition-colors hover:border-secondary hover:text-secondary">Copy</button>
+        </div>
+        <a href="#ledger" class="btn-primary magnetic sheen grid place-items-center rounded-lg bg-primary px-6 py-3.5 text-sm font-600 text-deep">
+          See it live
+        </a>
+      </div>
+
+      <!-- telemetry stats -->
+      <dl class="reveal mt-10 grid max-w-lg grid-cols-3 gap-4" data-d="4">
+        <div class="spot rounded-lg border border-border bg-surface/50 px-4 py-3">
+          <dt class="font-mono text-xs text-muted">Sources</dt>
+          <dd class="mt-1 text-2xl font-600 text-ink"><span data-count="4">0</span>+</dd>
+        </div>
+        <div class="spot rounded-lg border border-border bg-surface/50 px-4 py-3">
+          <dt class="font-mono text-xs text-muted">Cached</dt>
+          <dd class="mt-1 text-2xl font-600 text-secondary"><span data-count="1284">0</span></dd>
+        </div>
+        <div class="spot rounded-lg border border-border bg-surface/50 px-4 py-3">
+          <dt class="font-mono text-xs text-muted">Config</dt>
+          <dd class="mt-1 text-2xl font-600 text-success">0</dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- satellite scene -->
+    <div id="scene" class="reveal scene relative mx-auto aspect-square w-full max-w-[460px]" data-d="2" role="img" aria-label="Animated diagram: the Oppy satellite sweeping opportunity boards with a rotating radar beam, opportunity signals pinging into orbit.">
+      <div class="orbit spin" style="width:100%;height:100%"></div>
+      <div class="orbit spin-r" style="width:74%;height:74%"></div>
+      <div class="orbit spin" style="width:48%;height:48%;border-color:rgba(6,182,212,.35)"></div>
+      <div class="radar" style="width:100%;height:100%"></div>
+
+      <!-- pings on orbits -->
+      <div class="ping"     style="top:6%;  left:50%"></div>
+      <div class="ping mag" style="top:30%; left:88%"></div>
+      <div class="ping"     style="top:82%; left:74%"></div>
+      <div class="ping mag" style="top:66%; left:10%"></div>
+      <div class="ping"     style="top:20%; left:16%"></div>
+
+      <!-- floating platform tags -->
+      <span class="absolute left-[6%] top-[40%] rounded-lg border border-border bg-surface/90 px-2.5 py-1 font-mono text-[11px] text-secondary backdrop-blur float">unstop</span>
+      <span class="absolute right-[2%] top-[62%] rounded-lg border border-border bg-surface/90 px-2.5 py-1 font-mono text-[11px] text-primary backdrop-blur float" style="animation-delay:1.5s">devpost</span>
+      <span class="absolute left-[54%] top-[8%] rounded-lg border border-border bg-surface/90 px-2.5 py-1 font-mono text-[11px] text-secondary backdrop-blur float" style="animation-delay:3s">remoteok</span>
+
+      <!-- central satellite -->
+      <div class="absolute inset-0 m-auto grid h-24 w-24 place-items-center float">
+        <div class="grid h-24 w-24 place-items-center rounded-lg border border-primary/40 bg-surface glow-primary">
+          <svg viewBox="0 0 48 48" class="h-14 w-14" fill="none" aria-hidden="true">
+            <!-- solar panels -->
+            <rect x="2"  y="18" width="12" height="12" rx="1.5" fill="#0B1120" stroke="#06B6D4" stroke-width="1.5"/>
+            <path d="M6 18v12M10 18v12" stroke="#06B6D4" stroke-width="1"/>
+            <rect x="34" y="18" width="12" height="12" rx="1.5" fill="#0B1120" stroke="#06B6D4" stroke-width="1.5"/>
+            <path d="M38 18v12M42 18v12" stroke="#06B6D4" stroke-width="1"/>
+            <!-- body -->
+            <rect x="17" y="16" width="14" height="16" rx="2" fill="#1E293B" stroke="#D946EF" stroke-width="1.5"/>
+            <path d="M14 24h3M31 24h3" stroke="#D946EF" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- dish -->
+            <circle cx="24" cy="10" r="4.5" fill="#0B1120" stroke="#D946EF" stroke-width="1.5"/>
+            <circle cx="24" cy="10" r="1.4" fill="#D946EF"/>
+            <path d="M24 14v2" stroke="#D946EF" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- HUD readout -->
+      <div class="absolute bottom-1 left-1 rounded-lg border border-border bg-deep/80 px-3 py-2 font-mono text-[11px] leading-relaxed backdrop-blur">
+        <div class="text-success">◉ SIGNAL LOCKED</div>
+        <div class="text-muted">SWEEP <span class="text-ink">#04</span> · <span class="text-secondary">paid+remote</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SOURCES MARQUEE ===================== -->
+<section class="border-y border-border bg-deep/40 py-6">
+  <div class="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 sm:flex-row md:px-6">
+    <p class="shrink-0 font-mono text-xs uppercase tracking-widest text-muted">Continuously sweeping</p>
+    <div class="marquee-wrap relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_12%,#000_88%,transparent)]">
+      <div class="marquee gap-10">
+        <!-- duplicated set for seamless loop -->
+        <div class="flex shrink-0 gap-10 pr-10 font-mono text-lg text-muted">
+          <span>Unstop</span><span class="text-primary/70">◇</span><span>Devpost</span><span class="text-secondary/70">◇</span><span>RemoteOK</span><span class="text-primary/70">◇</span><span>WeWorkRemotely</span><span class="text-secondary/70">◇</span><span>Custom RSS</span><span class="text-primary/70">◇</span>
+        </div>
+        <div class="flex shrink-0 gap-10 pr-10 font-mono text-lg text-muted" aria-hidden="true">
+          <span>Unstop</span><span class="text-primary/70">◇</span><span>Devpost</span><span class="text-secondary/70">◇</span><span>RemoteOK</span><span class="text-primary/70">◇</span><span>WeWorkRemotely</span><span class="text-secondary/70">◇</span><span>Custom RSS</span><span class="text-primary/70">◇</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LIVE LEDGER ===================== -->
+<section id="ledger" class="relative px-4 py-24 md:px-6">
+  <div class="mx-auto max-w-7xl">
+    <div class="reveal mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end" data-anim="left">
+      <div>
+        <p class="tag-line font-mono text-sm text-secondary">// live ledger</p>
+        <h2 class="mt-2 text-3xl font-700 md:text-4xl" data-split>Everything Oppy has beamed back</h2>
+        <p class="mt-3 max-w-xl text-muted">The same cache the CLI writes, rendered live. Search it, filter it, apply. This is exactly what the coming web app feels like.</p>
+      </div>
+      <div class="reveal flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs text-muted" data-anim="right">
+        <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75"></span><span class="relative h-2 w-2 rounded-full bg-success"></span></span>
+        <span id="ledger-count" data-count="12">0</span> opportunities cached
+      </div>
+    </div>
+
+    <div class="reveal overflow-hidden rounded-lg border border-border bg-surface shadow-xl shadow-slate-950/20" data-anim="tilt">
+      <!-- controls -->
+      <div class="flex flex-col gap-4 border-b border-border p-4 md:flex-row md:items-center md:justify-between">
+        <div class="relative flex-1 md:max-w-xs">
+          <svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3" stroke-linecap="round"/></svg>
+          <label for="search" class="sr-only">Search opportunities</label>
+          <input id="search" type="text" placeholder="Search title, company, platform…"
+                 class="w-full rounded-lg border border-border bg-deep py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted/70 outline-none transition-colors focus:border-secondary focus:ring-2 focus:ring-secondary/30" />
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- type pills -->
+          <div class="flex rounded-lg border border-border bg-deep p-1 font-mono text-xs" role="tablist" aria-label="Opportunity type">
+            <button data-type="all"        class="type-pill rounded px-3 py-1.5 text-ink transition-colors" aria-selected="true">All</button>
+            <button data-type="internship" class="type-pill rounded px-3 py-1.5 text-muted transition-colors">Internships</button>
+            <button data-type="hackathon"  class="type-pill rounded px-3 py-1.5 text-muted transition-colors">Hackathons</button>
+          </div>
+          <!-- toggles -->
+          <button data-toggle="paid"   aria-pressed="true" class="toggle-pill flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-xs transition-all">
+            <span class="dot h-1.5 w-1.5 rounded-full"></span> Paid only
+          </button>
+          <button data-toggle="remote" aria-pressed="true" class="toggle-pill flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-xs transition-all">
+            <span class="dot h-1.5 w-1.5 rounded-full"></span> Remote only
+          </button>
+        </div>
+      </div>
+
+      <!-- table -->
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[760px] text-left text-sm">
+          <thead class="bg-deep/50 font-mono text-xs uppercase tracking-wider text-muted">
+            <tr>
+              <th class="px-5 py-3 font-500">Platform</th>
+              <th class="px-5 py-3 font-500">Opportunity</th>
+              <th class="px-5 py-3 font-500">Compensation</th>
+              <th class="px-5 py-3 font-500">Deadline</th>
+              <th class="px-5 py-3 font-500"></th>
+            </tr>
+          </thead>
+          <tbody id="ledger-body"></tbody>
+        </table>
+      </div>
+      <div id="ledger-empty" class="hidden px-5 py-16 text-center">
+        <p class="font-mono text-sm text-muted">No signal. Adjust filters to widen the sweep.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FEATURES ===================== -->
+<section id="features" class="border-t border-border bg-deep/40 px-4 py-24 md:px-6">
+  <div class="mx-auto max-w-7xl">
+    <div class="reveal mb-12 max-w-2xl">
+      <p class="tag-line font-mono text-sm text-secondary">// capabilities</p>
+      <h2 class="mt-2 text-3xl font-700 md:text-4xl" data-split>A whole ground station in one command</h2>
+      <p class="mt-3 text-muted">Four sources unified, a cache that never repeats itself, and an export built for your second brain.</p>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-6">
+      <!-- sources : wide -->
+      <article class="reveal spot group relative overflow-hidden rounded-lg border border-border bg-surface p-6 md:col-span-4" data-anim="left">
+        <div class="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-secondary/10 blur-3xl transition-opacity group-hover:opacity-100 opacity-60"></div>
+        <h3 class="flex items-center gap-2 text-lg font-600">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 text-secondary" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9" stroke-dasharray="2 3"/><path d="M12 2v3M22 12h-3M12 22v-3M2 12h3" stroke-linecap="round"/></svg>
+          Four sources, one signal
+        </h3>
+        <p class="mt-2 max-w-md text-sm text-muted">Internships and hackathons pulled and normalised from every board that matters — plus any RSS feed you point it at.</p>
+        <div class="mt-5 flex flex-wrap gap-2 font-mono text-xs">
+          <span class="rounded-lg border border-border bg-deep px-3 py-1.5">Unstop</span>
+          <span class="rounded-lg border border-border bg-deep px-3 py-1.5">Devpost</span>
+          <span class="rounded-lg border border-border bg-deep px-3 py-1.5">RemoteOK</span>
+          <span class="rounded-lg border border-border bg-deep px-3 py-1.5">WeWorkRemotely</span>
+          <span class="rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-primary">+ custom RSS</span>
+        </div>
+      </article>
+
+      <!-- dedup cache -->
+      <article class="reveal spot group relative overflow-hidden rounded-lg border border-border bg-surface p-6 md:col-span-2" data-d="1" data-anim="zoom">
+        <h3 class="flex items-center gap-2 text-lg font-600">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 text-primary" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+          Dedup cache
+        </h3>
+        <p class="mt-2 text-sm text-muted">WAL-mode SQLite with a unique-URL index. Re-run all day — you'll never see the same listing twice.</p>
+      </article>
+
+      <!-- markdown export -->
+      <article class="reveal spot group relative overflow-hidden rounded-lg border border-border bg-surface p-6 md:col-span-2" data-d="2" data-anim="zoom">
+        <h3 class="flex items-center gap-2 text-lg font-600">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 text-secondary" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5" stroke-linecap="round"/></svg>
+          Markdown export
+        </h3>
+        <p class="mt-2 text-sm text-muted">Links-enabled tables beamed straight into your Obsidian vault — or the working dir as a fallback.</p>
+      </article>
+
+      <!-- TUI : wide with mini terminal -->
+      <article class="reveal spot group relative overflow-hidden rounded-lg border border-border bg-surface p-6 md:col-span-4" data-d="1" data-anim="right">
+        <div class="flex flex-col gap-5 md:flex-row md:items-center">
+          <div class="flex-1">
+            <h3 class="flex items-center gap-2 text-lg font-600">
+              <svg viewBox="0 0 24 24" class="h-5 w-5 text-primary" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Interactive TUI — or headless cron
+            </h3>
+            <p class="mt-2 max-w-sm text-sm text-muted">A Rich-rendered dashboard with single-key controls: sync feeds, page the ledger, toggle filters. Or run <code class="rounded bg-deep px-1.5 py-0.5 text-primary">--headless</code> from a timer.</p>
+          </div>
+          <div class="w-full shrink-0 overflow-hidden rounded-lg border border-border bg-deep font-mono text-[11px] md:w-56">
+            <div class="flex items-center gap-1.5 border-b border-border px-3 py-2">
+              <span class="h-2 w-2 rounded-full bg-primary/70"></span><span class="h-2 w-2 rounded-full bg-warning/70"></span><span class="h-2 w-2 rounded-full bg-success/70"></span>
+            </div>
+            <pre class="px-3 py-2.5 leading-relaxed text-muted">[1] Sync feeds
+[2] Browse ledger
+[3] Settings
+<span class="text-secondary">›</span> <span class="text-ink">syncing…</span> <span class="text-success">+23</span></pre>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section id="how" class="px-4 py-24 md:px-6">
+  <div class="mx-auto max-w-4xl">
+    <div class="reveal mb-14 text-center">
+      <p class="tag-line justify-center font-mono text-sm text-secondary">// mission profile</p>
+      <h2 class="mt-2 text-3xl font-700 md:text-4xl" data-split>Deploy. Sweep. Beam down.</h2>
+      <p class="mt-3 text-muted">One command, three moves. Total setup time: the length of an npx download.</p>
+    </div>
+
+    <ol class="relative ml-4 space-y-12 md:ml-0">
+      <!-- vertical signal line -->
+      <span class="timeline-line absolute left-[19px] top-2 h-[calc(100%-1rem)] w-px bg-gradient-to-b from-primary via-secondary to-transparent md:left-1/2 md:-translate-x-1/2" aria-hidden="true"></span>
+      <span class="packet absolute left-[16px] top-2 h-[7px] w-[7px] rounded-full bg-secondary md:left-1/2 md:-ml-[3px]" aria-hidden="true"></span>
+
+      <li class="reveal relative flex gap-6 md:grid md:grid-cols-2 md:gap-10" data-anim="left">
+        <div class="md:pr-12 md:text-right">
+          <div class="step-node absolute left-0 grid h-10 w-10 place-items-center rounded-lg border border-primary/50 bg-surface font-mono font-600 text-primary glow-primary md:left-1/2 md:-translate-x-1/2">1</div>
+          <div class="ml-16 md:ml-0">
+            <h3 class="text-xl font-600">Deploy</h3>
+            <p class="mt-2 text-sm text-muted"><code class="text-primary">npx @dshenoyh/oppy-cli</code> — Python deps verify and install themselves on first launch. Nothing to configure.</p>
+          </div>
+        </div>
+        <div class="hidden md:block"></div>
+      </li>
+
+      <li class="reveal relative flex gap-6 md:grid md:grid-cols-2 md:gap-10" data-anim="right">
+        <div class="hidden md:block"></div>
+        <div class="md:pl-12">
+          <div class="step-node absolute left-0 grid h-10 w-10 place-items-center rounded-lg border border-secondary/50 bg-surface font-mono font-600 text-secondary glow-secondary md:left-1/2 md:-translate-x-1/2">2</div>
+          <div class="ml-16 md:ml-0">
+            <h3 class="text-xl font-600">Sweep</h3>
+            <p class="mt-2 text-sm text-muted">Oppy crawls every active platform, filters to paid &amp; remote, and stores new hits in your local cache — deduped by URL.</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="reveal relative flex gap-6 md:grid md:grid-cols-2 md:gap-10" data-anim="left">
+        <div class="md:pr-12 md:text-right">
+          <div class="step-node absolute left-0 grid h-10 w-10 place-items-center rounded-lg border border-primary/50 bg-surface font-mono font-600 text-primary glow-primary md:left-1/2 md:-translate-x-1/2">3</div>
+          <div class="ml-16 md:ml-0">
+            <h3 class="text-xl font-600">Beam down</h3>
+            <p class="mt-2 text-sm text-muted">A fresh <code class="text-secondary">Opportunities.md</code> lands in your vault with apply links, stipends and deadlines. Open, scan, apply.</p>
+          </div>
+        </div>
+        <div class="hidden md:block"></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ===================== CLI REFERENCE ===================== -->
+<section id="cli" class="relative overflow-hidden border-t border-border px-4 py-24 md:px-6">
+  <div class="par pointer-events-none absolute -right-32 top-20 h-[420px] w-[420px] rounded-full bg-secondary/10 blur-[120px]" style="--p:90px" aria-hidden="true"></div>
+
+  <div class="relative mx-auto max-w-7xl">
+    <div class="reveal mb-12 max-w-2xl" data-anim="left">
+      <p class="tag-line font-mono text-sm text-secondary">// ground station manual</p>
+      <h2 class="mt-2 text-3xl font-700 md:text-4xl" data-split>The whole CLI, on one screen</h2>
+      <p class="mt-3 text-muted">Two commands and two environment variables. That is the entire surface area — there is no config file to learn, no account, no API key.</p>
+    </div>
+
+    <div class="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
+      <!-- animated terminal -->
+      <div class="reveal scanlines relative overflow-hidden rounded-lg border border-border bg-deep shadow-xl shadow-slate-950/50" data-anim="tilt">
+        <div class="flex items-center gap-2 border-b border-border px-4 py-3">
+          <span class="h-2.5 w-2.5 rounded-full bg-primary/70"></span>
+          <span class="h-2.5 w-2.5 rounded-full bg-warning/70"></span>
+          <span class="h-2.5 w-2.5 rounded-full bg-success/70"></span>
+          <span class="ml-2 font-mono text-xs text-muted">~/projects — oppy</span>
+          <button data-copy="npx @dshenoyh/oppy-cli" aria-label="Copy the command shown in this terminal"
+                  class="copy-btn ml-auto cursor-pointer rounded-md border border-border px-2.5 py-1 font-mono text-[11px] text-muted transition-colors hover:border-secondary hover:text-secondary">Copy</button>
+        </div>
+        <pre id="term" class="min-h-[330px] overflow-x-auto px-5 py-4 font-mono text-[12.5px] leading-[1.75] text-muted md:text-[13px]"></pre>
+      </div>
+
+      <!-- command reference -->
+      <div class="grid gap-4 content-start">
+        <article class="reveal spot rounded-lg border border-border bg-surface p-6" data-anim="right">
+          <h3 class="font-mono text-sm text-secondary">commands</h3>
+          <dl class="mt-4 space-y-4">
+            <div class="cmd-row">
+              <dt class="font-mono text-sm text-ink"><span class="text-primary">$</span> oppy</dt>
+              <dd class="mt-1 text-sm text-muted">Opens the Rich-rendered TUI: sync feeds, browse the ledger, change settings, export.</dd>
+            </div>
+            <div class="cmd-row">
+              <dt class="font-mono text-sm text-ink"><span class="text-primary">$</span> oppy <span class="text-warning">--headless</span></dt>
+              <dd class="mt-1 text-sm text-muted">Silent scan, no UI. Writes to the cache and regenerates <code class="text-secondary">Opportunities.md</code>. Built for cron and systemd timers.</dd>
+            </div>
+            <div class="cmd-row">
+              <dt class="font-mono text-sm text-ink"><span class="text-primary">$</span> npx @dshenoyh/oppy-cli</dt>
+              <dd class="mt-1 text-sm text-muted">Same TUI with nothing installed. Python deps (<code class="text-secondary">feedparser</code>, <code class="text-secondary">rich</code>) verify and install themselves on first run.</dd>
+            </div>
+          </dl>
+        </article>
+
+        <article class="reveal spot rounded-lg border border-border bg-surface p-6" data-anim="right" data-d="1">
+          <h3 class="font-mono text-sm text-secondary">environment</h3>
+          <dl class="mt-4 space-y-4">
+            <div class="cmd-row">
+              <dt class="font-mono text-sm text-primary">OPPY_EXPORT_PATH</dt>
+              <dd class="mt-1 text-sm text-muted">Where the Markdown dashboard lands.<br /><span class="font-mono text-xs text-muted/80">default: ~/Documents/obsidian/Brain/00 Inbox/Opportunities.md</span></dd>
+            </div>
+            <div class="cmd-row">
+              <dt class="font-mono text-sm text-primary">OPPY_DB_PATH</dt>
+              <dd class="mt-1 text-sm text-muted">Where the SQLite cache lives.<br /><span class="font-mono text-xs text-muted/80">default: ~/.config/oppy/opportunities.db</span></dd>
+            </div>
+          </dl>
+        </article>
+      </div>
+    </div>
+
+    <!-- keys + cron -->
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      <article class="reveal spot rounded-lg border border-border bg-surface p-6" data-anim="zoom">
+        <h3 class="font-mono text-sm text-secondary">TUI controls</h3>
+        <p class="mt-2 text-sm text-muted">Single-key, no Enter required.</p>
+        <ul class="mt-5 space-y-3 text-sm">
+          <li class="flex items-center gap-3"><span class="keycaps"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd></span><span class="text-muted">Fire a menu option instantly</span></li>
+          <li class="flex items-center gap-3"><span class="keycaps"><kbd>←</kbd><kbd>P</kbd></span><span class="text-muted">Page the ledger backward</span></li>
+          <li class="flex items-center gap-3"><span class="keycaps"><kbd>→</kbd><kbd>N</kbd></span><span class="text-muted">Page the ledger forward</span></li>
+          <li class="flex items-center gap-3"><span class="keycaps"><kbd>Y</kbd><kbd>N</kbd></span><span class="text-muted">Toggle a setting on the spot</span></li>
+        </ul>
+        <p class="mt-5 text-xs text-muted">Text fields bind GNU <code class="text-secondary">readline</code> — arrow keys, backspace and history behave like your shell.</p>
+      </article>
+
+      <article class="reveal spot rounded-lg border border-border bg-surface p-6" data-anim="zoom" data-d="1">
+        <h3 class="font-mono text-sm text-secondary">Run it on a timer</h3>
+        <p class="mt-2 text-sm text-muted">Let the satellite sweep while you sleep — a fresh dashboard is waiting at 9am.</p>
+        <div class="mt-5 flex items-center gap-3 rounded-lg border border-border bg-deep px-4 py-3 font-mono text-xs">
+          <code class="flex-1 overflow-x-auto whitespace-nowrap text-ink">0 9 * * * oppy --headless</code>
+          <button data-copy="0 9 * * * oppy --headless" aria-label="Copy cron line"
+                  class="copy-btn shrink-0 cursor-pointer rounded-md border border-border px-2.5 py-1 text-muted transition-colors hover:border-secondary hover:text-secondary">Copy</button>
+        </div>
+        <ul class="mt-5 space-y-2 text-sm text-muted">
+          <li class="flex gap-2"><span class="text-success">✓</span> Node 14+ and Python 3.8+ — nothing else</li>
+          <li class="flex gap-2"><span class="text-success">✓</span> macOS SSL certificate fallback built in</li>
+          <li class="flex gap-2"><span class="text-success">✓</span> Everything stays on your machine. MIT licensed.</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== COMPARISON ===================== -->
+<section class="border-y border-border bg-deep/40 px-4 py-24 md:px-6">
+  <div class="mx-auto max-w-5xl">
+    <div class="reveal mb-10 max-w-2xl">
+      <p class="tag-line font-mono text-sm text-secondary">// why oppy</p>
+      <h2 class="scrub-head mt-2 text-3xl font-700 md:text-4xl">Not another static list</h2>
+      <p class="mt-3 text-muted">Curated repos go stale. Cloud scrapers bill you monthly. Oppy runs on your machine, for free, and remembers what it already showed you.</p>
+    </div>
+    <div class="reveal overflow-x-auto rounded-lg border border-border" data-anim="deep">
+      <table class="w-full min-w-[640px] border-collapse text-sm">
+        <thead>
+          <tr class="bg-surface text-left">
+            <th class="px-5 py-4 font-600">Capability</th>
+            <th class="px-5 py-4 text-center font-600 text-primary">Oppy</th>
+            <th class="px-5 py-4 text-center font-500 text-muted">Static lists</th>
+            <th class="px-5 py-4 text-center font-500 text-muted">Apify scrapers</th>
+            <th class="px-5 py-4 text-center font-500 text-muted">Job scrapers</th>
+          </tr>
+        </thead>
+        <tbody id="cmp-body" class="font-mono text-xs"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== INSTALL ===================== -->
+<section id="install" class="px-4 py-24 md:px-6">
+  <div class="mx-auto max-w-2xl text-center">
+    <p class="reveal tag-line justify-center font-mono text-sm text-secondary">// install</p>
+    <h2 class="scrub-head mt-2 text-3xl font-700 md:text-4xl">Two ways in. Both zero-config.</h2>
+    <p class="reveal mt-3 text-muted" data-d="1">Published to npm and PyPI. Each needs Python 3.8+ on the host — deps auto-install on first run.</p>
+
+    <!-- tabs -->
+    <div class="reveal mt-8" data-d="2">
+      <div class="mx-auto inline-flex rounded-lg border border-border bg-surface p-1 font-mono text-xs">
+        <button data-tab="npx" class="install-tab rounded px-4 py-2 text-deep">npx</button>
+        <button data-tab="npm" class="install-tab rounded px-4 py-2 text-muted">npm</button>
+        <button data-tab="pip" class="install-tab rounded px-4 py-2 text-muted">pip</button>
+      </div>
+
+      <div class="spot mt-4 rounded-lg border border-border bg-deep p-5 text-left shadow-xl shadow-slate-950/40">
+        <div class="flex items-center gap-3 font-mono text-sm">
+          <span class="text-primary">$</span>
+          <code id="install-cmd" class="flex-1 truncate">npx @dshenoyh/oppy-cli</code>
+          <button id="install-copy" data-copy="npx @dshenoyh/oppy-cli" aria-label="Copy install command"
+                  class="copy-btn shrink-0 cursor-pointer rounded-md border border-border px-2.5 py-1 text-xs text-muted transition-colors hover:border-secondary hover:text-secondary">Copy</button>
+        </div>
+        <p id="install-note" class="mt-3 font-mono text-xs text-muted">Zero install — runs straight from the registry.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section id="faq" class="border-t border-border px-4 py-24 md:px-6">
+  <div class="mx-auto max-w-3xl">
+    <div class="reveal mb-10">
+      <p class="tag-line font-mono text-sm text-secondary">// pre-flight checks</p>
+      <h2 class="mt-2 text-3xl font-700 md:text-4xl" data-split>Questions before launch</h2>
+    </div>
+
+    <div class="space-y-3">
+      <details class="faq reveal rounded-lg border border-border bg-surface px-5" data-anim="left">
+        <summary class="flex items-center justify-between gap-4 py-5 text-left font-600">
+          Is it actually free?
+          <span class="chev shrink-0 font-mono text-lg text-secondary">+</span>
+        </summary>
+        <div class="faq-body pb-5 text-sm leading-relaxed text-muted">Yes — MIT licensed, published to npm and PyPI, no account, no API key, no rate-limited free tier. It runs on your machine and costs you nothing but disk space.</div>
+      </details>
+
+      <details class="faq reveal rounded-lg border border-border bg-surface px-5" data-anim="left" data-d="1">
+        <summary class="flex items-center justify-between gap-4 py-5 text-left font-600">
+          Where does my data go?
+          <span class="chev shrink-0 font-mono text-lg text-secondary">+</span>
+        </summary>
+        <div class="faq-body pb-5 text-sm leading-relaxed text-muted">Nowhere. Listings are written to a local SQLite database (<code class="text-secondary">~/.config/oppy/opportunities.db</code>) and a Markdown file in your vault. There is no Oppy server, no telemetry and no sign-in — the only network calls are to the public job boards themselves.</div>
+      </details>
+
+      <details class="faq reveal rounded-lg border border-border bg-surface px-5" data-anim="left" data-d="2">
+        <summary class="flex items-center justify-between gap-4 py-5 text-left font-600">
+          Do I need to know Python?
+          <span class="chev shrink-0 font-mono text-lg text-secondary">+</span>
+        </summary>
+        <div class="faq-body pb-5 text-sm leading-relaxed text-muted">No. You need Python 3.8+ installed — most machines already have it — and Oppy verifies and installs its own dependencies on first run. If you can run <code class="text-secondary">npx</code>, you can run Oppy.</div>
+      </details>
+
+      <details class="faq reveal rounded-lg border border-border bg-surface px-5" data-anim="left" data-d="3">
+        <summary class="flex items-center justify-between gap-4 py-5 text-left font-600">
+          Will I see the same listing twice?
+          <span class="chev shrink-0 font-mono text-lg text-secondary">+</span>
+        </summary>
+        <div class="faq-body pb-5 text-sm leading-relaxed text-muted">No. The cache holds a unique index on the opportunity URL, so re-running the sweep only ever adds what is genuinely new. Run it hourly if you like — the ledger stays clean.</div>
+      </details>
+
+      <details class="faq reveal rounded-lg border border-border bg-surface px-5" data-anim="left" data-d="4">
+        <summary class="flex items-center justify-between gap-4 py-5 text-left font-600">
+          I don't use Obsidian. Does it still work?
+          <span class="chev shrink-0 font-mono text-lg text-secondary">+</span>
+        </summary>
+        <div class="faq-body pb-5 text-sm leading-relaxed text-muted">Yes. If the default vault path is missing, the export falls back to <code class="text-secondary">Opportunities.md</code> in your working directory — or point <code class="text-secondary">OPPY_EXPORT_PATH</code> anywhere you like. It is plain Markdown; every notes app reads it.</div>
+      </details>
+
+      <details class="faq reveal rounded-lg border border-border bg-surface px-5" data-anim="left" data-d="4">
+        <summary class="flex items-center justify-between gap-4 py-5 text-left font-600">
+          Can I add my own sources?
+          <span class="chev shrink-0 font-mono text-lg text-secondary">+</span>
+        </summary>
+        <div class="faq-body pb-5 text-sm leading-relaxed text-muted">Point the custom RSS scraper at any feed and it joins the sweep alongside the four built-in platforms. New platform scrapers are welcome as pull requests — see CONTRIBUTING.md in the repo.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WEB APP TEASER + WAITLIST ===================== -->
+<section class="px-4 pb-28 md:px-6">
+  <div class="reveal spot relative mx-auto max-w-4xl overflow-hidden rounded-lg border border-border bg-surface p-8 md:p-12" data-anim="deep">
+    <div class="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-primary/15 blur-[90px]"></div>
+    <div class="pointer-events-none absolute -bottom-16 -right-16 h-56 w-56 rounded-full bg-secondary/15 blur-[90px]"></div>
+    <div class="relative">
+      <span class="inline-flex items-center gap-2 rounded-lg border border-secondary/40 bg-secondary/10 px-3 py-1 font-mono text-xs text-secondary">ground control · coming soon</span>
+      <h2 class="mt-4 max-w-2xl text-2xl font-700 md:text-3xl">A hosted web app for everyone who doesn't live in a terminal</h2>
+      <p class="mt-3 max-w-xl text-muted">Same satellite, no install. The live ledger above, in your browser — search, filters and apply links for non-technical opportunity-hunters. Get pinged when it launches.</p>
+
+      <form id="waitlist" class="mt-7 flex max-w-md flex-col gap-3 sm:flex-row" novalidate>
+        <label for="email" class="sr-only">Email address</label>
+        <input id="email" name="email" type="email" required placeholder="you@domain.com" autocomplete="email"
+               class="flex-1 rounded-lg border border-border bg-deep px-4 py-3 text-sm text-ink placeholder:text-muted/70 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30" />
+        <button type="submit" class="btn-primary magnetic sheen rounded-lg bg-primary px-5 py-3 text-sm font-600 text-deep">Join waitlist</button>
+      </form>
+      <p id="waitlist-msg" class="mt-3 font-mono text-xs text-success" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="border-t border-border px-4 py-12 md:px-6">
+  <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 md:flex-row">
+    <div class="text-center md:text-left">
+      <a href="#top" class="flex items-center justify-center gap-2 font-mono text-lg font-600 md:justify-start">
+        <span class="text-primary">◇</span> oppy
+      </a>
+      <!-- ponytail: attribution placeholder — confirm real credit line with repo owner before publishing -->
+      <p class="mt-1 text-sm text-muted">The scouting satellite for paid internships &amp; hackathons · MIT License</p>
+    </div>
+    <nav class="flex items-center gap-6 text-sm text-muted" aria-label="Footer">
+      <a href="https://github.com/abbysallord/oppy" target="_blank" rel="noopener" class="link-u transition-colors hover:text-ink">GitHub</a>
+      <a href="https://www.npmjs.com/package/@dshenoyh/oppy-cli" target="_blank" rel="noopener" class="link-u transition-colors hover:text-ink">npm</a>
+      <a href="https://pypi.org/project/oppy-cli/" target="_blank" rel="noopener" class="link-u transition-colors hover:text-ink">PyPI</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- copy buttons ---------- */
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy);
+        const prev = btn.textContent;
+        btn.textContent = '✓ Copied';
+        btn.classList.add('text-success', 'border-success');
+        setTimeout(() => { btn.textContent = prev; btn.classList.remove('text-success', 'border-success'); }, 1400);
+      } catch (e) { /* clipboard unavailable */ }
+    });
+  });
+
+  /* ---------- nav scroll state + active link ---------- */
+  const nav = document.getElementById('nav');
+  const links = [...document.querySelectorAll('#navlinks a')];
+  const navbar = document.getElementById('navbar');
+  const onScroll = () => {
+    const past = window.scrollY > 12;
+    nav.classList.toggle('border-border', past);
+    nav.classList.toggle('bg-bg/80', past);
+    nav.classList.toggle('backdrop-blur', past);
+    navbar.classList.toggle('py-4', !past);
+    navbar.classList.toggle('py-2.5', past);
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const id = e.target.id;
+      links.forEach((l) => l.classList.toggle('text-ink', l.getAttribute('href') === '#' + id));
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  ['ledger', 'features', 'how', 'cli', 'install'].forEach((id) => { const el = document.getElementById(id); if (el) spy.observe(el); });
+
+  /* ---------- reveal + timeline ---------- */
+  const revObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); revObs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal, .timeline-line').forEach((el) => revObs.observe(el));
+
+  /* ---------- count-up ---------- */
+  const countObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const el = e.target, target = +el.dataset.count;
+      countObs.unobserve(el);
+      if (reduce) { el.textContent = target.toLocaleString(); return; }
+      const dur = 1200, t0 = performance.now();
+      const tick = (t) => {
+        const p = Math.min((t - t0) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased).toLocaleString();
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('[data-count]').forEach((el) => countObs.observe(el));
+
+  /* ---------- typewriter (shared by hero + terminal demo) ---------- */
+  function typeInto(el, text, speed, done) {
+    if (reduce) { el.textContent = text; done && done(); return; }
+    let i = 0;
+    (function step() {
+      if (i <= text.length) { el.textContent = text.slice(0, i++); setTimeout(step, speed); }
+      else done && done();
+    })();
+  }
+
+  const heroCmd = document.getElementById('hero-cmd');
+  typeInto(heroCmd, 'npx @dshenoyh/oppy-cli', 55, () => setTimeout(() => heroCmd.classList.remove('caret'), 1200));
+
+  /* ---------- word-by-word headings ---------- */
+  document.querySelectorAll('[data-split]').forEach((h) => {
+    let n = 0;
+    h.innerHTML = h.innerHTML.replace(/(^|>)([^<]+)(?=<|$)/g, (_, lead, text) =>
+      lead + text.replace(/(\S+)(\s*)/g, (__, word, sp) => `<span class="word" style="--i:${n++}">${word}</span>${sp}`));
+  });
+  const splitObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('split-in'); splitObs.unobserve(e.target); } });
+  }, { threshold: 0.25 });
+  // anything already on screen plays now; the rest wait for their scroll cue
+  document.querySelectorAll('[data-split]').forEach((h) => {
+    if (h.getBoundingClientRect().top < innerHeight) h.classList.add('split-in');
+    else splitObs.observe(h);
+  });
+
+  /* ---------- scroll progress (fallback where scroll() timelines are unsupported) ---------- */
+  if (!CSS.supports('animation-timeline', 'scroll()')) {
+    const bar = document.querySelector('.progress');
+    const paint = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      bar.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+    };
+    paint();
+    addEventListener('scroll', paint, { passive: true });
+  }
+
+  /* ---------- cursor spotlight on cards ---------- */
+  document.querySelectorAll('.spot').forEach((card) => {
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+  });
+
+  /* ---------- magnetic buttons ---------- */
+  if (!reduce && !matchMedia('(hover: none)').matches) {
+    document.querySelectorAll('.magnetic').forEach((btn) => {
+      btn.addEventListener('pointermove', (e) => {
+        const r = btn.getBoundingClientRect();
+        btn.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.22}px, ${(e.clientY - r.top - r.height / 2) * 0.3}px)`;
+      });
+      btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
+    });
+  }
+
+  /* ---------- hero parallax ---------- */
+  (function () {
+    const scene = document.getElementById('scene');
+    if (!scene || reduce || window.matchMedia('(hover: none)').matches) return;
+    const layers = [...scene.querySelectorAll('.orbit, .float')];
+    scene.addEventListener('mousemove', (ev) => {
+      const r = scene.getBoundingClientRect();
+      const x = (ev.clientX - r.left) / r.width - 0.5;
+      const y = (ev.clientY - r.top) / r.height - 0.5;
+      layers.forEach((l, idx) => {
+        const depth = (idx + 1) * 3;
+        l.style.transform = `translate(${x * depth}px, ${y * depth}px)`;
+      });
+    });
+    scene.addEventListener('mouseleave', () => layers.forEach((l) => (l.style.transform = '')));
+  })();
+
+  /* ---------- animated terminal session ---------- */
+  (function () {
+    const term = document.getElementById('term');
+    if (!term) return;
+    const LINES = [
+      ['text-muted/70', '✔ python3 detected · deps verified (feedparser, rich)'],
+      ['', ''],
+      ['text-primary', '◇ oppy v1.0.3 · opportunity scout · MIT'],
+      ['', ''],
+      ['text-muted', '  [1] Sync feeds        [4] Export dashboard'],
+      ['text-muted', '  [2] Browse ledger     [5] Settings'],
+      ['', ''],
+      ['text-secondary', '› 1  <span class="text-ink">sweeping 4 platforms…</span>'],
+      ['text-muted', '  unstop         internship   <span class="text-success">+12</span>'],
+      ['text-muted', '  unstop         hackathon    <span class="text-success">+5</span>'],
+      ['text-muted', '  devpost        hackathon    <span class="text-success">+7</span>'],
+      ['text-muted', '  remoteok       internship   <span class="text-success">+9</span>'],
+      ['text-muted', '  weworkremotely internship   <span class="text-success">+4</span>'],
+      ['', ''],
+      ['text-ink', '  scan complete · <span class="text-success">37 new</span> · <span class="text-muted">118 duplicates skipped</span>'],
+      ['text-secondary', '  → ~/Documents/obsidian/…/Opportunities.md'],
+    ];
+
+    const play = () => {
+      term.innerHTML = '<span class="text-primary">$</span> <code id="term-cmd" class="caret text-ink"></code>\n';
+      typeInto(document.getElementById('term-cmd'), 'npx @dshenoyh/oppy-cli', 55, () => {
+        document.getElementById('term-cmd').classList.remove('caret');
+        LINES.forEach(([cls, html], i) => {
+          const emit = () => term.insertAdjacentHTML('beforeend',
+            `<span class="term-line ${cls}" style="animation-delay:${reduce ? 0 : 40}ms">${html || '&nbsp;'}</span>\n`);
+          reduce ? emit() : setTimeout(emit, 140 * i + 200);
+        });
+      });
+    };
+
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { obs.unobserve(e.target); play(); } });
+    }, { threshold: 0.3 });
+    obs.observe(term);
+  })();
+
+  /* ---------- install tabs ---------- */
+  const installs = {
+    npx: { cmd: 'npx @dshenoyh/oppy-cli', note: 'Zero install — runs straight from the registry.' },
+    npm: { cmd: 'npm install -g @dshenoyh/oppy-cli && oppy', note: 'Global install, then run the `oppy` command anywhere.' },
+    pip: { cmd: 'pip install oppy-cli && oppy', note: 'Installs into your active Python environment.' },
+  };
+  const iCmd = document.getElementById('install-cmd'), iNote = document.getElementById('install-note'), iCopy = document.getElementById('install-copy');
+  document.querySelectorAll('.install-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.install-tab').forEach((t) => { t.classList.remove('bg-secondary', 'text-deep'); t.classList.add('text-muted'); });
+      tab.classList.add('bg-secondary', 'text-deep'); tab.classList.remove('text-muted');
+      const d = installs[tab.dataset.tab];
+      iCmd.textContent = d.cmd; iNote.textContent = d.note; iCopy.dataset.copy = d.cmd;
+    });
+  });
+  // init first tab styling
+  document.querySelector('.install-tab[data-tab="npx"]').classList.add('bg-primary');
+
+  /* ---------- comparison table ---------- */
+  const cmp = [
+    ['Paid remote internships', '✓', '~ static', '✓ paid', '1 platform'],
+    ['Active hackathons',       '✓', '✕', 'prizes only', '✕'],
+    ['SQLite dedup cache',      '✓', '✕', '✕', '✕'],
+    ['Obsidian Markdown export','✓', '✕', '✕', '✕'],
+    ['Interactive TUI',         '✓', '✕', '✕', '✕'],
+    ['Zero-config npx',         '✓', '✕', '✕', '✕'],
+    ['Local-first & free',      '✓', '✓', '✕ paid', '~'],
+  ];
+  document.getElementById('cmp-body').innerHTML = cmp.map((r, i) => {
+    const cell = (v) => v === '✓' ? '<span class="text-primary">✓</span>'
+      : v === '✕' ? '<span class="text-muted/40">✕</span>'
+      : `<span class="text-muted/70">${v}</span>`;
+    return `<tr class="border-t border-border ${i % 2 ? 'bg-surface/30' : ''}">
+      <td class="px-5 py-3.5 font-sans text-sm text-ink/90">${r[0]}</td>
+      <td class="px-5 py-3.5 text-center">${cell(r[1])}</td>
+      <td class="px-5 py-3.5 text-center">${cell(r[2])}</td>
+      <td class="px-5 py-3.5 text-center">${cell(r[3])}</td>
+      <td class="px-5 py-3.5 text-center">${cell(r[4])}</td>
+    </tr>`;
+  }).join('');
+
+  /* ---------- live ledger ---------- */
+  const DATA = [
+    { title:'Sales Operation Intern',      company:'Flow Operations Ltd', platform:'remoteok',       type:'internship', pay:'$4,000 – $6,000/mo', deadline:'Apply ASAP', soon:true,  remote:1, paid:1 },
+    { title:'Frontend Engineering Intern', company:'Vercel',              platform:'weworkremotely', type:'internship', pay:'$7,500/mo',          deadline:'Aug 15, 2026', soon:false, remote:1, paid:1 },
+    { title:'AI Agents Hackathon',         company:'Anthropic × Devpost', platform:'devpost',        type:'hackathon',  pay:'$50,000 pool',       deadline:'Aug 30, 2026', soon:false, remote:1, paid:1 },
+    { title:'Web3 Infra Challenge',        company:'Solana Foundation',   platform:'unstop',         type:'hackathon',  pay:'₹8,00,000 pool',     deadline:'Sep 02, 2026', soon:false, remote:1, paid:1 },
+    { title:'Backend Intern (Go)',         company:'Fly.io',              platform:'remoteok',       type:'internship', pay:'$6,000/mo',          deadline:'Rolling',      soon:false, remote:1, paid:1 },
+    { title:'Data Science Intern',         company:'Hugging Face',        platform:'weworkremotely', type:'internship', pay:'$5,500/mo',          deadline:'Aug 20, 2026', soon:false, remote:1, paid:1 },
+    { title:'National Hackathon Qualifier',company:'Unstop',              platform:'unstop',         type:'hackathon',  pay:'₹1,00,000',          deadline:'3 days left',  soon:true,  remote:1, paid:1 },
+    { title:'Product Design Intern',       company:'Linear',              platform:'remoteok',       type:'internship', pay:'$6,500/mo',          deadline:'Aug 10, 2026', soon:true,  remote:1, paid:1 },
+    { title:'Global Fintech Hack',         company:'Stripe × Devpost',    platform:'devpost',        type:'hackathon',  pay:'$25,000 pool',       deadline:'Sep 12, 2026', soon:false, remote:1, paid:1 },
+    { title:'Rust Systems Intern',         company:'Cloudflare',          platform:'remoteok',       type:'internship', pay:'$7,000/mo',          deadline:'Aug 25, 2026', soon:false, remote:1, paid:1 },
+    { title:'DevRel Intern',               company:'Supabase',            platform:'weworkremotely', type:'internship', pay:'$5,000/mo',          deadline:'Rolling',      soon:false, remote:1, paid:1 },
+    { title:'Climate AI Hackathon',        company:'Devpost',             platform:'devpost',        type:'hackathon',  pay:'$15,000 pool',       deadline:'Sep 05, 2026', soon:false, remote:1, paid:1 },
+  ];
+  const PLAT = {
+    unstop:        { label:'Unstop',        cls:'text-primary   border-primary/30   bg-primary/10' },
+    devpost:       { label:'Devpost',       cls:'text-secondary border-secondary/30 bg-secondary/10' },
+    remoteok:      { label:'RemoteOK',      cls:'text-primary   border-primary/30   bg-primary/10' },
+    weworkremotely:{ label:'WeWorkRemotely',cls:'text-secondary border-secondary/30 bg-secondary/10' },
+  };
+  const platHref = { unstop:'https://unstop.com', devpost:'https://devpost.com', remoteok:'https://remoteok.com', weworkremotely:'https://weworkremotely.com' };
+
+  const state = { search:'', type:'all', paid:true, remote:true };
+  const body = document.getElementById('ledger-body');
+  const empty = document.getElementById('ledger-empty');
+  document.getElementById('ledger-count').textContent = DATA.length;
+
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+  function matches(o) {
+    if (state.type !== 'all' && o.type !== state.type) return false;
+    if (state.paid && !o.paid) return false;
+    if (state.remote && !o.remote) return false;
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      if (![o.title, o.company, o.platform].some((f) => f.toLowerCase().includes(q))) return false;
+    }
+    return true;
+  }
+
+  function render() {
+    const rows = DATA.filter(matches);
+    empty.classList.toggle('hidden', rows.length > 0);
+    body.innerHTML = rows.map((o, i) => {
+      const p = PLAT[o.platform];
+      const dl = o.soon
+        ? `<span class="inline-flex items-center gap-1.5 text-warning"><span class="h-1.5 w-1.5 rounded-full bg-warning"></span>${esc(o.deadline)}</span>`
+        : `<span class="text-muted">${esc(o.deadline)}</span>`;
+      return `<tr class="row-enter border-t border-border transition-colors hover:bg-deep/40" style="animation-delay:${i * 30}ms">
+        <td class="px-5 py-4"><span class="inline-block rounded-lg border px-2.5 py-1 font-mono text-[11px] ${p.cls}">${p.label}</span></td>
+        <td class="px-5 py-4">
+          <div class="font-500 text-ink">${esc(o.title)}</div>
+          <div class="mt-0.5 flex items-center gap-2 text-xs text-muted">
+            ${esc(o.company)}
+            ${o.paid ? '<span class="inline-flex items-center gap-1 text-success"><span class="h-1 w-1 rounded-full bg-success"></span>Paid</span>' : ''}
+          </div>
+        </td>
+        <td class="px-5 py-4 font-mono text-xs text-ink/90">${esc(o.pay)}</td>
+        <td class="px-5 py-4 font-mono text-xs">${dl}</td>
+        <td class="px-5 py-4 text-right">
+          <a href="${platHref[o.platform]}" target="_blank" rel="noopener"
+             class="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs text-muted transition-colors hover:border-secondary hover:text-secondary">
+            Apply <svg viewBox="0 0 24 24" class="apply-arrow h-3 w-3" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  // search
+  document.getElementById('search').addEventListener('input', (e) => { state.search = e.target.value; render(); });
+
+  // type pills
+  document.querySelectorAll('.type-pill').forEach((pill) => {
+    pill.addEventListener('click', () => {
+      state.type = pill.dataset.type;
+      document.querySelectorAll('.type-pill').forEach((p) => {
+        const on = p === pill;
+        p.classList.toggle('bg-surface', on); p.classList.toggle('text-ink', on); p.classList.toggle('text-muted', !on);
+        p.setAttribute('aria-selected', on);
+      });
+      render();
+    });
+  });
+
+  // toggles
+  function paintToggle(btn, on, hue) {
+    btn.setAttribute('aria-pressed', on);
+    btn.classList.toggle('border-border', !on);
+    btn.classList.toggle('text-muted', !on);
+    btn.classList.toggle(`border-${hue}`, on);
+    btn.classList.toggle(`text-${hue}`, on);
+    btn.classList.toggle(`bg-${hue}/10`, on);
+    btn.querySelector('.dot').classList.toggle(`bg-${hue}`, on);
+    btn.querySelector('.dot').classList.toggle('bg-muted', !on);
+  }
+  const paidBtn = document.querySelector('[data-toggle="paid"]');
+  const remoteBtn = document.querySelector('[data-toggle="remote"]');
+  paintToggle(paidBtn, true, 'success');
+  paintToggle(remoteBtn, true, 'secondary');
+  paidBtn.addEventListener('click', () => { state.paid = !state.paid; paintToggle(paidBtn, state.paid, 'success'); render(); });
+  remoteBtn.addEventListener('click', () => { state.remote = !state.remote; paintToggle(remoteBtn, state.remote, 'secondary'); render(); });
+
+  render();
+
+  /* ---------- waitlist (client-only demo, no submission) ---------- */
+  const form = document.getElementById('waitlist');
+  const msg = document.getElementById('waitlist-msg');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email');
+    if (!email.validity.valid || !email.value) {
+      msg.className = 'mt-3 font-mono text-xs text-warning';
+      msg.textContent = 'Enter a valid email so we can ping you.';
+      email.focus();
+      return;
+    }
+    msg.className = 'mt-3 font-mono text-xs text-success';
+    msg.textContent = '◉ Locked on. You\'re on the waitlist — we\'ll beam you when the web app launches.';
+    form.reset();
+  });
+
+  /* ---------- self-check (filter logic) ---------- */
+  console.assert(DATA.filter((o) => o.type === 'hackathon').length === 5, 'ledger: expected 5 hackathons');
+  (function () {
+    const s = { search:'stripe', type:'all', paid:true, remote:true };
+    const m = (o) => (s.type === 'all' || o.type === s.type) && (!s.paid || o.paid) && (!s.remote || o.remote) &&
+      (!s.search || [o.title, o.company, o.platform].some((f) => f.toLowerCase().includes(s.search)));
+    console.assert(DATA.filter(m).length === 1, 'ledger: search "stripe" should match 1');
+  })();
+})();
+</script>
+</body>
+</html>
